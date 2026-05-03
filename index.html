@@ -75,7 +75,7 @@ let allData = null;
 let activeStores = new Set();
 
 // Load prices.json
-fetch("data/prices.json")
+fetch("./data/prices.json")
   .then(r => r.json())
   .then(data => {
     allData = data;
