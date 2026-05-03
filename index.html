@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QİYMƏTMÜQAYİSƏ — Azərbaycan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Mono','Courier New',monospace;background:#f5f0e8;color:#1a1a1a;min-height:100vh}
+header{background:#1a1a1a;color:#f5f0e8;padding:24px 32px;border-bottom:4px solid #d4a853}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.5px}
+h1 span{color:#d4a853}
+.subtitle{margin-top:4px;font-size:11px;opacity:.6;letter-spacing:.1em;text-transform:uppercase}
+.last-update{text-align:right;font-size:11px;opacity:.5}
+.last-update b{color:#d4a853;opacity:1;display:block}
+.main{max-width:1100px;margin:0 auto;padding:24px 32px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+input{flex:1 1 240px;padding:10px 16px;border:2px solid #1a1a1a;background:white;font-family:inherit;font-size:14px;outline:none}
+.store-toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center}
+.store-btn{padding:6px 16px;border-width:2px;border-style:solid;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.05em}
+.hint{font-size:11px;color:#888;margin-left:4px}
+.summary{background:#1a1a1a;color:#f5f0e8;padding:10px 20px;margin-bottom:2px;display:flex;gap:20px;font-size:12px;letter-spacing:.08em;flex-wrap:wrap}
+.gold{color:#d4a853}.red{color:#ff6b6b}
+.table-wrap{overflow-x:auto;border:2px solid #1a1a1a}
+table{width:100%;border-collapse:collapse;background:white}
+thead tr{background:#1a1a1a;color:#f5f0e8}
+th{padding:12px 16px;text-align:center;font-size:11px;letter-spacing:.08em;font-weight:500;min-width:100px;white-space:nowrap}
+th.left{text-align:left;min-width:180px}
+td{padding:12px 16px;text-align:center;border-bottom:1px solid #e8e0d0;font-size:14px}
+td.left{text-align:left;font-weight:500}
+tr.even{background:#fafafa}tr.odd{background:white}
+.best{background:#fffbe6;font-weight:700;color:#b8860b}
+.worst{background:#fff5f5;color:#cc3333}
+.saving{display:inline-block;padding:2px 8px;font-size:12px;font-weight:500}
+.saving.green{background:#e8f5e9;color:#2e7d32}
+.saving.grey{background:#f5f5f5;color:#999}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.footer{margin-top:28px;padding:16px 0;border-top:2px solid #ddd;font-size:11px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.loading{text-align:center;padding:60px;font-size:14px;color:#888}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>🛒 QİYMƏT<span>MÜQAYİSƏ</span></h1>
+      <p class="subtitle">Azərbaycan ərzaq qiymətləri müqayisəsi</p>
+    </div>
+    <div class="last-update">📡 Son yenilənmə<b id="lastUpdate">yüklənir...</b></div>
+  </div>
+</header>
+<div class="main">
+  <div class="controls">
+    <input id="search" type="text" placeholder="Məhsul axtar..." oninput="render()"/>
+  </div>
+  <div class="store-toggles" id="storeToggles"></div>
+  <div class="summary" id="summary"></div>
+  <div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="footer">
+    <span>Qiymətlər Azərbaycan Manatı (₼) ilə · Hər gün avtomatik yenilənir</span>
+    <span>Bravo · Neptun · Rahat · OBA</span>
+  </div>
+</div>
+<script>
+const COLORS = {
+  "Bravo":  "#e63946",
+  "Neptun": "#6366f1",
+  "Rahat":  "#2a9d8f",
+  "OBA":    "#f4a261"
+};
+
+let allData = null;
+let activeStores = new Set();
+
+// Load prices.json
+fetch("data/prices.json")
+  .then(r => r.json())
+  .then(data => {
+    allData = data;
+    document.getElementById("lastUpdate").textContent = data.last_updated;
+
+    // Build store list from data
+    const stores = Object.keys(data.products[0].prices);
+    activeStores = new Set(stores);
+
+    // Store toggle buttons
+    const togglesEl = document.getElementById("storeToggles");
+    stores.forEach(store => {
+      const color = COLORS[store] || "#888";
+      const btn = document.createElement("button");
+      btn.className = "store-btn";
+      btn.style.borderColor = color;
+      btn.style.background = color;
+      btn.style.color = "white";
+      btn.innerHTML = `<span class="dot" style="background:white"></span>${store}`;
+      btn.onclick = () => {
+        if (activeStores.has(store)) {
+          if (activeStores.size > 1) {
+            activeStores.delete(store);
+            btn.style.background = "transparent";
+            btn.style.color = color;
+          }
+        } else {
+          activeStores.add(store);
+          btn.style.background = color;
+          btn.style.color = "white";
+        }
+        render();
+      };
+      togglesEl.appendChild(btn);
+    });
+    const hint = document.createElement("span");
+    hint.className = "hint"; hint.textContent = "mağazaları seçin";
+    togglesEl.appendChild(hint);
+
+    render();
+  })
+  .catch(() => {
+    document.getElementById("tbody").innerHTML = '<tr><td colspan="10" class="loading">❌ Qiymətlər yüklənə bilmədi. prices.json faylını yoxlayın.</td></tr>';
+  });
+
+function render() {
+  if (!allData) return;
+  const search = document.getElementById("search").value.toLowerCase();
+  const visible = Object.keys(allData.products[0].prices).filter(s => activeStores.has(s));
+
+  const products = allData.products.filter(p => p.name.toLowerCase().includes(search));
+
+  document.getElementById("summary").innerHTML =
+    `<span>${products.length} məhsul</span><span>·</span><span>${visible.length} mağaza</span><span>·</span><span class="gold">★ ən ucuz</span><span>·</span><span class="red">● ən baha</span>`;
+
+  document.getElementById("thead").innerHTML = `<tr>
+    <th class="left">MƏHSUL</th>
+    ${visible.map(s=>`<th><span class="dot" style="background:${COLORS[s]||'#888'}"></span>${s.toUpperCase()}</th>`).join("")}
+    <th>QƏNAƏT</th>
+  </tr>`;
+
+  if (!products.length) {
+    document.getElementById("tbody").innerHTML = `<tr><td colspan="${visible.length+2}" style="padding:40px;color:#999;text-align:center">Heç nə tapılmadı</td></tr>`;
+    return;
+  }
+
+  document.getElementById("tbody").innerHTML = products.map((p, i) => {
+    const vp = visible.map(s => p.prices[s]).filter(x => x !== null);
+    const min = Math.min(...vp), max = Math.max(...vp);
+    const saving = (max - min).toFixed(2);
+    const cells = visible.map(s => {
+      const pr = p.prices[s];
+      if (pr === null || pr === undefined) return `<td style="color:#ccc">—</td>`;
+      const isBest = pr === min, isWorst = pr === max && min !== max;
+      return `<td class="${isBest?'best':isWorst?'worst':''}">${isBest?'★ ':isWorst?'● ':''}₼${pr.toFixed(2)}</td>`;
+    }).join("");
+    const savingHtml = parseFloat(saving) > 0
+      ? `<span class="saving green">−₼${saving}</span>`
+      : `<span class="saving grey">eyni</span>`;
+    return `<tr class="${i%2===0?'even':'odd'}">
+      <td class="left">${p.name}</td>
+      ${cells}
+      <td>${savingHtml}</td>
+    </tr>`;
+  }).join("");
+}
+</script>
+</body>
+</html>
