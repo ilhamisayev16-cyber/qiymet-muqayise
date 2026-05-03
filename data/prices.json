@@ -1,17 +1,125 @@
 {
-  "last_updated": "03 May 2026, 06:00",
+  "last_updated": "03 May 2026, 20:53",
   "products": [
-    {"id": "sud-1l", "name": "Süd 1L", "prices": {"Bravo": 1.20, "Neptun": 1.15, "Rahat": 1.18, "OBA": 1.10}},
-    {"id": "yumurta-10", "name": "Yumurta 10 ədəd", "prices": {"Bravo": 2.80, "Neptun": 2.65, "Rahat": 2.70, "OBA": 2.60}},
-    {"id": "kere-yagi-200q", "name": "Kərə yağı 200q", "prices": {"Bravo": 3.50, "Neptun": 3.30, "Rahat": 3.40, "OBA": 3.20}},
-    {"id": "ag-corek", "name": "Ağ çörək", "prices": {"Bravo": 0.40, "Neptun": 0.42, "Rahat": 0.38, "OBA": 0.35}},
-    {"id": "pomidor-1kq", "name": "Pomidor 1kq", "prices": {"Bravo": 1.80, "Neptun": 1.70, "Rahat": 1.75, "OBA": 1.60}},
-    {"id": "kartof-1kq", "name": "Kartof 1kq", "prices": {"Bravo": 0.90, "Neptun": 0.88, "Rahat": 0.85, "OBA": 0.80}},
-    {"id": "soyan-1kq", "name": "Soğan 1kq", "prices": {"Bravo": 0.60, "Neptun": 0.58, "Rahat": 0.62, "OBA": 0.55}},
-    {"id": "toyuq-1kq", "name": "Toyuq 1kq", "prices": {"Bravo": 5.20, "Neptun": 5.00, "Rahat": 5.10, "OBA": 4.90}},
-    {"id": "duyü-1kq", "name": "Düyü 1kq", "prices": {"Bravo": 2.10, "Neptun": 2.00, "Rahat": 2.05, "OBA": 1.95}},
-    {"id": "sekerqum-1kq", "name": "Şəkər 1kq", "prices": {"Bravo": 1.40, "Neptun": 1.32, "Rahat": 1.35, "OBA": 1.30}},
-    {"id": "un-1kq", "name": "Un 1kq", "prices": {"Bravo": 0.95, "Neptun": 0.88, "Rahat": 0.90, "OBA": 0.85}},
-    {"id": "ay-cicayi-1l", "name": "Ay çiçəyi yağı 1L", "prices": {"Bravo": 3.20, "Neptun": 3.00, "Rahat": 3.10, "OBA": 2.90}}
+    {
+      "id": "sud-1l",
+      "name": "Süd 1L",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "yumurta-10",
+      "name": "Yumurta 10 ədəd",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "kere-yagi-200q",
+      "name": "Kərə yağı 200q",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "ag-corek",
+      "name": "Ağ çörək",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "pomidor-1kq",
+      "name": "Pomidor 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "kartof-1kq",
+      "name": "Kartof 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "soyan-1kq",
+      "name": "Soğan 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "toyuq-1kq",
+      "name": "Toyuq 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "duyü-1kq",
+      "name": "Düyü 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "sekerqum-1kq",
+      "name": "Şəkər 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "un-1kq",
+      "name": "Un 1kq",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    },
+    {
+      "id": "ay-cicayi-1l",
+      "name": "Ay çiçəyi yağı 1L",
+      "prices": {
+        "Bravo": null,
+        "Neptun": null,
+        "Rahat": null,
+        "OBA": null
+      }
+    }
   ]
 }
