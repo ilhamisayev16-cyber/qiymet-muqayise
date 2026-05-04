@@ -63,14 +63,23 @@ tr.even{background:#fafafa}tr.odd{background:white}
 const COLORS={"Bravo":"#e63946","Neptun":"#6366f1","Rahat":"#2a9d8f","OBA":"#f4a261"};
 let allData=null, activeCat="all";
 
-fetch("./data/prices.json")
+ffetch("./data/prices.json")
   .then(r=>r.json())
   .then(data=>{
+    // Köhnə format (category+stores) → yeni formata çevir
+    if(data.category && data.stores){
+      const catId = data.category.replace(/\s/g,"_").toLowerCase();
+      data.categories = {};
+      data.categories[catId] = {name: data.category, stores: data.stores};
+    }
     allData=data;
     document.getElementById("lastUpdate").textContent=data.last_updated;
     buildCats();
     render();
   })
+  .catch(()=>{
+    document.getElementById("content").innerHTML='<div class="empty">❌ Qiymətlər yüklənə bilmədi.</div>';
+  });
   .catch(()=>{
     document.getElementById("content").innerHTML='<div class="empty">❌ Qiymətlər yüklənə bilmədi.</div>';
   });
