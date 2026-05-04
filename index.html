@@ -63,7 +63,7 @@ tr.even{background:#fafafa}tr.odd{background:white}
 const COLORS={"Bravo":"#e63946","Neptun":"#6366f1","Rahat":"#2a9d8f","OBA":"#f4a261"};
 let allData=null, activeCat="all";
 
-fetch("./data/prices.json")
+fetch("/qiymet-muqayise/data/prices.json")
   .then(r=>r.json())
   .then(data=>{
     if(data.category && data.stores){
