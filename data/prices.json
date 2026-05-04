@@ -1,5 +1,5 @@
 {
-  "last_updated": "04 May 2026, 11:51",
+  "last_updated": "04 May 2026, 11:57",
   "category": "Süd 1L",
   "stores": {
     "Bravo": [
@@ -60,12 +60,12 @@
         "price": 2.85
       },
       {
-        "name": "Parmalat Süd 3.5% Paket 1 L",
-        "price": 4.85
-      },
-      {
         "name": "Parmalat Süd 1.8% Uht 1l",
         "price": 3.39
+      },
+      {
+        "name": "Parmalat Süd 3.5% Paket 1 L",
+        "price": 4.85
       },
       {
         "name": "Savuşkin Süd 3 1% 1l",
