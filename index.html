@@ -9,26 +9,35 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Mono','Courier New',monospace;background:#f5f0e8;color:#1a1a1a;min-height:100vh}
 header{background:#1a1a1a;color:#f5f0e8;padding:24px 32px;border-bottom:4px solid #d4a853}
-.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.5px}
 h1 span{color:#d4a853}
 .subtitle{margin-top:4px;font-size:11px;opacity:.6;letter-spacing:.1em;text-transform:uppercase}
 .last-update{text-align:right;font-size:11px;opacity:.5}
 .last-update b{color:#d4a853;opacity:1;display:block}
-.main{max-width:1100px;margin:0 auto;padding:24px 32px}
-input{width:100%;padding:10px 16px;border:2px solid #1a1a1a;background:white;font-family:inherit;font-size:14px;outline:none;margin-bottom:20px}
-.category-title{background:#1a1a1a;color:#f5f0e8;padding:10px 20px;font-size:13px;letter-spacing:.1em;margin-bottom:2px}
-.table-wrap{overflow-x:auto;border:2px solid #1a1a1a;margin-bottom:32px}
+.main{max-width:1200px;margin:0 auto;padding:24px 32px}
+input{width:100%;padding:10px 16px;border:2px solid #1a1a1a;background:white;font-family:inherit;font-size:14px;outline:none;margin-bottom:8px}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.cat-btn{padding:6px 16px;border:2px solid #1a1a1a;background:transparent;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.05em}
+.cat-btn.active{background:#1a1a1a;color:#f5f0e8}
+.section-title{background:#1a1a1a;color:#f5f0e8;padding:10px 20px;font-size:12px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:2px;margin-top:24px}
+.table-wrap{overflow-x:auto;border:2px solid #1a1a1a;margin-bottom:4px}
 table{width:100%;border-collapse:collapse;background:white}
 thead tr{background:#1a1a1a;color:#f5f0e8}
-th{padding:12px 16px;text-align:left;font-size:11px;letter-spacing:.08em;font-weight:500;white-space:nowrap}
-th.right{text-align:right}
-td{padding:10px 16px;border-bottom:1px solid #e8e0d0;font-size:13px}
-td.right{text-align:right;font-weight:700;color:#b8860b}
-tr.even{background:#fafafa}
-tr.odd{background:white}
-.store-tag{display:inline-block;padding:2px 8px;font-size:11px;border-radius:2px;color:white;margin-right:4px}
-.footer{margin-top:16px;padding:16px 0;border-top:2px solid #ddd;font-size:11px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+th{padding:11px 16px;text-align:center;font-size:11px;letter-spacing:.08em;font-weight:500;white-space:nowrap}
+th.left{text-align:left;min-width:220px}
+td{padding:10px 16px;border-bottom:1px solid #e8e0d0;font-size:13px;text-align:center}
+td.left{text-align:left}
+tr.even{background:#fafafa}tr.odd{background:white}
+.best{background:#fffbe6;font-weight:700;color:#b8860b}
+.worst{background:#fff5f5;color:#cc3333}
+.none{color:#ccc}
+.saving{display:inline-block;padding:1px 8px;font-size:11px;font-weight:500}
+.saving.g{background:#e8f5e9;color:#2e7d32}
+.saving.s{background:#f5f5f5;color:#999}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.footer{margin-top:32px;padding:16px 0;border-top:2px solid #ddd;font-size:11px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.empty{text-align:center;padding:48px;color:#999;font-size:14px}
 </style>
 </head>
 <body>
@@ -42,70 +51,131 @@ tr.odd{background:white}
   </div>
 </header>
 <div class="main">
-  <input id="search" type="text" placeholder="Məhsul axtar..." oninput="render()"/>
+  <input id="search" type="text" placeholder="Məhsul axtar... (məs: Milla, Azərsüd, 3.2%)" oninput="render()"/>
+  <div class="cats" id="cats"></div>
   <div id="content"></div>
   <div class="footer">
-    <span>Qiymətlər Azərbaycan Manatı (₼) ilə · Hər gün avtomatik yenilənir</span>
+    <span>Qiymətlər ₼ ilə · Hər gün avtomatik yenilənir</span>
     <span>Bravo · Neptun · Rahat · OBA</span>
   </div>
 </div>
 <script>
 const COLORS={"Bravo":"#e63946","Neptun":"#6366f1","Rahat":"#2a9d8f","OBA":"#f4a261"};
-let allData=null;
+let allData=null, activeCat="all";
 
 fetch("./data/prices.json")
   .then(r=>r.json())
   .then(data=>{
     allData=data;
     document.getElementById("lastUpdate").textContent=data.last_updated;
+    buildCats();
     render();
   })
   .catch(()=>{
-    document.getElementById("content").innerHTML='<p style="padding:40px;color:#999;text-align:center">❌ Qiymətlər yüklənə bilmədi.</p>';
+    document.getElementById("content").innerHTML='<div class="empty">❌ Qiymətlər yüklənə bilmədi.</div>';
   });
+
+function buildCats(){
+  const el=document.getElementById("cats");
+  const cats=[{id:"all",name:"Hamısı"},...Object.entries(allData.categories).map(([id,c])=>({id,name:c.name}))];
+  el.innerHTML=cats.map(c=>`<button class="cat-btn${c.id===activeCat?' active':''}" onclick="setcat('${c.id}')">${c.name}</button>`).join("");
+}
+
+function setcat(id){activeCat=id;buildCats();render();}
+
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/\s+/g," ")
+    .replace(/,/g,".")
+    .replace(/süd/g,"sud")
+    .trim();
+}
+
+function similarity(a,b){
+  const wa=normalize(a).split(" ");
+  const wb=normalize(b).split(" ");
+  const common=wa.filter(w=>wb.includes(w)&&w.length>1);
+  return common.length/Math.max(wa.length,wb.length);
+}
+
+function matchProducts(stores,storeNames){
+  // Gather all items with store tag
+  let all=[];
+  storeNames.forEach(s=>{
+    (stores[s]||[]).forEach(item=>all.push({...item,store:s}));
+  });
+
+  const groups=[];
+  const used=new Set();
+
+  all.forEach((item,i)=>{
+    if(used.has(i)) return;
+    const group={name:item.name, stores:{}};
+    group.stores[item.store]=item.price;
+    used.add(i);
+
+    all.forEach((other,j)=>{
+      if(used.has(j)||other.store===item.store) return;
+      if(similarity(item.name,other.name)>=0.6){
+        group.stores[other.store]=other.price;
+        used.add(j);
+      }
+    });
+    groups.push(group);
+  });
+
+  return groups;
+}
 
 function render(){
   if(!allData) return;
   const search=document.getElementById("search").value.toLowerCase();
-  const stores=allData.stores;
-  const storeNames=Object.keys(stores);
+  const cats=activeCat==="all"?Object.entries(allData.categories):[[activeCat,allData.categories[activeCat]]];
+  const storeNames=["Bravo","Neptun","Rahat","OBA"];
+  let html="";
 
-  // Collect all unique products across all stores
-  let allItems=[];
-  storeNames.forEach(store=>{
-    (stores[store]||[]).forEach(item=>{
-      if(item.name.toLowerCase().includes(search)){
-        allItems.push({...item, store});
-      }
-    });
-  });
+  cats.forEach(([catId,cat])=>{
+    let groups=matchProducts(cat.stores,storeNames);
+    if(search) groups=groups.filter(g=>g.name.toLowerCase().includes(search));
+    if(!groups.length) return;
 
-  if(!allItems.length){
-    document.getElementById("content").innerHTML='<p style="padding:40px;color:#999;text-align:center">Heç nə tapılmadı</p>';
-    return;
-  }
-
-  // Sort by price
-  allItems.sort((a,b)=>a.price-b.price);
-
-  let html=`<div class="category-title">🥛 ${allData.category} — ${allItems.length} məhsul tapıldı</div>`;
-  html+=`<div class="table-wrap"><table>
-    <thead><tr>
-      <th>MƏHSUL ADI</th>
-      <th>MAĞAZA</th>
-      <th class="right">QİYMƏT</th>
+    html+=`<div class="section-title">🛒 ${cat.name} — ${groups.length} məhsul</div>`;
+    html+=`<div class="table-wrap"><table><thead><tr>
+      <th class="left">MƏHSUL</th>
+      ${storeNames.map(s=>`<th><span class="dot" style="background:${COLORS[s]}"></span>${s.toUpperCase()}</th>`).join("")}
+      <th>QƏNAƏT</th>
     </tr></thead><tbody>`;
 
-  allItems.forEach((item,i)=>{
-    const color=COLORS[item.store]||"#888";
-    html+=`<tr class="${i%2===0?'even':'odd'}">
-      <td>${item.name}</td>
-      <td><span class="store-tag" style="background:${color}">${item.store}</span></td>
-      <td class="right">₼${item.price.toFixed(2)}</td>
-    </tr>`;
+    groups.sort((a,b)=>{
+      const minA=Math.min(...Object.values(a.stores).filter(Boolean));
+      const minB=Math.min(...Object.values(b.stores).filter(Boolean));
+      return minA-minB;
+    });
+
+    groups.forEach((g,i)=>{
+      const prices=storeNames.map(s=>g.stores[s]||null);
+      const valid=prices.filter(Boolean);
+      const min=valid.length?Math.min(...valid):null;
+      const max=valid.length?Math.max(...valid):null;
+      const saving=min&&max&&max>min?`<span class="saving g">−₼${(max-min).toFixed(2)}</span>`:`<span class="saving s">—</span>`;
+
+      html+=`<tr class="${i%2===0?'even':'odd'}">
+        <td class="left">${g.name}</td>
+        ${storeNames.map(s=>{
+          const p=g.stores[s];
+          if(!p) return `<td class="none">—</td>`;
+          const best=p===min&&valid.length>1;
+          const worst=p===max&&min!==max;
+          return `<td class="${best?'best':worst?'worst':''}">${best?'★ ':worst?'● ':''}₼${p.toFixed(2)}</td>`;
+        }).join("")}
+        <td>${saving}</td>
+      </tr>`;
+    });
+
+    html+=`</tbody></table></div>`;
   });
 
-  html+=`</tbody></table></div>`;
+  if(!html) html=`<div class="empty">Heç nə tapılmadı</div>`;
   document.getElementById("content").innerHTML=html;
 }
 </script>
