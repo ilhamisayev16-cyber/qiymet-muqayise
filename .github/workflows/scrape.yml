@@ -19,11 +19,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Playwright quraşdır
-        run: |
-          pip install playwright beautifulsoup4
-          playwright install chromium
-          playwright install-deps chromium
+      - name: Asılılıqları yüklə
+        run: pip install requests
 
       - name: Scraper işlət
         run: python scrapers/scraper.py
