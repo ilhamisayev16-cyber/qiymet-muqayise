@@ -63,23 +63,19 @@ tr.even{background:#fafafa}tr.odd{background:white}
 const COLORS={"Bravo":"#e63946","Neptun":"#6366f1","Rahat":"#2a9d8f","OBA":"#f4a261"};
 let allData=null, activeCat="all";
 
-ffetch("./data/prices.json")
+fetch("./data/prices.json")
   .then(r=>r.json())
   .then(data=>{
-    // Köhnə format (category+stores) → yeni formata çevir
     if(data.category && data.stores){
-      const catId = data.category.replace(/\s/g,"_").toLowerCase();
-      data.categories = {};
-      data.categories[catId] = {name: data.category, stores: data.stores};
+      const catId=data.category.replace(/\s/g,"_").toLowerCase();
+      data.categories={};
+      data.categories[catId]={name:data.category,stores:data.stores};
     }
     allData=data;
     document.getElementById("lastUpdate").textContent=data.last_updated;
     buildCats();
     render();
   })
-  .catch(()=>{
-    document.getElementById("content").innerHTML='<div class="empty">❌ Qiymətlər yüklənə bilmədi.</div>';
-  });
   .catch(()=>{
     document.getElementById("content").innerHTML='<div class="empty">❌ Qiymətlər yüklənə bilmədi.</div>';
   });
@@ -93,11 +89,7 @@ function buildCats(){
 function setcat(id){activeCat=id;buildCats();render();}
 
 function normalize(s){
-  return s.toLowerCase()
-    .replace(/\s+/g," ")
-    .replace(/,/g,".")
-    .replace(/süd/g,"sud")
-    .trim();
+  return s.toLowerCase().replace(/\s+/g," ").replace(/,/g,".").replace(/süd/g,"sud").trim();
 }
 
 function similarity(a,b){
@@ -108,21 +100,17 @@ function similarity(a,b){
 }
 
 function matchProducts(stores,storeNames){
-  // Gather all items with store tag
   let all=[];
   storeNames.forEach(s=>{
     (stores[s]||[]).forEach(item=>all.push({...item,store:s}));
   });
-
   const groups=[];
   const used=new Set();
-
   all.forEach((item,i)=>{
     if(used.has(i)) return;
-    const group={name:item.name, stores:{}};
+    const group={name:item.name,stores:{}};
     group.stores[item.store]=item.price;
     used.add(i);
-
     all.forEach((other,j)=>{
       if(used.has(j)||other.store===item.store) return;
       if(similarity(item.name,other.name)>=0.6){
@@ -132,7 +120,6 @@ function matchProducts(stores,storeNames){
     });
     groups.push(group);
   });
-
   return groups;
 }
 
@@ -142,32 +129,27 @@ function render(){
   const cats=activeCat==="all"?Object.entries(allData.categories):[[activeCat,allData.categories[activeCat]]];
   const storeNames=["Bravo","Neptun","Rahat","OBA"];
   let html="";
-
   cats.forEach(([catId,cat])=>{
     let groups=matchProducts(cat.stores,storeNames);
     if(search) groups=groups.filter(g=>g.name.toLowerCase().includes(search));
     if(!groups.length) return;
-
     html+=`<div class="section-title">🛒 ${cat.name} — ${groups.length} məhsul</div>`;
     html+=`<div class="table-wrap"><table><thead><tr>
       <th class="left">MƏHSUL</th>
       ${storeNames.map(s=>`<th><span class="dot" style="background:${COLORS[s]}"></span>${s.toUpperCase()}</th>`).join("")}
       <th>QƏNAƏT</th>
     </tr></thead><tbody>`;
-
     groups.sort((a,b)=>{
       const minA=Math.min(...Object.values(a.stores).filter(Boolean));
       const minB=Math.min(...Object.values(b.stores).filter(Boolean));
       return minA-minB;
     });
-
     groups.forEach((g,i)=>{
       const prices=storeNames.map(s=>g.stores[s]||null);
       const valid=prices.filter(Boolean);
       const min=valid.length?Math.min(...valid):null;
       const max=valid.length?Math.max(...valid):null;
       const saving=min&&max&&max>min?`<span class="saving g">−₼${(max-min).toFixed(2)}</span>`:`<span class="saving s">—</span>`;
-
       html+=`<tr class="${i%2===0?'even':'odd'}">
         <td class="left">${g.name}</td>
         ${storeNames.map(s=>{
@@ -180,10 +162,8 @@ function render(){
         <td>${saving}</td>
       </tr>`;
     });
-
     html+=`</tbody></table></div>`;
   });
-
   if(!html) html=`<div class="empty">Heç nə tapılmadı</div>`;
   document.getElementById("content").innerHTML=html;
 }
