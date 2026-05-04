@@ -16,10 +16,11 @@ h1 span{color:#d4a853}
 .last-update{text-align:right;font-size:11px;opacity:.5}
 .last-update b{color:#d4a853;opacity:1;display:block}
 .main{max-width:1200px;margin:0 auto;padding:24px 32px}
-input{width:100%;padding:10px 16px;border:2px solid #1a1a1a;background:white;font-family:inherit;font-size:14px;outline:none;margin-bottom:8px}
-.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.cat-btn{padding:6px 16px;border:2px solid #1a1a1a;background:transparent;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.05em}
-.cat-btn.active{background:#1a1a1a;color:#f5f0e8}
+input{width:100%;padding:10px 16px;border:2px solid #1a1a1a;background:white;font-family:inherit;font-size:14px;outline:none;margin-bottom:12px}
+.best-box{background:#fffbe6;border:2px solid #d4a853;padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.best-box .label{font-size:11px;opacity:.6;letter-spacing:.1em;text-transform:uppercase}
+.best-box .winner{font-size:18px;font-weight:700;color:#b8860b}
+.best-box .details{font-size:12px;color:#555;margin-top:2px}
 .section-title{background:#1a1a1a;color:#f5f0e8;padding:10px 20px;font-size:12px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:2px;margin-top:24px}
 .table-wrap{overflow-x:auto;border:2px solid #1a1a1a;margin-bottom:4px}
 table{width:100%;border-collapse:collapse;background:white}
@@ -36,6 +37,7 @@ tr.even{background:#fafafa}tr.odd{background:white}
 .saving.g{background:#e8f5e9;color:#2e7d32}
 .saving.s{background:#f5f5f5;color:#999}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.store-tag{display:inline-block;padding:2px 10px;font-size:11px;color:white;font-weight:500}
 .footer{margin-top:32px;padding:16px 0;border-top:2px solid #ddd;font-size:11px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .empty{text-align:center;padding:48px;color:#999;font-size:14px}
 </style>
@@ -51,8 +53,8 @@ tr.even{background:#fafafa}tr.odd{background:white}
   </div>
 </header>
 <div class="main">
-  <input id="search" type="text" placeholder="Məhsul axtar... (məs: Milla, Azərsüd, 3.2%)" oninput="render()"/>
-  <div class="cats" id="cats"></div>
+  <input id="search" type="text" placeholder="Axtar... (məs: Milla 1.5%, Azərsüd 3.2%, Parmalat)" oninput="render()"/>
+  <div id="bestbox"></div>
   <div id="content"></div>
   <div class="footer">
     <span>Qiymətlər ₼ ilə · Hər gün avtomatik yenilənir</span>
@@ -61,7 +63,7 @@ tr.even{background:#fafafa}tr.odd{background:white}
 </div>
 <script>
 const COLORS={"Bravo":"#e63946","Neptun":"#6366f1","Rahat":"#2a9d8f","OBA":"#f4a261"};
-let allData=null, activeCat="all";
+let allData=null;
 
 fetch("/qiymet-muqayise/data/prices.json")
   .then(r=>r.json())
@@ -73,20 +75,11 @@ fetch("/qiymet-muqayise/data/prices.json")
     }
     allData=data;
     document.getElementById("lastUpdate").textContent=data.last_updated;
-    buildCats();
     render();
   })
   .catch(()=>{
     document.getElementById("content").innerHTML='<div class="empty">❌ Qiymətlər yüklənə bilmədi.</div>';
   });
-
-function buildCats(){
-  const el=document.getElementById("cats");
-  const cats=[{id:"all",name:"Hamısı"},...Object.entries(allData.categories).map(([id,c])=>({id,name:c.name}))];
-  el.innerHTML=cats.map(c=>`<button class="cat-btn${c.id===activeCat?' active':''}" onclick="setcat('${c.id}')">${c.name}</button>`).join("");
-}
-
-function setcat(id){activeCat=id;buildCats();render();}
 
 function normalize(s){
   return s.toLowerCase().replace(/\s+/g," ").replace(/,/g,".").replace(/süd/g,"sud").trim();
@@ -101,11 +94,8 @@ function similarity(a,b){
 
 function matchProducts(stores,storeNames){
   let all=[];
-  storeNames.forEach(s=>{
-    (stores[s]||[]).forEach(item=>all.push({...item,store:s}));
-  });
-  const groups=[];
-  const used=new Set();
+  storeNames.forEach(s=>{(stores[s]||[]).forEach(item=>all.push({...item,store:s}));});
+  const groups=[], used=new Set();
   all.forEach((item,i)=>{
     if(used.has(i)) return;
     const group={name:item.name,stores:{}};
@@ -113,37 +103,84 @@ function matchProducts(stores,storeNames){
     used.add(i);
     all.forEach((other,j)=>{
       if(used.has(j)||other.store===item.store) return;
-      if(similarity(item.name,other.name)>=0.6){
-        group.stores[other.store]=other.price;
-        used.add(j);
-      }
+      if(similarity(item.name,other.name)>=0.6){group.stores[other.store]=other.price;used.add(j);}
     });
     groups.push(group);
   });
   return groups;
 }
 
+// Extract fat % from name e.g. "3.2%", "1,5%"
+function getFat(name){
+  const m=name.match(/(\d+[.,]\d+)\s*%/);
+  return m?m[1].replace(",","."):"";
+}
+
+function renderBestBox(groups, search){
+  const el=document.getElementById("bestbox");
+  // Find cheapest per fat% group
+  const byFat={};
+  groups.forEach(g=>{
+    const fat=getFat(g.name);
+    if(!fat) return;
+    const valid=Object.entries(g.stores).filter(([,p])=>p);
+    valid.forEach(([store,price])=>{
+      if(!byFat[fat]||price<byFat[fat].price){
+        byFat[fat]={name:g.name,store,price};
+      }
+    });
+  });
+
+  const fats=Object.keys(byFat).sort((a,b)=>parseFloat(a)-parseFloat(b));
+  if(!fats.length){el.innerHTML="";return;}
+
+  el.innerHTML=`
+    <div class="section-title">⭐ HƏR FAİZ ÜZRƏ ƏN UCUZ</div>
+    <div class="table-wrap">
+    <table><thead><tr>
+      <th class="left">FAIZ</th>
+      <th class="left">MƏHSUL</th>
+      <th class="left">MAĞAZA</th>
+      <th>QİYMƏT</th>
+    </tr></thead><tbody>
+    ${fats.map((fat,i)=>{
+      const w=byFat[fat];
+      const color=COLORS[w.store]||"#888";
+      return `<tr class="${i%2===0?'even':'odd'}">
+        <td class="left"><b>${fat}%</b></td>
+        <td class="left">${w.name}</td>
+        <td class="left"><span class="store-tag" style="background:${color}">${w.store}</span></td>
+        <td class="best">★ ₼${w.price.toFixed(2)}</td>
+      </tr>`;
+    }).join("")}
+    </tbody></table></div>`;
+}
+
 function render(){
   if(!allData) return;
   const search=document.getElementById("search").value.toLowerCase();
-  const cats=activeCat==="all"?Object.entries(allData.categories):[[activeCat,allData.categories[activeCat]]];
   const storeNames=["Bravo","Neptun","Rahat","OBA"];
-  let html="";
-  cats.forEach(([catId,cat])=>{
+  let html="", allGroups=[];
+
+  Object.entries(allData.categories).forEach(([catId,cat])=>{
     let groups=matchProducts(cat.stores,storeNames);
     if(search) groups=groups.filter(g=>g.name.toLowerCase().includes(search));
     if(!groups.length) return;
+    allGroups=allGroups.concat(groups);
+
     html+=`<div class="section-title">🛒 ${cat.name} — ${groups.length} məhsul</div>`;
     html+=`<div class="table-wrap"><table><thead><tr>
       <th class="left">MƏHSUL</th>
       ${storeNames.map(s=>`<th><span class="dot" style="background:${COLORS[s]}"></span>${s.toUpperCase()}</th>`).join("")}
       <th>QƏNAƏT</th>
     </tr></thead><tbody>`;
+
     groups.sort((a,b)=>{
       const minA=Math.min(...Object.values(a.stores).filter(Boolean));
       const minB=Math.min(...Object.values(b.stores).filter(Boolean));
       return minA-minB;
     });
+
     groups.forEach((g,i)=>{
       const prices=storeNames.map(s=>g.stores[s]||null);
       const valid=prices.filter(Boolean);
@@ -164,6 +201,8 @@ function render(){
     });
     html+=`</tbody></table></div>`;
   });
+
+  renderBestBox(allGroups, search);
   if(!html) html=`<div class="empty">Heç nə tapılmadı</div>`;
   document.getElementById("content").innerHTML=html;
 }
