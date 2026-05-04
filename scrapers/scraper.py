@@ -1,67 +1,53 @@
 import requests
 import json
-import re
 from datetime import datetime
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-    "app-language": "az",
 }
 
-# Wolt-da Bakı mağazalarının slug-ları
 STORES = {
-    "Bravo":  "bravo-supermarket-nizami",
+    "Bravo":  "bravo-supermarket-globus-centre",
     "Neptun": "neptun-supermarket-28",
-    "Rahat":  "rahat-supermarket",
-    "OBA":    "oba-market-narimanov",
+    "Rahat":  "aze_3p-nov24_cl_rahat_supermarket",
+    "OBA":    "oba-market-nerimanov-1",
 }
 
-SEARCH_TERMS = [
-    {"id": "sud-1l",          "name": "Süd 1L",              "query": "süd"},
-    {"id": "yumurta-10",      "name": "Yumurta 10 ədəd",     "query": "yumurta"},
-    {"id": "kere-yagi-200q",  "name": "Kərə yağı 200q",      "query": "kərə yağı"},
-    {"id": "ag-corek",        "name": "Ağ çörək",             "query": "çörək"},
-    {"id": "pomidor-1kq",     "name": "Pomidor 1kq",          "query": "pomidor"},
-    {"id": "kartof-1kq",      "name": "Kartof 1kq",           "query": "kartof"},
-    {"id": "soyan-1kq",       "name": "Soğan 1kq",            "query": "soğan"},
-    {"id": "toyuq-1kq",       "name": "Toyuq 1kq",            "query": "toyuq"},
-    {"id": "duyü-1kq",        "name": "Düyü 1kq",             "query": "düyü"},
-    {"id": "sekerqum-1kq",    "name": "Şəkər 1kq",            "query": "şəkər"},
-    {"id": "un-1kq",          "name": "Un 1kq",               "query": "un"},
-    {"id": "ay-cicayi-1l",    "name": "Ay çiçəyi yağı 1L",   "query": "ay çiçəyi"},
-]
-
-def get_wolt_price(venue_slug, query):
+def search_wolt(venue_slug, query):
     try:
         url = f"https://consumer-api.wolt.com/consumer-api/v1/venues/slug/{venue_slug}/menu/items/?q={requests.utils.quote(query)}&language=az"
         r = requests.get(url, headers=HEADERS, timeout=15)
         data = r.json()
-        items = data.get("items", [])
-        if items:
-            price_cents = items[0].get("price", None)
-            if price_cents:
-                return round(price_cents / 100, 2)
+        return data.get("items", [])
     except Exception as e:
-        print(f"  Wolt error [{venue_slug}] '{query}': {e}")
-    return None
+        print(f"  Xəta [{venue_slug}]: {e}")
+        return []
 
-results = []
-for product in SEARCH_TERMS:
-    print(f"\n{product['name']}:")
-    prices = {}
-    for store_name, slug in STORES.items():
-        price = get_wolt_price(slug, product["query"])
-        prices[store_name] = price
-        print(f"  {store_name}: {price}")
-    results.append({
-        "id": product["id"],
-        "name": product["name"],
-        "prices": prices
-    })
+def is_1_liter(name):
+    name_lower = name.lower()
+    return "1l" in name_lower or "1 l" in name_lower or "1000ml" in name_lower or "1000 ml" in name_lower or "1lt" in name_lower
+
+results = {}
+
+for store_name, slug in STORES.items():
+    print(f"\n{store_name} - süd axtarılır...")
+    items = search_wolt(slug, "süd")
+    store_results = []
+    for item in items:
+        name = item.get("name", "")
+        price_cents = item.get("price", None)
+        if price_cents and is_1_liter(name):
+            price = round(price_cents / 100, 2)
+            store_results.append({"name": name, "price": price})
+            print(f"  ✅ {name}: ₼{price}")
+    if not store_results:
+        print(f"  ❌ Heç nə tapılmadı")
+    results[store_name] = store_results
 
 output = {
     "last_updated": datetime.now().strftime("%d %B %Y, %H:%M"),
-    "products": results
+    "category": "Süd 1L",
+    "stores": results
 }
 
 with open("data/prices.json", "w", encoding="utf-8") as f:
