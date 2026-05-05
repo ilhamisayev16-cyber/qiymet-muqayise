@@ -116,23 +116,104 @@ function getFat(name){
   return m?m[1].replace(",","."):"";
 }
 
+function getAttr(name, type){
+  const n = name.toLowerCase();
+  if(type === "fat"){
+    const m = n.match(/(\d+[.,]\d+)\s*%/);
+    return m ? m[1].replace(",",".")+"%" : null;
+  }
+  if(type === "size"){
+    const m = n.match(/(\d+[.,]?\d*)\s*(kq|kg|qr|gr|g|l|lt|litr|ml)\b/i);
+    if(!m) return null;
+    let val = parseFloat(m[1].replace(",","."));
+    let unit = m[2].toLowerCase();
+    if(unit==="kq"||unit==="kg") return val+"kq";
+    if(unit==="qr"||unit==="gr"||unit==="g") return val+"q";
+    if(unit==="l"||unit==="lt"||unit==="litr") return val+"l";
+    if(unit==="ml") return val+"ml";
+    return null;
+  }
+  return null;
+}
+
 function renderBestBox(groups, search){
-  const el=document.getElementById("bestbox");
-  // Find cheapest per fat% group
+  const el = document.getElementById("bestbox");
+  if(!groups.length){el.innerHTML="";return;}
+
+  // Build fat% table
   const byFat={};
   groups.forEach(g=>{
-    const fat=getFat(g.name);
+    const fat=getAttr(g.name,"fat");
     if(!fat) return;
-    const valid=Object.entries(g.stores).filter(([,p])=>p);
-    valid.forEach(([store,price])=>{
-      if(!byFat[fat]||price<byFat[fat].price){
+    Object.entries(g.stores).filter(([,p])=>p).forEach(([store,price])=>{
+      if(!byFat[fat]||price<byFat[fat].price)
         byFat[fat]={name:g.name,store,price};
-      }
+    });
+  });
+
+  // Build size table
+  const bySize={};
+  groups.forEach(g=>{
+    const size=getAttr(g.name,"size");
+    if(!size) return;
+    Object.entries(g.stores).filter(([,p])=>p).forEach(([store,price])=>{
+      if(!bySize[size]||price<bySize[size].price)
+        bySize[size]={name:g.name,store,price};
     });
   });
 
   const fats=Object.keys(byFat).sort((a,b)=>parseFloat(a)-parseFloat(b));
-  if(!fats.length){el.innerHTML="";return;}
+  const sizes=Object.keys(bySize).sort((a,b)=>{
+    const toG=s=>{
+      const m=s.match(/([\d.]+)(.*)/);
+      if(!m) return 0;
+      const v=parseFloat(m[1]), u=m[2];
+      if(u==="kq") return v*1000;
+      if(u==="l") return v*1000;
+      if(u==="ml") return v;
+      return v;
+    };
+    return toG(a)-toG(b);
+  });
+
+  let html="";
+
+  if(fats.length){
+    html+=`<div class="section-title">⭐ HƏR FAİZ ÜZRƏ ƏN UCUZ</div>
+    <div class="table-wrap"><table><thead><tr>
+      <th class="left">FAİZ</th><th class="left">MƏHSUL</th><th class="left">MAĞAZA</th><th>QİYMƏT</th>
+    </tr></thead><tbody>
+    ${fats.map((fat,i)=>{
+      const w=byFat[fat];
+      return `<tr class="${i%2===0?'even':'odd'}">
+        <td class="left"><b>${fat}</b></td>
+        <td class="left">${w.name}</td>
+        <td class="left"><span style="background:${COLORS[w.store]||'#888'};color:white;padding:2px 8px;font-size:11px">${w.store}</span></td>
+        <td class="best">★ ₼${w.price.toFixed(2)}</td>
+      </tr>`;
+    }).join("")}
+    </tbody></table></div>`;
+  }
+
+  if(sizes.length){
+    html+=`<div class="section-title" style="margin-top:16px">📦 HƏR ÖLÇÜ ÜZRƏ ƏN UCUZ</div>
+    <div class="table-wrap"><table><thead><tr>
+      <th class="left">ÖLÇÜ</th><th class="left">MƏHSUL</th><th class="left">MAĞAZA</th><th>QİYMƏT</th>
+    </tr></thead><tbody>
+    ${sizes.map((size,i)=>{
+      const w=bySize[size];
+      return `<tr class="${i%2===0?'even':'odd'}">
+        <td class="left"><b>${size}</b></td>
+        <td class="left">${w.name}</td>
+        <td class="left"><span style="background:${COLORS[w.store]||'#888'};color:white;padding:2px 8px;font-size:11px">${w.store}</span></td>
+        <td class="best">★ ₼${w.price.toFixed(2)}</td>
+      </tr>`;
+    }).join("")}
+    </tbody></table></div>`;
+  }
+
+  el.innerHTML=html;
+}
 
   el.innerHTML=`
     <div class="section-title">⭐ HƏR FAİZ ÜZRƏ ƏN UCUZ</div>
