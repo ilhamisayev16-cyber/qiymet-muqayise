@@ -200,7 +200,7 @@ function render(){
     });
     html+=`</tbody></table></div>`;
   });
-  renderBestBox(search?allGroups:[]);
+  renderBestBox(allGroups);
   if(!html) html=`<div class="empty">Heç nə tapılmadı</div>`;
   document.getElementById("content").innerHTML=html;
 }
