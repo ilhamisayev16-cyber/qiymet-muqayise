@@ -1,5 +1,5 @@
 {
-  "last_updated": "05 May 2026, 19:11",
+  "last_updated": "05 May 2026, 19:21",
   "categories": {
     "sud": {
       "name": "Süd",
@@ -7108,113 +7108,6 @@
           {
             "name": "Car 1kq Un",
             "price": 1.79
-          }
-        ],
-        "Rahat": [],
-        "OBA": []
-      }
-    },
-    "corek": {
-      "name": "Çörək",
-      "stores": {
-        "Bravo": [
-          {
-            "name": "Schar Corek Pan Rustico 250g",
-            "price": 7.49
-          },
-          {
-            "name": "Schar Qlutensiz Ag Corek Multiqranula 250g",
-            "price": 7.45
-          },
-          {
-            "name": "Zdorovoye Menu Çörək Dilimi 12 Qarğıdalı Un 90qr",
-            "price": 1.85
-          },
-          {
-            "name": "Kubanskiye Xlebçi Xrust Çörək Arası 100qr",
-            "price": 1.0
-          },
-          {
-            "name": "Zdorovoye Menu 13 Çörək Dilimi 90qr",
-            "price": 1.85
-          },
-          {
-            "name": "Bravo Fırın Zirəli Çörək 400 Qr",
-            "price": 1.2
-          },
-          {
-            "name": "Oven Simit Çörək 280 qr",
-            "price": 1.1
-          },
-          {
-            "name": "Schar Çörək Pan Blanco 250qr",
-            "price": 6.45
-          },
-          {
-            "name": "Zdorovoye Menu Çörək Dilimi 10 Multizlak 90qr",
-            "price": 1.85
-          },
-          {
-            "name": "Nowel Multicereal Kaiser Roll Çörək",
-            "price": 0.65
-          },
-          {
-            "name": "Nowel Kaiser Roll XXL Çörək",
-            "price": 0.89
-          },
-          {
-            "name": "Garnec Borodinskiy Corek Qarisimi Qlutensiz 600 Gr",
-            "price": 6.99
-          },
-          {
-            "name": "Zdorovoye Menu Çörək Dilimi 11 Kəpəkli 90qr",
-            "price": 1.85
-          },
-          {
-            "name": "Abad Qara Çörək Otu 30qr",
-            "price": 1.59
-          },
-          {
-            "name": "Otliçnaya Kuxnya Bişmiş Qurudulmuş Çörək 200qr",
-            "price": 2.65
-          },
-          {
-            "name": "Schar Çörək Çubuqları 150qr",
-            "price": 9.69
-          }
-        ],
-        "Neptun": [
-          {
-            "name": "Çörək Çörəkçi Zavod 600 qr",
-            "price": 0.8
-          },
-          {
-            "name": "Çörək Çörəkçi Tost 600 qr",
-            "price": 1.7
-          },
-          {
-            "name": "Çörək Binə Zavod 600 qr",
-            "price": 0.65
-          },
-          {
-            "name": "Fırın Çörək Baton Kiçik Ədəd",
-            "price": 0.5
-          },
-          {
-            "name": "Çörək Nur 600 qr",
-            "price": 0.65
-          },
-          {
-            "name": "Çörək İvanovka 600 qr Borodinskiy",
-            "price": 3.15
-          },
-          {
-            "name": "Bağdat Çörək Otu 75 Gr",
-            "price": 2.55
-          },
-          {
-            "name": "Masoud 50 qr Tehre Çörək Otu Paket",
-            "price": 1.75
           }
         ],
         "Rahat": [],
