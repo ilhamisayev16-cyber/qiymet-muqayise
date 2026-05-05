@@ -131,6 +131,12 @@ CATEGORIES = [
         "query": "corek",
         "filter": lambda n: any(w in n.lower() for w in ["çörək","corek","lavaş","lavash"])
     },
+{
+        "id": "xama",
+        "name": "Xama",
+        "query": "xama",
+        "filter": lambda n: "xama" in n.lower()
+    },
 ]
 
 def search_items(venue_slug, query):
