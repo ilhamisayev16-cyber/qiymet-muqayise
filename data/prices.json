@@ -1,5 +1,5 @@
 {
-  "last_updated": "05 May 2026, 19:03",
+  "last_updated": "05 May 2026, 19:11",
   "categories": {
     "sud": {
       "name": "Süd",
@@ -306,12 +306,12 @@
             "price": 1.05
           },
           {
-            "name": "Birpa Silikon Yumurta Fırçası AGN-165",
-            "price": 2.0
-          },
-          {
             "name": "Birpa Silikon Yumurta Fırçası AGN-166",
             "price": 2.5
+          },
+          {
+            "name": "Birpa Silikon Yumurta Fırçası AGN-165",
+            "price": 2.0
           },
           {
             "name": "Ozmo Mini Şokoladlı Yumurta",
@@ -3666,12 +3666,12 @@
             "price": 18.89
           },
           {
-            "name": "Qualiko Dondurulmuş Toyuq Nuggets Burger 300 qr",
-            "price": 4.5
-          },
-          {
             "name": "Qualiko Dondurulmuş Toyuq Nuggets Popkorn 300 qr",
             "price": 6.2
+          },
+          {
+            "name": "Qualiko Dondurulmuş Toyuq Nuggets Burger 300 qr",
+            "price": 4.5
           },
           {
             "name": "Burma Sobada Pirojki Toyuq ilə 1əd 30897",
@@ -5263,12 +5263,12 @@
             "price": 0.8
           },
           {
-            "name": "Sirab Qazlı Su Pet 500ml",
-            "price": 0.8
-          },
-          {
             "name": "Sirab Qazsız Su Şüşə 500ml",
             "price": 1.4
+          },
+          {
+            "name": "Sirab Qazlı Su Pet 500ml",
+            "price": 0.8
           },
           {
             "name": "İstisu Mineral Suyu Şüşə 250ml",
@@ -7219,6 +7219,622 @@
         ],
         "Rahat": [],
         "OBA": []
+      }
+    },
+    "xama": {
+      "name": "Xama",
+      "stores": {
+        "Bravo": [
+          {
+            "name": "Prostokvaşino Xama 25% 300qr",
+            "price": 5.19
+          },
+          {
+            "name": "Romashka Xama 25% 320 qr",
+            "price": 5.5
+          },
+          {
+            "name": "Brest-litovsk Xama 20% 300qr",
+            "price": 3.29
+          },
+          {
+            "name": "Dr.Milk Xama Kaunasskaya 20% 200qr",
+            "price": 2.49
+          },
+          {
+            "name": "Qaymaq Xama 250qr",
+            "price": 5.15
+          },
+          {
+            "name": "Prostokvaşino Xama 15% 300qr",
+            "price": 4.05
+          },
+          {
+            "name": "Brest-litovsk Xama 25% 315qr",
+            "price": 3.79
+          },
+          {
+            "name": "Brest-litovsk Xama 15% 300qr",
+            "price": 2.79
+          },
+          {
+            "name": "Dr.milk Xama Kaunasskaya 20% 350gr 1x12",
+            "price": 3.8
+          },
+          {
+            "name": "Svalya Xama 22% 200gr",
+            "price": 4.25
+          },
+          {
+            "name": "Yurdum Xama 25% 3kq 3537",
+            "price": 7.49
+          },
+          {
+            "name": "Azərsüd Xama 20% 325qr",
+            "price": 2.75
+          },
+          {
+            "name": "Romashka Xama 25% 180 qr",
+            "price": 2.95
+          },
+          {
+            "name": "Smetanovna Xama 20% 185qr",
+            "price": 2.85
+          },
+          {
+            "name": "Svalya Xama 22% 380gr",
+            "price": 7.25
+          },
+          {
+            "name": "Milla Xama 20% 300qr",
+            "price": 2.6
+          },
+          {
+            "name": "Brest-litovsk Xama 20% 180qr",
+            "price": 2.15
+          },
+          {
+            "name": "Milla Xama 15% 300qr",
+            "price": 2.95
+          },
+          {
+            "name": "Azərsüd Xama 15% 325qr",
+            "price": 2.55
+          },
+          {
+            "name": "Yurdum Xama  15 % 300qr",
+            "price": 2.49
+          },
+          {
+            "name": "Yurdum Xama 15% 850qr",
+            "price": 4.5
+          },
+          {
+            "name": "Prostokvaşino Xama 20% 300qr",
+            "price": 4.85
+          },
+          {
+            "name": "Milla Xama 25% 300qr",
+            "price": 3.39
+          },
+          {
+            "name": "Smetanovna Xama 15% 185qr",
+            "price": 2.59
+          },
+          {
+            "name": "Belous Xama 20% 350qr",
+            "price": 3.55
+          },
+          {
+            "name": "Brest-litovsk Xama 15% 180qr",
+            "price": 1.85
+          },
+          {
+            "name": "Cpl Xama 25% 1kq 31274",
+            "price": 5.19
+          },
+          {
+            "name": "Prostokvaşino Xama 15% 180qr",
+            "price": 2.59
+          },
+          {
+            "name": "Smetanovna Xama 20% 375qr",
+            "price": 4.7
+          },
+          {
+            "name": "Prostokvaşino Xama 20% 180qr",
+            "price": 2.85
+          },
+          {
+            "name": "Dr.milk Xama 15% 180gr",
+            "price": 1.99
+          },
+          {
+            "name": "Dr.Milk Xama Kaunas 10% 200qr 1x12",
+            "price": 2.1
+          },
+          {
+            "name": "Milla Xama 20% 175qr",
+            "price": 2.29
+          },
+          {
+            "name": "Milla Xama 25% 175qr",
+            "price": 2.45
+          },
+          {
+            "name": "Dr.milk Xama 15% 300gr",
+            "price": 2.95
+          },
+          {
+            "name": "Qafqaz Teami Xama kq",
+            "price": 6.25
+          },
+          {
+            "name": "Belous Xama 26% 350qr",
+            "price": 3.65
+          },
+          {
+            "name": "Smetanovna Xama 15% 375qr",
+            "price": 4.3
+          },
+          {
+            "name": "Dr.milk Xama 25% 180gr",
+            "price": 2.35
+          },
+          {
+            "name": "Atena Xama 25% 190 Qr",
+            "price": 2.15
+          },
+          {
+            "name": "Pringles Xama Soğanlı 165 qr",
+            "price": 4.99
+          },
+          {
+            "name": "Lays Fırından Xama Şüyüdlü 110 qr",
+            "price": 3.69
+          },
+          {
+            "name": "Lays Xama və Soğan ilə Çips 140qr",
+            "price": 3.69
+          },
+          {
+            "name": "Rice Up Düyü Çips Xama və Soğanlı 60qr",
+            "price": 3.79
+          },
+          {
+            "name": "Lays Xama Soğan Cips 70qr",
+            "price": 1.95
+          },
+          {
+            "name": "Xrusteam Suxari Xama ilə 100qr",
+            "price": 1.35
+          },
+          {
+            "name": "Minifree Xama Halqalı Soğan 45qr",
+            "price": 1.05
+          },
+          {
+            "name": "Sloboda Provansal Mayonez Xama ilə 67% 400ml",
+            "price": 3.39
+          },
+          {
+            "name": "Qatıqlaşdırıcı Xama və Qaymaq üçün 15qr",
+            "price": 1.39
+          },
+          {
+            "name": "Lays Xama və Göyərti ilə 225qr",
+            "price": 5.65
+          },
+          {
+            "name": "Lays Stax Xama Soğan 140qr",
+            "price": 6.05
+          },
+          {
+            "name": "Lays Xama və Göyərti Çips 140qr",
+            "price": 3.69
+          },
+          {
+            "name": "Fanat Suxari Xama ilə 150qr",
+            "price": 1.39
+          },
+          {
+            "name": "Xrusteam Suxari Xama ilə 30qr",
+            "price": 0.45
+          },
+          {
+            "name": "Fanat Xamali Suxari 25 Qr",
+            "price": 0.49
+          },
+          {
+            "name": "Tuk Xama və Soğanlı Peçenye 100qr",
+            "price": 2.65
+          },
+          {
+            "name": "Snaq Çips Xama Dadı ilə 50 qr",
+            "price": 2.65
+          },
+          {
+            "name": "Pringles Xama Soğanlı",
+            "price": 3.49
+          },
+          {
+            "name": "Lays Çipsi Xama və Göyərti ilə 37qr",
+            "price": 1.05
+          },
+          {
+            "name": "Long Çips Xamalı 75qr",
+            "price": 2.0
+          },
+          {
+            "name": "Oneqa Xamalı Və Soğanlı Chips 70 qr",
+            "price": 1.69
+          },
+          {
+            "name": "Popsy Stix Suxari Xama Göyərti 60 qr",
+            "price": 0.59
+          },
+          {
+            "name": "Kreki Xamalı Çubuq 45 qr",
+            "price": 0.55
+          },
+          {
+            "name": "Pringles Soğanlı Xama",
+            "price": 3.49
+          },
+          {
+            "name": "Fanat Suxari Xama ilə 100qr",
+            "price": 1.04
+          },
+          {
+            "name": "Lays Xama və Soğan ilə 225qr",
+            "price": 5.65
+          },
+          {
+            "name": "Just Brutal Xama və Soğanlı Çips 85qr",
+            "price": 1.49
+          },
+          {
+            "name": "Ləbuləb Çips Fıstıq Soğan və Xama ilə 50qr",
+            "price": 1.19
+          },
+          {
+            "name": "Cpl Xama 10% 170qr",
+            "price": 0.69
+          },
+          {
+            "name": "Bizim Süfrə Xama Dadlı Mayonez 400ml",
+            "price": 4.25
+          },
+          {
+            "name": "Bizim Süfrə Xama Dadlı Mayonez 200ml",
+            "price": 2.49
+          },
+          {
+            "name": "Bizim Süfrə Xama Dadli Mayonez 55% 891ml",
+            "price": 8.0
+          },
+          {
+            "name": "Meçta Xozayki Xamalı Mayonez 50.5% 900ml",
+            "price": 8.25
+          },
+          {
+            "name": "Popsy Stix Suxari Xama Göyərti  150qr",
+            "price": 1.19
+          },
+          {
+            "name": "Popsy Stix Suxari Xama Göyərti 100 qr",
+            "price": 0.75
+          }
+        ],
+        "Neptun": [
+          {
+            "name": "Romaşka Xama 25% 350 qr",
+            "price": 5.49
+          },
+          {
+            "name": "Brest-Litovsk 315 qr Xama 20% (Plastik Qabda)",
+            "price": 3.3
+          },
+          {
+            "name": "Brest-Litovsk 300 qr Xama 15% (Plastik Qabda)",
+            "price": 2.8
+          },
+          {
+            "name": "Prostokvaşıno Xama 20% 300 qr",
+            "price": 4.75
+          },
+          {
+            "name": "Dr.Milk  Xama 20% Kaunasskaya 200 qr",
+            "price": 2.4
+          },
+          {
+            "name": "Brest-Litovsk 300 qr Xama 25% (Plastik Qabda)",
+            "price": 3.8
+          },
+          {
+            "name": "Romaşka Xama 25% 200 qr",
+            "price": 3.5
+          },
+          {
+            "name": "Brest-litovsk Xama 20% 180 qr",
+            "price": 2.1
+          },
+          {
+            "name": "Prostokvaşıno Xama 25% 300 qr",
+            "price": 5.15
+          },
+          {
+            "name": "Azər Süd 325 qr Xama 20% (Plastik Qabda)",
+            "price": 2.39
+          },
+          {
+            "name": "Azər Süd 180 qr Xama 15% (Plastik Qabda)",
+            "price": 1.99
+          },
+          {
+            "name": "Milla Xama 20% 300 qr",
+            "price": 3.09
+          },
+          {
+            "name": "Prostokvaşıno Xama 15% 180 qr",
+            "price": 2.5
+          },
+          {
+            "name": "Ehrmann Smetanovna Xama 20%  320 Gr",
+            "price": 3.93
+          },
+          {
+            "name": "Brest-litovsk Xama 15% 180 qr",
+            "price": 1.8
+          },
+          {
+            "name": "Svalya Xama 22% Plastik Qab 380qr",
+            "price": 7.25
+          },
+          {
+            "name": "Azər Süd 325 qr Xama 25% (Plastik Qabda)",
+            "price": 3.2
+          },
+          {
+            "name": "Milla Xama 25% 300 qr",
+            "price": 2.95
+          },
+          {
+            "name": "Milla Xama 25% 175 qr",
+            "price": 2.45
+          },
+          {
+            "name": "Prostokvaşıno Xama 20% 180 qr",
+            "price": 2.7
+          },
+          {
+            "name": "Prostokvaşıno Xama 15% 300 qr",
+            "price": 4.0
+          },
+          {
+            "name": "Ehrmann Smetanovna Xama 15%  320 Gr",
+            "price": 4.3
+          },
+          {
+            "name": "Dr.milk Xama 15% 300 qr",
+            "price": 2.79
+          },
+          {
+            "name": "Dr.milk Xama 15% 180 qr",
+            "price": 1.7
+          },
+          {
+            "name": "Dr.Milk  Xama Kaunasskaya 20%  350 qr",
+            "price": 3.8
+          },
+          {
+            "name": "Milla Xama 15% PL/Q 300qr",
+            "price": 2.79
+          },
+          {
+            "name": "Ehrmann Xama 20% Smetanovna 185 qr",
+            "price": 2.33
+          },
+          {
+            "name": "Belous Xama 15% 180 Gr",
+            "price": 1.55
+          },
+          {
+            "name": "Azər Süd 325 qr Xama 15% (Plastik Qabda)",
+            "price": 2.8
+          },
+          {
+            "name": "Yurdum 850 qr Xama 15% (Plastik Qabda)",
+            "price": 4.4
+          },
+          {
+            "name": "Svalya Xama 22% PL/Q 200qr",
+            "price": 4.25
+          },
+          {
+            "name": "Milla Xama 20% 175 qr",
+            "price": 2.29
+          },
+          {
+            "name": "Belous Xama 20% 180 Gr",
+            "price": 2.05
+          },
+          {
+            "name": "Ehrmann Xama 15% Smetanovna 185 qr",
+            "price": 2.55
+          },
+          {
+            "name": "Fermer 175 qr Xama",
+            "price": 0.55
+          },
+          {
+            "name": "Xama 20% Yurdum kq",
+            "price": 7.49
+          },
+          {
+            "name": "Dr.Milk Xama 10% Kaunasskaya 200 qr",
+            "price": 2.0
+          },
+          {
+            "name": "Dr.milk Xama 25% 180 qr",
+            "price": 2.19
+          },
+          {
+            "name": "Belous Xama 15%  350 Gr",
+            "price": 2.8
+          },
+          {
+            "name": "Atena 330 qr Xama 25% (Plastik Qabda)",
+            "price": 3.4
+          },
+          {
+            "name": "Svalya 200 qr Xama 30% (Plastik Qabda)",
+            "price": 4.95
+          },
+          {
+            "name": "Lays Fırından Çips Xama-Göyərtili 110 qr",
+            "price": 3.69
+          },
+          {
+            "name": "CPL 170 qr Xama 10%",
+            "price": 0.79
+          },
+          {
+            "name": "Lays 140 qr Çips Xama-Soğan",
+            "price": 3.25
+          },
+          {
+            "name": "Vita Grain Çips Xama Göyərti 80 Gr",
+            "price": 1.7
+          },
+          {
+            "name": "Pringles 165 qr Çips Xama-Soğanlı",
+            "price": 6.99
+          },
+          {
+            "name": "Lays 225 qr Çips Xama-Soğan",
+            "price": 5.49
+          },
+          {
+            "name": "Sloboda 400 ml Mayonez Xamalı 67% Paket",
+            "price": 3.5
+          },
+          {
+            "name": "Lays Stax Xama Soğan 140q",
+            "price": 5.99
+          },
+          {
+            "name": "Lays 225 qr Çips Xama-Göyərti",
+            "price": 5.49
+          },
+          {
+            "name": "Lays 140 qr Çips Xama-Göyərti",
+            "price": 3.25
+          },
+          {
+            "name": "Lays 70 qr Çips Xama-Soğan",
+            "price": 1.89
+          },
+          {
+            "name": "Xama Atena 20% 190qr",
+            "price": 2.3
+          },
+          {
+            "name": "Bizim Süfrə 400 ml Mayonez Xama Dadlı Paket",
+            "price": 3.75
+          },
+          {
+            "name": "Sloboda 800 ml Mayonez Xamalı 67% Paket",
+            "price": 6.0
+          },
+          {
+            "name": "Xrus Team Suxariki Xama 30 qr",
+            "price": 0.4
+          },
+          {
+            "name": "Çipsim 70 qr Çips Soğan Xama",
+            "price": 1.59
+          },
+          {
+            "name": "Çipsim 140 qr Çips Soğan Xama",
+            "price": 2.79
+          },
+          {
+            "name": "Lays 37gr Çips Xama-Göyərti",
+            "price": 0.99
+          },
+          {
+            "name": "Lays Xama Göyərti Çips 70qr",
+            "price": 1.89
+          },
+          {
+            "name": "Chizzpa Çips Xama və Soğanlı  160 Gr",
+            "price": 3.79
+          },
+          {
+            "name": "Akkond Krekersi Xama Ve Tərəvəz Dadlı Kreker 180qr",
+            "price": 2.49
+          },
+          {
+            "name": "Xrus Team 100 qr Suxariki Xamalı",
+            "price": 1.29
+          },
+          {
+            "name": "\"Мечта Хозяйки\" 900 ml Mayonez Xamalı (Şüşə Qabda)",
+            "price": 8.25
+          },
+          {
+            "name": "Bizim Süfrə Mayonez Xama Dadlı Paket 200 ml",
+            "price": 2.15
+          },
+          {
+            "name": "Tuc Kreker Xama və Soğanlı 110 Gr",
+            "price": 3.09
+          }
+        ],
+        "Rahat": [],
+        "OBA": [
+          {
+            "name": "Romashka Xama 25% 180qr",
+            "price": 2.99
+          },
+          {
+            "name": "Romashka Xama 25% 320qr",
+            "price": 5.49
+          },
+          {
+            "name": "Derevenskie Motivi Xama 20% 650qr",
+            "price": 3.39
+          },
+          {
+            "name": "Derevenskie Motivi Xama 20% 350qr",
+            "price": 1.79
+          },
+          {
+            "name": "Milla Xama 25% 300qr",
+            "price": 3.39
+          },
+          {
+            "name": "Derevenskie Motivi Xama 20% 200qr",
+            "price": 1.19
+          },
+          {
+            "name": "Derevenskie Motivi Xama 15% 200qr",
+            "price": 1.09
+          },
+          {
+            "name": "Derevenskie Motivi Xama 15% 350qr",
+            "price": 1.69
+          },
+          {
+            "name": "Xrusteam Suxarı Xamalı 30qr",
+            "price": 0.4
+          },
+          {
+            "name": "Pringles Soğan-Xamalı 165qr",
+            "price": 6.99
+          }
+        ]
       }
     }
   }
