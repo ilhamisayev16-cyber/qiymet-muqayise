@@ -125,11 +125,11 @@ CATEGORIES = [
         "query": "un 1kq",
         "filter": lambda n: n.lower().startswith("un") or " un " in n.lower() or n.lower().endswith(" un")
     },
-    {
-        "id": "corek",
-        "name": "Çörək",
-        "query": "corek",
-        "filter": lambda n: any(w in n.lower() for w in ["çörək","corek","lavaş","lavash"])
+{
+        "id": "xama",
+        "name": "Xama / Qaymaq",
+        "query": "qaymaq",
+        "filter": lambda n: any(w in n.lower() for w in ["xama","qaymaq"])
     },
 {
         "id": "xama",
