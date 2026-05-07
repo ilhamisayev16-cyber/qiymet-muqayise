@@ -127,10 +127,6 @@ h1 .highlight{color:var(--accent);text-decoration:underline;text-decoration-thic
   border-color:transparent;
 }
 
-.view-all{background:linear-gradient(135deg,var(--accent),#ff8c5a);color:var(--card);border:none;font-weight:800;letter-spacing:.5px;box-shadow:0 8px 20px rgba(255,107,53,0.3)}
-.view-all .cat-icon{font-size:36px}
-.view-all .cat-price-bar{background:rgba(0,0,0,0.2);font-size:10px}
-
 /* ── TABLES ── */
 .section-title{background:var(--text);color:var(--bg);padding:16px 28px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin:48px 0 16px;border-radius:12px;font-weight:700;display:flex;align-items:center;gap:12px}
 .section-icon{font-size:24px}
@@ -203,104 +199,156 @@ tr:hover{background:#fff9f5}
 <script>
 const COLORS = { Bravo:"#e63946", Neptun:"#6366f1", Rahat:"#2a9d8f", OBA:"#f4a261" };
 
-/* ─── CATEGORY CONFIG ─── */
-/* icon  : emoji shown on card body
-   color : accent color
-   unit  : preferred unit label for "per-unit" bar (null = auto-detect)
-   perG  : base grams for per-unit calc (100 = per 100g, 1000 = per kg, etc.)
+/* ─── CATEGORY CONFIG ───
+   icon    : unikal emoji
+   color   : accent rəng
+   unit    : "per-unit" bar üçün label
+   per     : base gram/ml (100=100g, 1000=kg/l)
+   keywords: məhsul adında bu sözlər varsa → bu kateqoriyaya aid et
+             (siyahı nə qədər dəqiq olsa, yanlış təsnifat bir o qədər az olur)
+   exclude : bu sözlər varsa → bu kateqoriyadan ÇIXAR
 */
 const CAT_CFG = {
-  /* ── DAIRY ── */
-  sud:       { icon:"🥛", color:"#4FC3F7", label:"Süd",         unit:"l",    per:1000 },
-  yumurta:   { icon:"🥚", color:"#FFD54F", label:"Yumurta",     unit:"ədəd", per:null },
-  kere_yagi: { icon:"🧈", color:"#FFE082", label:"Kərə yağı",   unit:"100g", per:100  },
-  pendir:    { icon:"🧀", color:"#FFF176", label:"Pendir",       unit:"100g", per:100  },
-  qatiq:     { icon:"🫙", color:"#E1BEE7", label:"Qatıq",        unit:"100g", per:100  },
-  xama:      { icon:"🍶", color:"#F3E5F5", label:"Xama",         unit:"100g", per:100  },
-  kefir:     { icon:"🥤", color:"#E1F5FE", label:"Kefir",        unit:"l",    per:1000 },
-  /* ── VEGETABLES ── */
-  kartof:    { icon:"🥔", color:"#D7CCC8", label:"Kartof",       unit:"kg",   per:1000 },
-  pomidor:   { icon:"🍅", color:"#EF5350", label:"Pomidor",      unit:"kg",   per:1000 },
-  xiyar:     { icon:"🥒", color:"#66BB6A", label:"Xiyar",        unit:"kg",   per:1000 },
-  soyan:     { icon:"🧅", color:"#D4A574", label:"Soğan",        unit:"kg",   per:1000 },
-  kelem:     { icon:"🥬", color:"#81C784", label:"Kələm",        unit:"kg",   per:1000 },
-  yerkoyu:   { icon:"🥕", color:"#FF9800", label:"Yerkökü",      unit:"kg",   per:1000 },
-  cuqundur:  { icon:"🫚", color:"#CE93D8", label:"Çuğundur",     unit:"kg",   per:1000 },
-  qabaq:     { icon:"🎃", color:"#FF7043", label:"Qabaq",        unit:"kg",   per:1000 },
-  badimcan:  { icon:"🍆", color:"#9575CD", label:"Badımcan",     unit:"kg",   per:1000 },
-  biber:     { icon:"🫑", color:"#F06292", label:"Bibər",        unit:"kg",   per:1000 },
-  sarimsaq:  { icon:"🧄", color:"#A5D6A7", label:"Sarımsaq",     unit:"100g", per:100  },
-  kereviz:   { icon:"🌿", color:"#66BB6A", label:"Kərəviz",      unit:"kg",   per:1000 },
-  ispanaq:   { icon:"🥬", color:"#689F38", label:"İspanaq",      unit:"kg",   per:1000 },
-  goyerti:   { icon:"🌱", color:"#8BC34A", label:"Göyərti",      unit:"dəstə",per:null },
-  /* ── FRUITS ── */
-  alma:      { icon:"🍎", color:"#EF5350", label:"Alma",         unit:"kg",   per:1000 },
-  armud:     { icon:"🍐", color:"#DCE775", label:"Armud",        unit:"kg",   per:1000 },
-  saftal:    { icon:"🍑", color:"#FFAB91", label:"Şaftalı",      unit:"kg",   per:1000 },
-  gilas:     { icon:"🍒", color:"#E57373", label:"Gilas",        unit:"kg",   per:1000 },
-  uzum:      { icon:"🍇", color:"#AB47BC", label:"Üzüm",         unit:"kg",   per:1000 },
-  banan:     { icon:"🍌", color:"#FFEB3B", label:"Banan",        unit:"kg",   per:1000 },
-  kivi:      { icon:"🥝", color:"#AED581", label:"Kivi",         unit:"kg",   per:1000 },
-  limon:     { icon:"🍋", color:"#FFF59D", label:"Limon",        unit:"kg",   per:1000 },
-  portaqal:  { icon:"🍊", color:"#FFB74D", label:"Portağal",     unit:"kg",   per:1000 },
-  nar:       { icon:"🍎", color:"#E53935", label:"Nar",          unit:"kg",   per:1000 },
-  /* ── MEAT ── */
-  toyuq:     { icon:"🍗", color:"#BCAAA4", label:"Toyuq",        unit:"kg",   per:1000 },
-  dana_ati:  { icon:"🥩", color:"#A1887F", label:"Dana əti",     unit:"kg",   per:1000 },
-  qoyun_ati: { icon:"🍖", color:"#8D6E63", label:"Qoyun əti",    unit:"kg",   per:1000 },
-  hindi:     { icon:"🦃", color:"#D7CCC8", label:"Hindi",        unit:"kg",   per:1000 },
-  kolbasa:   { icon:"🌭", color:"#FF7043", label:"Kolbasa",      unit:"100g", per:100  },
-  sosis:     { icon:"🌭", color:"#FF8A65", label:"Sosis",        unit:"100g", per:100  },
-  /* ── FISH ── */
-  baliq:     { icon:"🐟", color:"#4DD0E1", label:"Balıq",        unit:"kg",   per:1000 },
-  /* ── GRAINS ── */
-  duyu:      { icon:"🍚", color:"#EEEEEE", label:"Düyü",         unit:"kg",   per:1000 },
-  qarqidali: { icon:"🌽", color:"#FFF176", label:"Qarğıdalı",    unit:"kg",   per:1000 },
-  yulaf:     { icon:"🌾", color:"#F0E68C", label:"Yulaf",        unit:"kg",   per:1000 },
-  qarbasaq:  { icon:"🌾", color:"#D7CCC8", label:"Qara buğda",   unit:"kg",   per:1000 },
-  merci:     { icon:"🫘", color:"#A1887F", label:"Mərcimək",     unit:"kg",   per:1000 },
-  noxud:     { icon:"🫘", color:"#BCAAA4", label:"Noxud",        unit:"kg",   per:1000 },
-  fasulya:   { icon:"🫘", color:"#8D6E63", label:"Fasulya",      unit:"kg",   per:1000 },
-  un:        { icon:"🌾", color:"#EFEBE9", label:"Un",           unit:"kg",   per:1000 },
-  makaron:   { icon:"🍝", color:"#FFECB3", label:"Makaron",      unit:"kg",   per:1000 },
-  /* ── BREAD ── */
-  corek:     { icon:"🍞", color:"#FFCC80", label:"Çörək",        unit:"ədəd", per:null },
-  lavas:     { icon:"🫓", color:"#FFE0B2", label:"Lavaş",        unit:"ədəd", per:null },
-  simit:     { icon:"🥨", color:"#FFCCBC", label:"Simit",        unit:"ədəd", per:null },
-  /* ── DRINKS ── */
-  cay:       { icon:"🍵", color:"#8D6E63", label:"Çay",          unit:"100g", per:100  },
-  qehve:     { icon:"☕", color:"#6D4C41", label:"Qəhvə",        unit:"100g", per:100  },
-  kakao:     { icon:"🍫", color:"#795548", label:"Kakao",        unit:"100g", per:100  },
-  sire:      { icon:"🧃", color:"#FF9800", label:"Şirə",         unit:"l",    per:1000 },
-  ayran:     { icon:"🥛", color:"#B3E5FC", label:"Ayran",        unit:"l",    per:1000 },
-  su:        { icon:"💧", color:"#B2EBF2", label:"Su",           unit:"l",    per:1000 },
-  kola:      { icon:"🥤", color:"#424242", label:"Kola",         unit:"l",    per:1000 },
-  /* ── SWEETS ── */
-  sokolad:   { icon:"🍫", color:"#6D4C41", label:"Şokolad",      unit:"100g", per:100  },
-  sekerbura: { icon:"🍪", color:"#FFECB3", label:"Şəkərbura",    unit:"100g", per:100  },
-  halva:     { icon:"🍬", color:"#FFD54F", label:"Halva",        unit:"100g", per:100  },
-  dondurma:  { icon:"🍦", color:"#81D4FA", label:"Dondurma",     unit:"ədəd", per:null },
-  /* ── OILS & CONDIMENTS ── */
-  zeytun_yagi:     { icon:"🫒", color:"#C5E1A5", label:"Zeytun yağı",    unit:"l",    per:1000 },
-  ay_cicayi:       { icon:"🌻", color:"#FFE082", label:"Günəbaxan yağı", unit:"l",    per:1000 },
-  qarqidali_yagi:  { icon:"🌽", color:"#FFF59D", label:"Qarğ. yağı",     unit:"l",    per:1000 },
-  kere_yagi_spred: { icon:"🧈", color:"#FFE082", label:"Spred",          unit:"100g", per:100  },
-  mayonez:   { icon:"🥫", color:"#FFF9C4", label:"Mayonez",      unit:"100g", per:100  },
-  ketcup:    { icon:"🍅", color:"#FFCCBC", label:"Ketçup",       unit:"100g", per:100  },
-  xardal:    { icon:"🌿", color:"#FFF176", label:"Xardal",       unit:"100g", per:100  },
-  /* ── SPICES ── */
-  duz:       { icon:"🧂", color:"#ECEFF1", label:"Duz",          unit:"kg",   per:1000 },
-  istiot:    { icon:"🌶️", color:"#D32F2F", label:"İstiot",       unit:"100g", per:100  },
-  zefaran:   { icon:"✨",  color:"#FFD700", label:"Zəfəran",      unit:"q",    per:1  },
-  darcin:    { icon:"🌰", color:"#A1887F", label:"Darçın",       unit:"100g", per:100  },
-  /* ── SUGAR ── */
-  sekerqum:  { icon:"🍬", color:"#F8BBD0", label:"Şəkər",        unit:"kg",   per:1000 },
+  /* ── SÜD MƏHSULLARİ ── */
+  sud:       { icon:"🥛", color:"#4FC3F7", label:"Süd",         unit:"l",    per:1000,
+               keywords:["süd","milk"], exclude:["süd şokolad","südlü şokolad","südlü konfet","südlü peçenye"] },
+  yumurta:   { icon:"🥚", color:"#FFD54F", label:"Yumurta",     unit:"ədəd", per:null,
+               keywords:["yumurta"] },
+  kere_yagi: { icon:"🧈", color:"#F9A825", label:"Kərə yağı",   unit:"100g", per:100,
+               keywords:["kərə yağ","butter"], exclude:["spred","margarin"] },
+  pendir:    { icon:"🧀", color:"#FFF176", label:"Pendir",       unit:"100g", per:100,
+               keywords:["pendir","cheese"] },
+  qatiq:     { icon:"🫙", color:"#CE93D8", label:"Qatıq",       unit:"100g", per:100,
+               keywords:["qatıq","yoqurt","yogurt"] },
+  xama:      { icon:"🍦", color:"#F3E5F5", label:"Xama",         unit:"100g", per:100,
+               keywords:["xama","krem"] },
+  kefir:     { icon:"🧋", color:"#81D4FA", label:"Kefir",        unit:"l",    per:1000,
+               keywords:["kefir"] },
+  /* ── TƏRƏVƏZLƏRİ ── */
+  kartof:    { icon:"🥔", color:"#D7CCC8", label:"Kartof",       unit:"kg",   per:1000,
+               keywords:["kartof"] },
+  pomidor:   { icon:"🍅", color:"#EF5350", label:"Pomidor",      unit:"kg",   per:1000,
+               keywords:["pomidor","tomat"], exclude:["pomidor sousu","pomidor pastası","ketçup"] },
+  xiyar:     { icon:"🥒", color:"#66BB6A", label:"Xiyar",        unit:"kg",   per:1000,
+               keywords:["xiyar","salatalıq"] },
+  soyan:     { icon:"🧅", color:"#D4A574", label:"Soğan",        unit:"kg",   per:1000,
+               keywords:["soğan"] },
+  kelem:     { icon:"🥬", color:"#81C784", label:"Kələm",        unit:"kg",   per:1000,
+               keywords:["kələm","lahana"] },
+  yerkoyu:   { icon:"🥕", color:"#FF9800", label:"Yerkökü",      unit:"kg",   per:1000,
+               keywords:["yerkökü","havuç"] },
+  cuqundur:  { icon:"🟣", color:"#CE93D8", label:"Çuğundur",     unit:"kg",   per:1000,
+               keywords:["çuğundur","çügündür"] },
+  qabaq:     { icon:"🎃", color:"#FF7043", label:"Qabaq",        unit:"kg",   per:1000,
+               keywords:["qabaq"] },
+  badimcan:  { icon:"🍆", color:"#9575CD", label:"Badımcan",     unit:"kg",   per:1000,
+               keywords:["badımcan"] },
+  biber:     { icon:"🫑", color:"#F06292", label:"Bibər",        unit:"kg",   per:1000,
+               keywords:["bibər","biber"], exclude:["istiot","qırmızı istiot"] },
+  sarimsaq:  { icon:"🧄", color:"#A5D6A7", label:"Sarımsaq",     unit:"100g", per:100,
+               keywords:["sarımsaq","sarimsaq"] },
+  ispanaq:   { icon:"🌿", color:"#558B2F", label:"İspanaq",      unit:"kg",   per:1000,
+               keywords:["ispanaq"] },
+  goyerti:   { icon:"🪴", color:"#8BC34A", label:"Göyərti",      unit:"dəstə",per:null,
+               keywords:["göyərti","cəfəri","şüyüd","kinza","reyhan","nanə","kərəviz"] },
+  /* ── MEYVƏ ── */
+  alma:      { icon:"🍎", color:"#EF5350", label:"Alma",         unit:"kg",   per:1000,
+               keywords:["alma"], exclude:["alma şirəsi","alma suyu"] },
+  armud:     { icon:"🍐", color:"#C6E05A", label:"Armud",        unit:"kg",   per:1000,
+               keywords:["armud"] },
+  saftal:    { icon:"🍑", color:"#FFAB91", label:"Şaftalı",      unit:"kg",   per:1000,
+               keywords:["şaftalı","nektarin"] },
+  gilas:     { icon:"🍒", color:"#E53935", label:"Gilas",        unit:"kg",   per:1000,
+               keywords:["gilas","albalı"] },
+  uzum:      { icon:"🍇", color:"#AB47BC", label:"Üzüm",         unit:"kg",   per:1000,
+               keywords:["üzüm"], exclude:["üzümlü","üzüm şirəsi","üzüm suyu","kişmiş"] },
+  banan:     { icon:"🍌", color:"#FFEB3B", label:"Banan",        unit:"kg",   per:1000,
+               keywords:["banan"] },
+  kivi:      { icon:"🥝", color:"#AED581", label:"Kivi",         unit:"kg",   per:1000,
+               keywords:["kivi"] },
+  limon:     { icon:"🍋", color:"#FFF59D", label:"Limon",        unit:"kg",   per:1000,
+               keywords:["limon"], exclude:["limon şirəsi","limon turşusu"] },
+  portaqal:  { icon:"🍊", color:"#FFB74D", label:"Portağal",     unit:"kg",   per:1000,
+               keywords:["portağal"], exclude:["portağal şirəsi"] },
+  nar:       { icon:"🌺", color:"#D32F2F", label:"Nar",          unit:"kg",   per:1000,
+               keywords:["nar"], exclude:["nar şirəsi","narşərab"] },
+  /* ── ƏT ── */
+  toyuq:     { icon:"🍗", color:"#BCAAA4", label:"Toyuq",        unit:"kg",   per:1000,
+               keywords:["toyuq","cücə","broyle"] },
+  dana_ati:  { icon:"🥩", color:"#8D6E63", label:"Dana əti",     unit:"kg",   per:1000,
+               keywords:["dana"] },
+  qoyun_ati: { icon:"🍖", color:"#6D4C41", label:"Qoyun əti",    unit:"kg",   per:1000,
+               keywords:["qoyun","quzu"] },
+  hindi:     { icon:"🦃", color:"#A1887F", label:"Hindi",        unit:"kg",   per:1000,
+               keywords:["hindi"] },
+  kolbasa:   { icon:"🥓", color:"#FF7043", label:"Kolbasa",      unit:"100g", per:100,
+               keywords:["kolbasa"] },
+  sosis:     { icon:"🌭", color:"#FF8A65", label:"Sosis",        unit:"100g", per:100,
+               keywords:["sosis","sosiska"] },
+  /* ── BALIK ── */
+  baliq:     { icon:"🐟", color:"#4DD0E1", label:"Balıq",        unit:"kg",   per:1000,
+               keywords:["balıq","lakerda","nərə","qızılbalıq","tuna","sardina","skumbriya"] },
+  /* ── TAXIL & MAKARON ── */
+  duyu:      { icon:"🍚", color:"#BDBDBD", label:"Düyü",         unit:"kg",   per:1000,
+               keywords:["düyü","pirinc"] },
+  merci:     { icon:"🫘", color:"#A1887F", label:"Mərcimək",     unit:"kg",   per:1000,
+               keywords:["mərcimək"] },
+  noxud:     { icon:"🟡", color:"#FFCC02", label:"Noxud",        unit:"kg",   per:1000,
+               keywords:["noxud","lobya"] },
+  fasulya:   { icon:"🫘", color:"#795548", label:"Fasulya",      unit:"kg",   per:1000,
+               keywords:["fasulya"] },
+  un:        { icon:"🌾", color:"#EFEBE9", label:"Un",           unit:"kg",   per:1000,
+               keywords:[" un ","unun","un,"] },
+  makaron:   { icon:"🍝", color:"#FFECB3", label:"Makaron",      unit:"kg",   per:1000,
+               keywords:["makaron","pasta","spagetti","vermişel"] },
+  /* ── ÇÖRƏK VƏ QƏNNADIYYAT ── */
+  corek:     { icon:"🍞", color:"#FF8F00", label:"Çörək",        unit:"ədəd", per:null,
+               keywords:["çörək","lavaş","lavash"], exclude:["çörək qabi","çörəkqabı"] },
+  pecenye:   { icon:"🍪", color:"#FFCC80", label:"Peçenye",      unit:"100g", per:100,
+               keywords:["peçenye","biskvit","kraker","wafer","vafli"] },
+  tort:      { icon:"🎂", color:"#F48FB1", label:"Tort/Pasta",   unit:"100g", per:100,
+               keywords:["tort","pasta","keks","baklava","şəkərbura","paxlava"] },
+  /* ── İÇKİLƏR ── */
+  cay:       { icon:"🍵", color:"#8D6E63", label:"Çay",          unit:"100g", per:100,
+               keywords:["çay"], exclude:["çay qaşığı","çay stəkanı"] },
+  qehve:     { icon:"☕", color:"#4E342E", label:"Qəhvə",        unit:"100g", per:100,
+               keywords:["qəhvə","nescafe","kapuçino","espresso"] },
+  sire:      { icon:"🧃", color:"#FF9800", label:"Şirə/Mors",    unit:"l",    per:1000,
+               keywords:["şirə","mors","nektar","şərbət"] },
+  ayran:     { icon:"🥤", color:"#B3E5FC", label:"Ayran",        unit:"l",    per:1000,
+               keywords:["ayran"] },
+  su:        { icon:"💧", color:"#29B6F6", label:"Su",           unit:"l",    per:1000,
+               keywords:["mineral su","içməli su","mənbə suyu"], exclude:["meyvə suyu","alma suyu","üzüm suyu"] },
+  kola:      { icon:"🫙", color:"#37474F", label:"Kola/Limonad",  unit:"l",    per:1000,
+               keywords:["kola","limonad","sprite","fanta","pepsi"] },
+  /* ── ŞOKOLAD VƏ ŞIRNIYYAT ── */
+  sokolad:   { icon:"🍫", color:"#4E342E", label:"Şokolad",      unit:"100g", per:100,
+               keywords:["şokolad","çokolad"], exclude:["şokoladlı peçenye","şokoladlı biskvit"] },
+  halva:     { icon:"🍬", color:"#FFD54F", label:"Halva/Şirniyyat",unit:"100g",per:100,
+               keywords:["halva","konfet","karamel","marmelad","zefir"] },
+  dondurma:  { icon:"🍨", color:"#81D4FA", label:"Dondurma",     unit:"ədəd", per:null,
+               keywords:["dondurma"] },
+  /* ── YAĞ VƏ SOUSU ── */
+  zeytun_yagi:    { icon:"🫒", color:"#AED581", label:"Zeytun yağı",    unit:"l", per:1000,
+                    keywords:["zeytun yağ"] },
+  ay_cicayi:      { icon:"🌻", color:"#FBC02D", label:"Günəbaxan yağı", unit:"l", per:1000,
+                    keywords:["günəbaxan yağ","ayçiçəyi yağ","bitki yağ"] },
+  mayonez:   { icon:"🥄", color:"#FFF9C4", label:"Mayonez",      unit:"100g", per:100,
+               keywords:["mayonez"] },
+  ketcup:    { icon:"🍅", color:"#EF9A9A", label:"Ketçup/Sous",  unit:"100g", per:100,
+               keywords:["ketçup","sous","pasta","adjika"], exclude:["pomidor","pasta maqueron"] },
+  /* ── ƏDVİYYAT ── */
+  duz:       { icon:"🧂", color:"#CFD8DC", label:"Duz",          unit:"kg",   per:1000,
+               keywords:["duz"] },
+  sekerqum:  { icon:"🍚", color:"#F8BBD0", label:"Şəkər",        unit:"kg",   per:1000,
+               keywords:["şəkər","saxarid"] },
+  istiot:    { icon:"🌶️", color:"#B71C1C", label:"İstiot/Ədviyyat",unit:"100g",per:100,
+               keywords:["istiot","ədviyyat","zəfəran","darçın","xardal","zirə"] },
 };
 
 const STORE_NAMES = ["Bravo","Neptun","Rahat","OBA"];
 
 let allData = null, viewMode = "categories", activeCat = null;
-/* Cache of per-category stats: { catId -> { bestUnitPrice, bestStore, unitLabel, pills } } */
 let catStats = {};
 
 /* ─── DATA LOAD ─── */
@@ -318,7 +366,6 @@ fetch("/qiymet-muqayise/data/prices.json")
 
 /* ─── UNIT PARSING ─── */
 function parseUnit(name) {
-  /* returns { grams } where grams is equivalent weight/volume in grams or ml */
   const n = name.toLowerCase();
   const m = n.match(/(\d+[.,]?\d*)\s*(kq|kg|qr|gr|g\b|l\b|lt\b|litr|ml)\b/i);
   if (!m) return null;
@@ -336,69 +383,68 @@ function parseFat(name) {
   return m ? parseFloat(m[1].replace(",",".")) : null;
 }
 
+/* ─── KATEQORİYA UYĞUNLUĞU ───
+   Məhsul adı verilan cfg-yə uyğundurmu?
+   keywords-dən biri varsa VƏ exclude-dan heç biri yoxsa → true
+*/
+function itemMatchesCat(name, cfg) {
+  if (!cfg.keywords || cfg.keywords.length === 0) return true;
+  const n = name.toLowerCase();
+  const hasKeyword = cfg.keywords.some(kw => n.includes(kw.toLowerCase()));
+  if (!hasKeyword) return false;
+  if (cfg.exclude) {
+    const isExcluded = cfg.exclude.some(ex => n.includes(ex.toLowerCase()));
+    if (isExcluded) return false;
+  }
+  return true;
+}
+
 /* ─── CATEGORY STATS ─── */
 function computeCatStats() {
   if (!allData) return;
   Object.entries(allData.categories).forEach(([catId, cat]) => {
     const cfg = CAT_CFG[catId];
     if (!cfg) return;
-    const per = cfg.per;   /* base in grams/ml, e.g. 1000 = per kg */
-    let bestUnitPrice = Infinity, bestStore = null, bestName = "";
-    /* fatmap: { "1.5": { price, store } } for fat-based pills */
-    const fatMap = {};
-    /* sizemap: { "1l": { price, store } } */
-    const sizeMap = {};
+    const per = cfg.per;
+    let bestUnitPrice = Infinity, bestStore = null;
+    const fatMap = {}, sizeMap = {};
 
     STORE_NAMES.forEach(store => {
       (cat.stores[store] || []).forEach(item => {
-        /* per-unit calc */
+        /* keyword filter */
+        if (!itemMatchesCat(item.name, cfg)) return;
+
         if (per) {
           const grams = parseUnit(item.name);
           if (grams && item.price) {
             const unitPrice = (item.price / grams) * per;
-            if (unitPrice < bestUnitPrice) {
-              bestUnitPrice = unitPrice;
-              bestStore = store;
-              bestName = item.name;
-            }
+            if (unitPrice < bestUnitPrice) { bestUnitPrice = unitPrice; bestStore = store; }
           }
         }
-        /* fat pills */
         const fat = parseFat(item.name);
         if (fat !== null && item.price) {
           const key = fat + "%";
           const grams = parseUnit(item.name) || 1000;
           const up = (item.price / grams) * 1000;
-          if (!fatMap[key] || up < fatMap[key].unitPrice) {
-            fatMap[key] = { unitPrice: up, price: item.price, store };
-          }
+          if (!fatMap[key] || up < fatMap[key].unitPrice) fatMap[key] = { unitPrice:up, price:item.price, store };
         }
-        /* size pills (only liquid/weight, skip countable) */
         if (per) {
           const grams = parseUnit(item.name);
           if (grams && item.price) {
             const sLabel = formatSizeLabel(grams, catId);
-            if (!sizeMap[sLabel] || item.price < sizeMap[sLabel].price) {
-              sizeMap[sLabel] = { price: item.price, store };
-            }
+            if (!sizeMap[sLabel] || item.price < sizeMap[sLabel].price) sizeMap[sLabel] = { price:item.price, store };
           }
         }
       });
     });
 
     const pills = [];
-    /* prefer fat pills if category is dairy */
     const fatKeys = Object.keys(fatMap).sort((a,b)=>parseFloat(a)-parseFloat(b));
     if (fatKeys.length > 0) {
-      fatKeys.slice(0,4).forEach(k => {
-        pills.push({ label: k, price: fatMap[k].price, store: fatMap[k].store });
-      });
+      fatKeys.slice(0,4).forEach(k => pills.push({ label:k, price:fatMap[k].price, store:fatMap[k].store }));
     } else {
-      const sizeKeys = Object.keys(sizeMap).sort((a,b)=>{
-        return parseFloat(a) - parseFloat(b);
-      }).slice(0,4);
-      sizeKeys.forEach(k => {
-        pills.push({ label: k, price: sizeMap[k].price, store: sizeMap[k].store });
+      Object.keys(sizeMap).sort((a,b)=>parseFloat(a)-parseFloat(b)).slice(0,4).forEach(k => {
+        pills.push({ label:k, price:sizeMap[k].price, store:sizeMap[k].store });
       });
     }
 
@@ -414,11 +460,8 @@ function computeCatStats() {
 
 function formatSizeLabel(grams, catId) {
   const cfg = CAT_CFG[catId];
-  /* liquid categories */
   const isLiquid = cfg && (cfg.unit === "l" || cfg.unit === "ml");
-  if (isLiquid) {
-    return grams >= 1000 ? (grams/1000) + "l" : grams + "ml";
-  }
+  if (isLiquid) return grams >= 1000 ? (grams/1000) + "l" : grams + "ml";
   return grams >= 1000 ? (grams/1000) + "kq" : grams + "q";
 }
 
@@ -433,7 +476,6 @@ function setMode(mode) {
     renderCategories();
   } else {
     document.getElementById("categoriesView").style.display = "none";
-    if (mode === "list" && !activeCat) activeCat = null;
     renderList();
   }
 }
@@ -450,30 +492,23 @@ function renderCategories() {
     const count = Object.values(cat.stores).reduce((s, items) => s + items.length, 0);
     const stats = catStats[catId];
 
-    /* ── price bar content ── */
     let barHtml = "";
     if (stats && stats.bestUnitPrice !== null) {
       const storeColor = COLORS[stats.bestStore] || cfg.color;
-      barHtml = `
-        <div class="cat-price-bar" style="background:${cfg.color}">
-          <span class="bar-label">Ən ucuz /&nbsp;${stats.unitLabel}</span>
-          <span class="bar-value">₼${stats.bestUnitPrice.toFixed(2)}</span>
-          <span class="bar-store" style="background:${storeColor}">${stats.bestStore}</span>
-        </div>`;
+      barHtml = `<div class="cat-price-bar" style="background:${cfg.color}">
+        <span class="bar-label">Ən ucuz /&nbsp;${stats.unitLabel}</span>
+        <span class="bar-value">₼${stats.bestUnitPrice.toFixed(2)}</span>
+        <span class="bar-store" style="background:${storeColor}">${stats.bestStore}</span>
+      </div>`;
     } else {
       barHtml = `<div class="cat-price-bar loading"></div>`;
     }
 
-    /* ── pills ── */
     let pillsHtml = "";
     if (stats && stats.pills && stats.pills.length > 0) {
       const minPrice = Math.min(...stats.pills.map(p => p.price));
       pillsHtml = `<div class="cat-unit-pills">
-        ${stats.pills.map(p => `
-          <span class="unit-pill${p.price === minPrice ? ' best-pill' : ''}"
-                style="--cat-color:${cfg.color}">
-            ${p.label} ₼${p.price.toFixed(2)}
-          </span>`).join("")}
+        ${stats.pills.map(p => `<span class="unit-pill${p.price === minPrice ? ' best-pill' : ''}" style="--cat-color:${cfg.color}">${p.label} ₼${p.price.toFixed(2)}</span>`).join("")}
       </div>`;
     }
 
@@ -488,25 +523,13 @@ function renderCategories() {
     </div>`;
   }).join("");
 
-  /* "View All" card */
-  html += `<div class="category-card view-all" onclick="setMode('list')" style="--cat-color:var(--accent)">
-    <div class="cat-price-bar" style="background:rgba(0,0,0,0.18);font-size:10px;justify-content:center;letter-spacing:1px">
-      BÜTÜN KATEQORİYALAR
-    </div>
-    <div class="cat-body">
-      <div class="cat-icon">🌟</div>
-      <div class="cat-name">HAMISI</div>
-      <div class="cat-count">Bütün məhsullar</div>
-    </div>
-  </div>`;
-
+  /* "Hamısı" kartı SILINDI */
   el.innerHTML = html;
 }
 
 function selectCategory(catId) {
   activeCat = catId;
   setMode("list");
-  renderList();
 }
 
 function handleSearch() {
@@ -514,18 +537,21 @@ function handleSearch() {
 }
 
 /* ─── PRODUCT MATCHING ─── */
-function normalize(s) {
-  return s.toLowerCase().replace(/\s+/g," ").replace(/,/g,".").trim();
-}
+function normalize(s) { return s.toLowerCase().replace(/\s+/g," ").replace(/,/g,".").trim(); }
 function similarity(a, b) {
-  const wa = normalize(a).split(" ");
-  const wb = normalize(b).split(" ");
+  const wa = normalize(a).split(" "), wb = normalize(b).split(" ");
   const common = wa.filter(w => wb.includes(w) && w.length > 1);
   return common.length / Math.max(wa.length, wb.length);
 }
-function matchProducts(stores) {
+function matchProducts(stores, cfg) {
   let all = [];
-  STORE_NAMES.forEach(s => { (stores[s] || []).forEach(item => all.push({...item, store:s})); });
+  STORE_NAMES.forEach(s => {
+    (stores[s] || []).forEach(item => {
+      /* keyword filter: yalnız cfg varsa tətbiq et */
+      if (cfg && !itemMatchesCat(item.name, cfg)) return;
+      all.push({...item, store:s});
+    });
+  });
   const groups = [], used = new Set();
   all.forEach((item, i) => {
     if (used.has(i)) return;
@@ -554,12 +580,11 @@ function getAttr(name, type) {
   if (type === "size") {
     const m = n.match(/(\d+[.,]?\d*)\s*(kq|kg|qr|gr|g|l|lt|litr|ml)\b/i);
     if (!m) return null;
-    let val = parseFloat(m[1].replace(",","."));
-    let unit = m[2].toLowerCase();
-    if (unit==="kq"||unit==="kg") return val + "kq";
-    if (unit==="qr"||unit==="gr"||unit==="g") return val + "q";
-    if (unit==="l"||unit==="lt"||unit==="litr") return val + "l";
-    if (unit==="ml") return val + "ml";
+    let val = parseFloat(m[1].replace(",",".")), unit = m[2].toLowerCase();
+    if (unit==="kq"||unit==="kg") return val+"kq";
+    if (unit==="qr"||unit==="gr"||unit==="g") return val+"q";
+    if (unit==="l"||unit==="lt"||unit==="litr") return val+"l";
+    if (unit==="ml") return val+"ml";
     return null;
   }
   return null;
@@ -571,27 +596,17 @@ function renderBestBox(groups) {
   groups.forEach(g => {
     const fat = getAttr(g.name, "fat");
     if (fat) Object.entries(g.stores).filter(([,p])=>p).forEach(([store,price]) => {
-      if (!byFat[fat] || price < byFat[fat].price) byFat[fat] = { name: g.name, store, price };
+      if (!byFat[fat] || price < byFat[fat].price) byFat[fat] = { name:g.name, store, price };
     });
     const size = getAttr(g.name, "size");
     if (size) Object.entries(g.stores).filter(([,p])=>p).forEach(([store,price]) => {
-      if (!bySize[size] || price < bySize[size].price) bySize[size] = { name: g.name, store, price };
+      if (!bySize[size] || price < bySize[size].price) bySize[size] = { name:g.name, store, price };
     });
   });
 
-  const fats = Object.keys(byFat).sort((a,b) => parseFloat(a)-parseFloat(b));
-  const sizes = Object.keys(bySize).sort((a,b) => {
-    const toG = s => {
-      const m = s.match(/([\d.]+)(.*)/);
-      if (!m) return 0;
-      const v = parseFloat(m[1]), u = m[2];
-      if (u==="kq") return v*1000;
-      if (u==="l") return v*1000;
-      if (u==="ml") return v;
-      return v;
-    };
-    return toG(a) - toG(b);
-  });
+  const fats = Object.keys(byFat).sort((a,b)=>parseFloat(a)-parseFloat(b));
+  const toG = s => { const m=s.match(/([\d.]+)(.*)/); if(!m) return 0; const v=parseFloat(m[1]),u=m[2]; if(u==="kq") return v*1000; if(u==="l") return v*1000; if(u==="ml") return v; return v; };
+  const sizes = Object.keys(bySize).sort((a,b)=>toG(a)-toG(b));
 
   let html = "";
   if (fats.length) {
@@ -599,32 +614,21 @@ function renderBestBox(groups) {
     <div class="table-wrap"><table><thead><tr>
       <th class="left">FAİZ</th><th class="left">MƏHSUL</th><th class="left">MAĞAZA</th><th>QİYMƏT</th>
     </tr></thead><tbody>
-    ${fats.map((fat,i) => {
-      const w = byFat[fat];
-      return `<tr class="${i%2===0?'even':'odd'}">
-        <td class="left"><b>${fat}</b></td>
-        <td class="left">${w.name}</td>
-        <td class="left"><span class="store-tag" style="background:${COLORS[w.store]}">${w.store}</span></td>
-        <td class="best">★ ₼${w.price.toFixed(2)}</td>
-      </tr>`;
-    }).join("")}
+    ${fats.map((fat,i)=>{ const w=byFat[fat]; return `<tr class="${i%2===0?'even':'odd'}">
+      <td class="left"><b>${fat}</b></td><td class="left">${w.name}</td>
+      <td class="left"><span class="store-tag" style="background:${COLORS[w.store]}">${w.store}</span></td>
+      <td class="best">★ ₼${w.price.toFixed(2)}</td></tr>`; }).join("")}
     </tbody></table></div>`;
   }
-
   if (sizes.length) {
     html += `<div class="section-title"><span class="section-icon">📦</span>HƏR ÖLÇÜ ÜZRƏ ƏN UCUZ</div>
     <div class="table-wrap"><table><thead><tr>
       <th class="left">ÖLÇÜ</th><th class="left">MƏHSUL</th><th class="left">MAĞAZA</th><th>QİYMƏT</th>
     </tr></thead><tbody>
-    ${sizes.map((size,i) => {
-      const w = bySize[size];
-      return `<tr class="${i%2===0?'even':'odd'}">
-        <td class="left"><b>${size}</b></td>
-        <td class="left">${w.name}</td>
-        <td class="left"><span class="store-tag" style="background:${COLORS[w.store]}">${w.store}</span></td>
-        <td class="best">★ ₼${w.price.toFixed(2)}</td>
-      </tr>`;
-    }).join("")}
+    ${sizes.map((size,i)=>{ const w=bySize[size]; return `<tr class="${i%2===0?'even':'odd'}">
+      <td class="left"><b>${size}</b></td><td class="left">${w.name}</td>
+      <td class="left"><span class="store-tag" style="background:${COLORS[w.store]}">${w.store}</span></td>
+      <td class="best">★ ₼${w.price.toFixed(2)}</td></tr>`; }).join("")}
     </tbody></table></div>`;
   }
   return html;
@@ -641,20 +645,21 @@ function renderList() {
   let html = "", allGroups = [];
 
   cats.forEach(([catId, cat]) => {
-    let groups = matchProducts(cat.stores);
+    const cfg = CAT_CFG[catId] || null;
+    let groups = matchProducts(cat.stores, cfg);
     if (search) groups = groups.filter(g => g.name.toLowerCase().includes(search));
     if (!groups.length) return;
     allGroups = allGroups.concat(groups);
 
-    const cfg = CAT_CFG[catId] || { icon:"📦" };
-    html += `<div class="section-title"><span class="section-icon">${cfg.icon}</span>${cat.name} — ${groups.length} məhsul</div>`;
+    const c = cfg || { icon:"📦" };
+    html += `<div class="section-title"><span class="section-icon">${c.icon}</span>${cat.name} — ${groups.length} məhsul</div>`;
     html += `<div class="table-wrap"><table><thead><tr>
       <th class="left">MƏHSUL</th>
       ${STORE_NAMES.map(s => `<th><span class="dot" style="background:${COLORS[s]}"></span>${s.toUpperCase()}</th>`).join("")}
       <th>QƏNAƏT</th>
     </tr></thead><tbody>`;
 
-    groups.sort((a, b) => {
+    groups.sort((a,b) => {
       const minA = Math.min(...Object.values(a.stores).filter(Boolean));
       const minB = Math.min(...Object.values(b.stores).filter(Boolean));
       return minA - minB;
