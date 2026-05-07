@@ -1,5 +1,5 @@
 {
-  "last_updated": "07 May 2026, 14:40",
+  "last_updated": "07 May 2026, 19:48",
   "categories": {
     "sud": {
       "name": "Süd",
@@ -258,12 +258,12 @@
       "stores": {
         "Bravo": [
           {
-            "name": "Romashka Xama 25% 320 qr",
-            "price": 5.5
-          },
-          {
             "name": "Prostokvaşino Xama 25% 300qr",
             "price": 5.19
+          },
+          {
+            "name": "Romashka Xama 25% 320 qr",
+            "price": 5.5
           },
           {
             "name": "Brest-litovsk Xama 20% 300qr",
@@ -284,10 +284,6 @@
           {
             "name": "Prostokvaşino Xama 15% 300qr",
             "price": 4.05
-          },
-          {
-            "name": "Brest-litovsk Xama 25% 315qr",
-            "price": 3.79
           },
           {
             "name": "Brest-litovsk Xama 15% 300qr",
@@ -504,12 +500,12 @@
             "price": 2.95
           },
           {
-            "name": "Belous Xama 20%  350 Gr",
-            "price": 3.15
-          },
-          {
             "name": "Prostokvaşıno Xama 20% 180 qr",
             "price": 2.7
+          },
+          {
+            "name": "Belous Xama 20%  350 Gr",
+            "price": 3.15
           },
           {
             "name": "Prostokvaşıno Xama 15% 300 qr",
@@ -1981,14 +1977,6 @@
             "price": 4.69
           },
           {
-            "name": "Yorukoğlu Ağ Pendir 600 qr",
-            "price": 11.55
-          },
-          {
-            "name": "Pendir Slavyanskiy Moloka 50% kq",
-            "price": 18.5
-          },
-          {
             "name": "Sütaş Süzmə Bəyaz Pendir 500qr",
             "price": 9.95
           },
@@ -2003,6 +1991,14 @@
           {
             "name": "Savuşkin Tilziter Pendir 45% 200qr",
             "price": 5.3
+          },
+          {
+            "name": "Yorukoğlu Ağ Pendir 600 qr",
+            "price": 11.55
+          },
+          {
+            "name": "Pendir Slavyanskiy Moloka 50% kq",
+            "price": 18.5
           },
           {
             "name": "President Pendir Vetcine Dilim 150qr",
@@ -2105,10 +2101,6 @@
             "price": 3.9
           },
           {
-            "name": "Svalya Pendir Hisə Verilmiş Sarımsaqlı 45% 75qr",
-            "price": 4.4
-          },
-          {
             "name": "Golden Plate Fry/Gril Pendir 200 qr",
             "price": 7.65
           },
@@ -2169,12 +2161,12 @@
             "price": 11.75
           },
           {
-            "name": "President Pendiri Yayılma Krem Pendir 45% 200qr",
-            "price": 5.09
-          },
-          {
             "name": "Viola Əridilmiş Pendir 400qr",
             "price": 9.29
+          },
+          {
+            "name": "President Pendiri Yayılma Krem Pendir 45% 200qr",
+            "price": 5.09
           },
           {
             "name": "Savuşkin Pendir Suluguni 40% 200 qr",
@@ -2607,10 +2599,6 @@
           {
             "name": "Lays Çipsi Pendirli 37qr",
             "price": 1.05
-          },
-          {
-            "name": "Just Brutal Jalapeno Bibər və Pendirli Çips 85qr",
-            "price": 1.49
           },
           {
             "name": "Pringles Pendirli 165qr",
@@ -3605,10 +3593,6 @@
             "price": 6.89
           },
           {
-            "name": "Miratorq Toyuq Naqqets Klassik kq",
-            "price": 21.49
-          },
-          {
             "name": "Siyəzən Toyuq Sarı Paket Kq 24595",
             "price": 6.7
           },
@@ -3709,16 +3693,20 @@
             "price": 6.2
           },
           {
+            "name": "Miratorq Toyuq Naqqets Klassik kq",
+            "price": 21.49
+          },
+          {
             "name": "Zolotoy Petusok Naqqets Toyuq 300gr",
             "price": 4.59
           },
           {
-            "name": "Qualiko Dondurulmuş Toyuq Nuggets Burger 300 qr",
-            "price": 4.5
-          },
-          {
             "name": "Qualiko Dondurulmuş Toyuq Nuggets Popkorn 300 qr",
             "price": 6.2
+          },
+          {
+            "name": "Qualiko Dondurulmuş Toyuq Nuggets Burger 300 qr",
+            "price": 4.5
           },
           {
             "name": "Burma Sobada Pirojki Toyuq ilə 1əd 30897",
@@ -4099,12 +4087,12 @@
             "price": 1.77
           },
           {
-            "name": "Biznes Menyu 90 qr Biznes Lanc Əriştə Toyuq",
-            "price": 1.39
-          },
-          {
             "name": "Rollton 40 qr Toyuqlu Kartof Püresi",
             "price": 1.4
+          },
+          {
+            "name": "Biznes Menyu 90 qr Biznes Lanc Əriştə Toyuq",
+            "price": 1.39
           },
           {
             "name": "Biznes Menyu 45 qr Biznes Lanç Əriştə Toyuqlu",
@@ -4239,12 +4227,12 @@
             "price": 12.55
           },
           {
-            "name": "Sehliyali Bs Servelat Qoyun Kq 22753",
-            "price": 17.95
-          },
-          {
             "name": "Halal Nemət Qoyun Servelat Kq 12625",
             "price": 19.65
+          },
+          {
+            "name": "Sehliyali Bs Servelat Qoyun Kq 22753",
+            "price": 17.95
           }
         ],
         "Neptun": [
@@ -4779,16 +4767,16 @@
             "price": 10.55
           },
           {
+            "name": "Starodvorye Kolbasa FiLedvorsky 280qr",
+            "price": 8.89
+          },
+          {
             "name": "Kolbasa Rosko Rossiyskaya kg",
             "price": 10.25
           },
           {
             "name": "Cənnət Qovyajaya Kolbasa kq",
             "price": 15.49
-          },
-          {
-            "name": "Starodvorye Kolbasa FiLedvorsky 280qr",
-            "price": 8.89
           },
           {
             "name": "Kolbasa Çarıçino Kavkazskaya 1kg",
@@ -4819,18 +4807,6 @@
             "price": 3.99
           },
           {
-            "name": "Kolbasa Rosko Servelat Zakaz kq",
-            "price": 11.55
-          },
-          {
-            "name": "Çarıçino Kolbasa Kavkazskaya 350 Gr",
-            "price": 4.49
-          },
-          {
-            "name": "Kolbasa Starodvorye Soçinka 300 Gr",
-            "price": 6.99
-          },
-          {
             "name": "Kolbasa Latifa Musulmanskaya 400 Gr",
             "price": 3.95
           },
@@ -4839,8 +4815,24 @@
             "price": 11.99
           },
           {
+            "name": "Kolbasa Starodvorye Soçinka 300 Gr",
+            "price": 6.99
+          },
+          {
+            "name": "Kolbasa Rosko Servelat Zakaz kq",
+            "price": 11.55
+          },
+          {
+            "name": "Çarıçino Kolbasa Kavkazskaya 350 Gr",
+            "price": 4.49
+          },
+          {
             "name": "Sab Ətirli Servelat Kolbasa kq",
             "price": 17.49
+          },
+          {
+            "name": "Kolbasa Sevimli Dad Oxot Hisə Verilmiş kq",
+            "price": 20.5
           },
           {
             "name": "Kolbasa Ovqat Doktor/Lyubitel/Russkaya kq",
@@ -4857,10 +4849,6 @@
           {
             "name": "Ovqat Prima Yağlı/Yağsız Kolbasa kq",
             "price": 11.45
-          },
-          {
-            "name": "Kolbasa Sevimli Dad Oxot Hisə Verilmiş kq",
-            "price": 20.5
           },
           {
             "name": "B. S Servelat Qoyun Kolbasa kq",
@@ -5008,10 +4996,6 @@
       "name": "Ton balığı",
       "stores": {
         "Bravo": [
-          {
-            "name": "Dardanel Tuna Balığı Yüngügl 140qr",
-            "price": 5.29
-          },
           {
             "name": "Dardanel Zeytunlu Ton Balığı 160qr",
             "price": 4.0
@@ -5307,24 +5291,12 @@
             "price": 3.15
           },
           {
-            "name": "Pomidor Salxım kq",
-            "price": 2.89
-          },
-          {
             "name": "Pomidor Salyan kq",
             "price": 3.99
           },
           {
             "name": "4 Fəsil Pomidor Çeri paket 300qr",
             "price": 3.39
-          },
-          {
-            "name": "MADAM CERRI POMIDOR 300 GR",
-            "price": 2.79
-          },
-          {
-            "name": "Pomidor Çeri Qırmızı kq",
-            "price": 9.19
           },
           {
             "name": "4 FESIL POMIDOR CERI 300 GR",
@@ -6333,12 +6305,12 @@
             "price": 17.99
           },
           {
-            "name": "Armudu Earl Grey Qara Cay 450 Qr Qutu",
-            "price": 9.0
-          },
-          {
             "name": "Armudu Earl Grey Qara Cay 900 Qr Qutu",
             "price": 17.99
+          },
+          {
+            "name": "Armudu Earl Grey Qara Cay 450 Qr Qutu",
+            "price": 9.0
           },
           {
             "name": "Bonjour Desert Vanil və Armud ilə 232qr",
@@ -6423,12 +6395,12 @@
             "price": 1.75
           },
           {
-            "name": "Qızıl Qusar Limonad Armud 0.5 L Şüşə qab",
-            "price": 2.15
-          },
-          {
             "name": "Qızıl Quyu 500 ml Limonad Armud (Plastik Qabda)",
             "price": 0.8
+          },
+          {
+            "name": "Qızıl Qusar Limonad Armud 0.5 L Şüşə qab",
+            "price": 2.15
           },
           {
             "name": "Çudo Kəsmikli Desert 4.2% Şaftalılı-Armudlu 100 qr",
@@ -6472,10 +6444,6 @@
           {
             "name": "Qızıl Quyu Armud Limonad Şüşə 500ml",
             "price": 1.5
-          },
-          {
-            "name": "Alpenland Alma-Armud Yoqurt 0.3% 95qr",
-            "price": 0.59
           },
           {
             "name": "Qızıl Quyu Armud Limonadı 1L",
@@ -6685,11 +6653,11 @@
             "price": 3.99
           },
           {
-            "name": "Nestle Sıyıq Armud-Banan-Yulaf 6 Ay 220qr",
+            "name": "Nestle Sıyıq Banan və Çiyələk 8 Aydan 220qr",
             "price": 5.89
           },
           {
-            "name": "Nestle Sıyıq Banan və Çiyələk 8 Aydan 220qr",
+            "name": "Nestle Sıyıq Armud-Banan-Yulaf 6 Ay 220qr",
             "price": 5.89
           },
           {
@@ -6787,12 +6755,12 @@
             "price": 0.65
           },
           {
-            "name": "Kent Puding Bananlı 125qr",
-            "price": 1.75
-          },
-          {
             "name": "Kenton Puding Bananlı 100qr",
             "price": 1.65
+          },
+          {
+            "name": "Kent Puding Bananlı 125qr",
+            "price": 1.75
           },
           {
             "name": "Dr.Oetker Puding Bananlı 120 Gr",
@@ -6990,11 +6958,11 @@
             "price": 4.99
           },
           {
-            "name": "R.F Karamel Limonnaya 6 kq",
+            "name": "R.F Limonçik Karamel 1 kq",
             "price": 8.99
           },
           {
-            "name": "R.F Limonçik Karamel 1 kq",
+            "name": "R.F Karamel Limonnaya 6 kq",
             "price": 8.99
           }
         ]
@@ -7289,6 +7257,10 @@
         ],
         "Rahat": [],
         "OBA": [
+          {
+            "name": "Portağal kg",
+            "price": 2.49
+          },
           {
             "name": "Cappy Pulpy Portağal 1 L",
             "price": 2.2
@@ -7891,12 +7863,12 @@
             "price": 3.39
           },
           {
-            "name": "Dənli Düyü Besta Uzun kq",
-            "price": 3.9
-          },
-          {
             "name": "Richmond 1.8 kq Düyü Uzun",
             "price": 6.47
+          },
+          {
+            "name": "Dənli Düyü Besta Uzun kq",
+            "price": 3.9
           },
           {
             "name": "Besta Uzun Düyü Torba 5 kq",
@@ -8351,12 +8323,12 @@
             "price": 1.69
           },
           {
-            "name": "Makfa Boru Makaron 400qr",
-            "price": 1.55
-          },
-          {
             "name": "Tanelli 1kq Makaron Qələm",
             "price": 1.4
+          },
+          {
+            "name": "Makfa Boru Makaron 400qr",
+            "price": 1.55
           },
           {
             "name": "Harika 500 qr Makaron Vermeşil",
@@ -8411,6 +8383,14 @@
             "price": 3.55
           },
           {
+            "name": "Favelli Makaron Boruvari 500 qr",
+            "price": 1.1
+          },
+          {
+            "name": "Pasteroni Makaron Tortiglioni  400 Gr",
+            "price": 2.05
+          },
+          {
             "name": "Pasteroni Makaron Fusilli 400 Gr",
             "price": 2.05
           },
@@ -8421,14 +8401,6 @@
           {
             "name": "Tanelli Makaron Boruvari 1 kq",
             "price": 1.4
-          },
-          {
-            "name": "Favelli Makaron Boruvari 500 qr",
-            "price": 1.1
-          },
-          {
-            "name": "Pasteroni Makaron Tortiglioni  400 Gr",
-            "price": 2.05
           },
           {
             "name": "Ankara Vit Makaron 500 qr",
@@ -8551,12 +8523,12 @@
             "price": 2.95
           },
           {
-            "name": "Ankara Makaron Fiyonk 500 qr",
-            "price": 1.69
-          },
-          {
             "name": "Saville Makaron Spiral 500 qr",
             "price": 1.73
+          },
+          {
+            "name": "Ankara Makaron Fiyonk 500 qr",
+            "price": 1.69
           },
           {
             "name": "Ankara Makaron Burğu 500 qr",
@@ -8698,16 +8670,16 @@
             "price": 1.75
           },
           {
+            "name": "Sabella Burgu Makaron 500qr",
+            "price": 0.95
+          },
+          {
             "name": "Barilla makaron Fusilli 450qr",
             "price": 2.85
           },
           {
             "name": "Doymaq qələm makaron 500qr",
             "price": 1.39
-          },
-          {
-            "name": "Sabella Burgu Makaron 500qr",
-            "price": 0.95
           },
           {
             "name": "Doymaq boru makaron 500qr",
@@ -9835,6 +9807,10 @@
           {
             "name": "Bizim Tarla Yaşıl Noxud Konservi 400 Gr Şüşə Qab",
             "price": 2.7
+          },
+          {
+            "name": "Bonduelle Noxud 212 ml",
+            "price": 2.55
           }
         ],
         "Rahat": [],
@@ -10288,10 +10264,6 @@
             "price": 24.5
           },
           {
-            "name": "Consul Pomace Zeytun Yağı 500 Ml",
-            "price": 13.35
-          },
-          {
             "name": "Monini Zeytun Yağı Anfora 500ml",
             "price": 16.49
           },
@@ -10670,12 +10642,12 @@
             "price": 12.39
           },
           {
-            "name": "Olive Gardens Zeytun Yağı Extra Virgin S/Q 500ml",
-            "price": 12.6
-          },
-          {
             "name": "Zeytun Bağları Zeytun Yağı S/Q Hədiyyə 0.75L",
             "price": 11.65
+          },
+          {
+            "name": "Olive Gardens Zeytun Yağı Extra Virgin S/Q 500ml",
+            "price": 12.6
           },
           {
             "name": "Basso Pomace Zeytun Yağı 1 L Şüşə Qab",
@@ -10928,11 +10900,11 @@
             "price": 6.05
           },
           {
-            "name": "Bizim Süfrə Ketçup Klasik 680qr",
+            "name": "Bizim Süfrə Ketçup Acılı 680qr",
             "price": 5.29
           },
           {
-            "name": "Bizim Süfrə Ketçup Acılı 680qr",
+            "name": "Bizim Süfrə Ketçup Klasik 680qr",
             "price": 5.29
           },
           {
@@ -11289,10 +11261,6 @@
             "price": 1.49
           },
           {
-            "name": "Türk Chef Doğpaq Çili Ketçup 200ml",
-            "price": 1.29
-          },
-          {
             "name": "Bizim Süfrə Ketçup Acılı 350qr DPK",
             "price": 2.5
           },
@@ -11514,11 +11482,11 @@
         ],
         "Neptun": [
           {
-            "name": "\"Мечта Хозяйки\" 900 ml Mayonez Xamalı (Şüşə Qabda)",
+            "name": "Meçta Xozyayki Mayonez Klassik 900 ml",
             "price": 8.25
           },
           {
-            "name": "Meçta Xozyayki Mayonez Klassik 900 ml",
+            "name": "\"Мечта Хозяйки\" 900 ml Mayonez Xamalı (Şüşə Qabda)",
             "price": 8.25
           },
           {
@@ -12183,12 +12151,12 @@
             "price": 0.85
           },
           {
-            "name": "Nestle 0.5lt Pure Life Su",
-            "price": 1.19
-          },
-          {
             "name": "Kehriz 0.5lt Təbii Qazlı Su",
             "price": 0.55
+          },
+          {
+            "name": "Nestle 0.5lt Pure Life Su",
+            "price": 1.19
           },
           {
             "name": "Kobi 0.5lt Mineral Qazlı Su (Plastik Qabda)",
@@ -12203,12 +12171,12 @@
             "price": 2.99
           },
           {
-            "name": "Yessentuki №4 Mineral Su Plastik 1 L",
-            "price": 1.85
-          },
-          {
             "name": "Gəmiqaya Badamlı Qazlı Mineral Su 300 ml",
             "price": 1.1
+          },
+          {
+            "name": "Yessentuki №4 Mineral Su Plastik 1 L",
+            "price": 1.85
           },
           {
             "name": "Kızılay 200 ml Mineral Su Alma  (Şüşə Qabda)",
@@ -12362,23 +12330,23 @@
             "price": 0.5
           },
           {
-            "name": "Bonaqua Qazlı Su 500ml",
-            "price": 0.5
-          },
-          {
             "name": "Slavyanka Qazsız Su 500ml",
             "price": 0.45
+          },
+          {
+            "name": "Bonaqua Qazlı Su 500ml",
+            "price": 0.5
           },
           {
             "name": "Sirab Qazlı Su Pet 1.5L",
             "price": 1.4
           },
           {
-            "name": "Sirab Qazlı Su Pet 500ml",
+            "name": "Badamlı Qazlı Su Pet 500ml",
             "price": 0.8
           },
           {
-            "name": "Badamlı Qazlı Su Pet 500ml",
+            "name": "Sirab Qazlı Su Pet 500ml",
             "price": 0.8
           },
           {
@@ -12481,12 +12449,12 @@
             "price": 2.3
           },
           {
-            "name": "Pepsi Cola",
-            "price": 2.59
-          },
-          {
             "name": "Berg Cola",
             "price": 0.65
+          },
+          {
+            "name": "Pepsi Cola",
+            "price": 2.59
           },
           {
             "name": "Full Cola 250ml",
@@ -12501,6 +12469,14 @@
             "price": 1.59
           },
           {
+            "name": "Full Cola 330 ml",
+            "price": 0.5
+          },
+          {
+            "name": "Coca -Cola 330 ml",
+            "price": 1.5
+          },
+          {
             "name": "Coca-Cola Classic MB",
             "price": 1.0
           },
@@ -12513,18 +12489,6 @@
             "price": 0.65
           },
           {
-            "name": "Coca -Cola 330 ml",
-            "price": 1.5
-          },
-          {
-            "name": "Full Cola 330 ml",
-            "price": 0.5
-          },
-          {
-            "name": "Full Cola Pl 1 Lt",
-            "price": 1.05
-          },
-          {
             "name": "Harika Cola 0.25l (1x24) Qazlı",
             "price": 0.85
           },
@@ -12535,6 +12499,10 @@
           {
             "name": "Full Cola Pl 0.5 Lt",
             "price": 0.65
+          },
+          {
+            "name": "Full Cola Pl 1 Lt",
+            "price": 1.05
           },
           {
             "name": "Aqua Vita Gülüstan Cola 500 ml",
@@ -12687,12 +12655,12 @@
             "price": 1.5
           },
           {
-            "name": "Full Cola (Pet) 500ml (1x12)",
-            "price": 0.7
-          },
-          {
             "name": "Full 250 ml Ice Cola",
             "price": 0.6
+          },
+          {
+            "name": "Full Cola (Pet) 500ml (1x12)",
+            "price": 0.7
           },
           {
             "name": "Full 1lt Ice Cola P/q",
@@ -12957,10 +12925,6 @@
             "price": 2.9
           },
           {
-            "name": "Azərçay Qara Çay Berqamot Ətirli 100qr Qutuda",
-            "price": 2.5
-          },
-          {
             "name": "Ahmad Çay Earl Grey 250qr",
             "price": 8.8
           },
@@ -13025,12 +12989,12 @@
             "price": 6.45
           },
           {
-            "name": "Berqa Enjoy Limon və Heyvali Qara Çay 100qr",
-            "price": 3.19
-          },
-          {
             "name": "AzerÇay Pekoe Qara Çay 225qr",
             "price": 6.65
+          },
+          {
+            "name": "Berqa Enjoy Limon və Heyvali Qara Çay 100qr",
+            "price": 3.19
           },
           {
             "name": "Beta Yaşıl Çay 250qr Qutu",
@@ -13045,20 +13009,20 @@
             "price": 13.15
           },
           {
-            "name": "Beta Selected Qara Çay 100qr Qutuda",
-            "price": 3.35
-          },
-          {
-            "name": "Azərçay Yaşıl Çay 100 qr Qutu",
-            "price": 2.15
+            "name": "Cihan Çay Earl Grey 400q Qutu",
+            "price": 15.25
           },
           {
             "name": "Filli Earl Grey Çay 225qr Qutu",
             "price": 6.19
           },
           {
-            "name": "Cihan Çay Earl Grey 400q Qutu",
-            "price": 15.25
+            "name": "Beta Selected Qara Çay 100qr Qutuda",
+            "price": 3.35
+          },
+          {
+            "name": "Azərçay Yaşıl Çay 100 qr Qutu",
+            "price": 2.15
           },
           {
             "name": "Hipp Analar üçün Çay Db 200qr",
@@ -13091,10 +13055,6 @@
           {
             "name": "Final Super Qara Çay 100 qr Qutu",
             "price": 2.79
-          },
-          {
-            "name": "Berqa Dream Qara Çay 400qr Qutuda",
-            "price": 12.39
           },
           {
             "name": "Cihan Çay Earl Grey Qırmızı 500q Qutu",
@@ -13273,6 +13233,10 @@
             "price": 1.35
           },
           {
+            "name": "Berqa Earl Grey Qara Çay 100qr Qutuda",
+            "price": 3.15
+          },
+          {
             "name": "Fuse Tea Şaftalı Ətirli Soyuq Çay 500ml",
             "price": 1.2
           },
@@ -13341,12 +13305,12 @@
             "price": 3.15
           },
           {
-            "name": "Im Tea Qarpız Aromalı Soyuq Çay 1 l",
-            "price": 1.0
-          },
-          {
             "name": "Coolsy Şaftalı Ətirli Soyuq Çay",
             "price": 0.85
+          },
+          {
+            "name": "Im Tea Qarpız Aromalı Soyuq Çay 1 l",
+            "price": 1.0
           },
           {
             "name": "Coolsy Manqo Ətirli Soyuq Çay",
@@ -13441,12 +13405,12 @@
             "price": 3.25
           },
           {
-            "name": "Azərçay Berqamot Qara Çay 225 qr Qutu",
-            "price": 5.39
-          },
-          {
             "name": "Tess Sunrise Qara Çay 100qr Qutuda",
             "price": 3.25
+          },
+          {
+            "name": "Azərçay Berqamot Qara Çay 225 qr Qutu",
+            "price": 5.39
           },
           {
             "name": "Mahmood Çay 500q Qutu",
@@ -13497,14 +13461,6 @@
             "price": 3.2
           },
           {
-            "name": "Beta Selected Qara Çay 500qr Qutuda",
-            "price": 16.39
-          },
-          {
-            "name": "Beta Qara Çay Limonlu 25əd.",
-            "price": 2.95
-          },
-          {
             "name": "Akbar Çay Gold 250 qr Qutu",
             "price": 7.15
           },
@@ -13519,6 +13475,14 @@
           {
             "name": "Tess Pleasure Qara Çay 200qr Qutuda",
             "price": 6.65
+          },
+          {
+            "name": "Beta Qara Çay Limonlu 25əd.",
+            "price": 2.95
+          },
+          {
+            "name": "Beta Selected Qara Çay 500qr Qutuda",
+            "price": 16.39
           },
           {
             "name": "Beta Qarışıq Meyvəli Qara Çay 25əd",
@@ -13549,28 +13513,28 @@
             "price": 6.05
           },
           {
-            "name": "Im Tea Şaftalı Soyuq Çay 500 ml",
-            "price": 1.0
+            "name": "Beta Qara Çay Çiyələkli 100qr Qutu",
+            "price": 3.55
           },
           {
             "name": "Im Tea Şaftalı Soyuq Çay 1 l",
             "price": 1.0
           },
           {
-            "name": "Im Tea Limon Soyuq Çay 330 ml",
-            "price": 0.75
-          },
-          {
-            "name": "Tess Sunrise Qara Çay Qutuda 200qr",
-            "price": 6.65
-          },
-          {
             "name": "Im Tea Şaftalı Soyuq Çay 330 ml",
             "price": 0.75
           },
           {
-            "name": "Beta Qara Çay Çiyələkli 100qr Qutu",
-            "price": 3.55
+            "name": "Im Tea Limon Soyuq Çay 330 ml",
+            "price": 0.75
+          },
+          {
+            "name": "Im Tea Şaftalı Soyuq Çay 500 ml",
+            "price": 1.0
+          },
+          {
+            "name": "Tess Sunrise Qara Çay Qutuda 200qr",
+            "price": 6.65
           },
           {
             "name": "Final Pekoe Qara Çay 100 qr Qutu",
@@ -13721,12 +13685,12 @@
             "price": 2.75
           },
           {
-            "name": "Mahmood Çay Earl Grey 100q Qutu",
-            "price": 5.15
-          },
-          {
             "name": "Twinings Yaşıl Limonlu Çay 2 qr",
             "price": 6.15
+          },
+          {
+            "name": "Mahmood Çay Earl Grey 100q Qutu",
+            "price": 5.15
           },
           {
             "name": "Çay Twinings Puregreen Tea 25ed 50qr",
@@ -13757,16 +13721,16 @@
             "price": 4.25
           },
           {
+            "name": "Azərçay Berqamot 100ədədli",
+            "price": 8.29
+          },
+          {
             "name": "Twinings Green Mint Tea Çayı 2qr",
             "price": 6.15
           },
           {
             "name": "Twinings Earl Grey Çayı 2 qr",
             "price": 6.15
-          },
-          {
-            "name": "Azərçay Berqamot 100ədədli",
-            "price": 8.29
           },
           {
             "name": "Dove Duş Geli Xiyar və Yaşıl Çay 250ml",
@@ -13835,12 +13799,12 @@
             "price": 5.3
           },
           {
-            "name": "Astaraçay 100gr May Çay",
-            "price": 2.3
-          },
-          {
             "name": "Astaraçay 100gr Ekstra Çay",
             "price": 3.8
+          },
+          {
+            "name": "Astaraçay 100gr May Çay",
+            "price": 2.3
           },
           {
             "name": "Beta Tea Selected Quality Çay 250 qr",
@@ -13851,16 +13815,16 @@
             "price": 3.45
           },
           {
-            "name": "Azerçay Ətirli Qara Çay 225 Gr",
-            "price": 6.69
-          },
-          {
             "name": "Tess Sunrise Qara Çay 400 Gr",
             "price": 12.39
           },
           {
             "name": "Ahmad Çay English Breakfast 250  Gr",
             "price": 8.8
+          },
+          {
+            "name": "Azerçay Ətirli Qara Çay 225 Gr",
+            "price": 6.69
           },
           {
             "name": "Ahmda Gunpowder Yaşıl Çay 100 Gr",
@@ -13875,6 +13839,10 @@
             "price": 10.5
           },
           {
+            "name": "Beta Tea 225 qr Howdah Brand Çay",
+            "price": 4.3
+          },
+          {
             "name": "Final Tea 450 qr Super Tea Çay",
             "price": 10.09
           },
@@ -13885,10 +13853,6 @@
           {
             "name": "Final New Super Tea Çay 100 qr",
             "price": 2.7
-          },
-          {
-            "name": "Beta Tea 225 qr Howdah Brand Çay",
-            "price": 4.3
           },
           {
             "name": "Beta Tea Selected Quality Çay 100 qr",
@@ -13919,12 +13883,12 @@
             "price": 5.25
           },
           {
-            "name": "Elita Yarpız Bitki Çayı 50qr",
-            "price": 2.8
-          },
-          {
             "name": "Astaraçay Məxməri Paket 75qr",
             "price": 3.4
+          },
+          {
+            "name": "Elita Yarpız Bitki Çayı 50qr",
+            "price": 2.8
           },
           {
             "name": "Elita Çobanyastığı Bitki Çayı 90qr",
@@ -14175,16 +14139,16 @@
             "price": 12.4
           },
           {
-            "name": "Champion Qara Çay Qutu 1 kq",
-            "price": 29.75
-          },
-          {
             "name": "Akbar Earl Grey Çay 500 Gr",
             "price": 12.7
           },
           {
             "name": "Doğadan Form Pure Çay 40 qr",
             "price": 4.46
+          },
+          {
+            "name": "Champion Qara Çay Qutu 1 kq",
+            "price": 29.75
           },
           {
             "name": "Beta Qarışıq Meyvəli Qara Çay 25əd",
@@ -14215,10 +14179,6 @@
             "price": 2.6
           },
           {
-            "name": "Ahmad Çay 100 qr Yaşıl Çay Qutu",
-            "price": 4.4
-          },
-          {
             "name": "Beta Tea 100 qr Howdah Brand Çay",
             "price": 1.95
           },
@@ -14227,16 +14187,12 @@
             "price": 2.5
           },
           {
+            "name": "Ahmad Çay 100 qr Yaşıl Çay Qutu",
+            "price": 4.4
+          },
+          {
             "name": "Şax Gold Klassik Qara Çay 200 Qr",
             "price": 5.5
-          },
-          {
-            "name": "Doğadan 20x2 qr Form Çay Alma Dadı",
-            "price": 4.46
-          },
-          {
-            "name": "Buzz® Tea Şaftalı Soyuq Çay 330ml",
-            "price": 0.8
           },
           {
             "name": "Tess Qara Çay Bergamotlu Qutu 200qr",
@@ -14245,6 +14201,14 @@
           {
             "name": "Lipton Yaşıl Çay Sitrus 20x3 Gr",
             "price": 3.2
+          },
+          {
+            "name": "Buzz® Tea Şaftalı Soyuq Çay 330ml",
+            "price": 0.8
+          },
+          {
+            "name": "Doğadan 20x2 qr Form Çay Alma Dadı",
+            "price": 4.46
           },
           {
             "name": "Beta Tea 100 qr Yaşıl Çay Yasəmənli",
@@ -14271,22 +14235,6 @@
             "price": 10.55
           },
           {
-            "name": "Greenfield Earl Grey Fantasy Qara Çay 100 Gr",
-            "price": 3.45
-          },
-          {
-            "name": "I Am Tea Soyuq Çay Şaftalı 500 ml",
-            "price": 0.8
-          },
-          {
-            "name": "Final Ultra Earl Grey Qara Çay 100 Qr",
-            "price": 2.95
-          },
-          {
-            "name": "I Am Tea Soyuq Çay Şaftalı 330 ml",
-            "price": 0.7
-          },
-          {
             "name": "I Am Tea Soyuq Çay Albalı 330 ml",
             "price": 0.7
           },
@@ -14297,6 +14245,22 @@
           {
             "name": "I Am Tea Soyuq Çay Şaftalı 1 l",
             "price": 1.5
+          },
+          {
+            "name": "Final Ultra Earl Grey Qara Çay 100 Qr",
+            "price": 2.95
+          },
+          {
+            "name": "Greenfield Earl Grey Fantasy Qara Çay 100 Gr",
+            "price": 3.45
+          },
+          {
+            "name": "I Am Tea Soyuq Çay Şaftalı 500 ml",
+            "price": 0.8
+          },
+          {
+            "name": "I Am Tea Soyuq Çay Şaftalı 330 ml",
+            "price": 0.7
           },
           {
             "name": "I Am Tea Soyuq Çay Qarpız 500 ml",
@@ -14503,12 +14467,12 @@
             "price": 2.65
           },
           {
-            "name": "Hyleys Çay English Aristocratic Qutu 250qr",
-            "price": 9.6
-          },
-          {
             "name": "Ahmad 25x2 qr Yaşıl Çay Qutu",
             "price": 2.9
+          },
+          {
+            "name": "Hyleys Çay English Aristocratic Qutu 250qr",
+            "price": 9.6
           },
           {
             "name": "Lipton Yellow Label Çay 25x3Gr",
@@ -14650,12 +14614,12 @@
             "price": 2.9
           },
           {
-            "name": "Şah Supreme Qara Çay 400qr",
-            "price": 6.99
-          },
-          {
             "name": "Tudor Earl Grey Çay 500qr",
             "price": 13.5
+          },
+          {
+            "name": "Şah Supreme Qara Çay 400qr",
+            "price": 6.99
           },
           {
             "name": "Beta Earl Grey Çay 250qr",
@@ -14690,16 +14654,20 @@
             "price": 4.49
           },
           {
-            "name": "Azerçay Buket 225qr",
-            "price": 6.15
-          },
-          {
             "name": "Azerçay Buket 100qr",
             "price": 3.15
           },
           {
+            "name": "Azerçay Buket 225qr",
+            "price": 6.15
+          },
+          {
             "name": "Berqa Ətiri Çay 225qr",
             "price": 5.89
+          },
+          {
+            "name": "Beta Selected Qara Çay 25 ədədli",
+            "price": 1.99
           },
           {
             "name": "Göyçay Çanaq Pendiri 500qr",
@@ -15250,10 +15218,6 @@
           {
             "name": "Nuts Brauni Şokolad Batonu 60qr",
             "price": 1.0
-          },
-          {
-            "name": "Roshen Lacmi Karamel Araxisli Şokolad",
-            "price": 1.99
           },
           {
             "name": "Roshen Lacmi Kakao və Vafli İçlikli Plitka Şokolad 90 qr",
