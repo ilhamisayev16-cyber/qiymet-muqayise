@@ -1,5 +1,5 @@
 {
-  "last_updated": "07 May 2026, 19:48",
+  "last_updated": "07 May 2026, 20:02",
   "categories": {
     "sud": {
       "name": "Süd",
@@ -10783,6 +10783,10 @@
           {
             "name": "Krestyanskoye Razdolye Spred Yağ 82% 1 kq",
             "price": 6.09
+          },
+          {
+            "name": "Kalinka Bitki Yağ Spredi 82% 2 kq",
+            "price": 18.67
           }
         ]
       }
@@ -11259,6 +11263,10 @@
           {
             "name": "Bizim Süfrə ketçup acılı 200qr (DPK)",
             "price": 1.49
+          },
+          {
+            "name": "Türk Chef Doğpaq Çili Ketçup 200ml",
+            "price": 1.29
           },
           {
             "name": "Bizim Süfrə Ketçup Acılı 350qr DPK",
