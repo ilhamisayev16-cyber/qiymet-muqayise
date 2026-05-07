@@ -2,7 +2,7 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>QİYMƏTMÜQAYİSƏ — Azərbaycan</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
@@ -13,156 +13,198 @@
   --accent:#ff6b35;
   --card:#fff;
   --border:#e8e4df;
+  --radius:16px;
 }
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-header{background:var(--text);color:var(--bg);padding:32px 24px;border-bottom:5px solid var(--accent);position:sticky;top:0;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
-.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-icon{font-size:38px;animation:bounce 2s ease-in-out infinite}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-h1{font-size:32px;font-weight:800;letter-spacing:-1px}
-h1 .highlight{color:var(--accent);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
-.subtitle{font-size:13px;opacity:.7;letter-spacing:.5px;margin-top:4px}
-.last-update{text-align:right;font-size:12px;opacity:.6;font-family:'Space Mono',monospace}
-.last-update b{color:var(--accent);opacity:1;display:block;font-size:14px}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-text-size-adjust:100%}
 
-.main{max-width:1400px;margin:0 auto;padding:40px 24px}
-.search-box{position:relative;margin-bottom:40px}
-.search-box input{width:100%;padding:18px 56px 18px 24px;border:3px solid var(--border);background:var(--card);font-family:inherit;font-size:16px;border-radius:16px;outline:none;transition:all .3s ease;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
-.search-box input:focus{border-color:var(--accent);box-shadow:0 8px 24px rgba(255,107,53,0.15)}
-.search-icon{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:24px;opacity:.3;pointer-events:none}
+/* ── HEADER ── */
+header{
+  background:var(--text);color:var(--bg);
+  padding:20px 20px;
+  border-bottom:4px solid var(--accent);
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15)
+}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}
+.logo{display:flex;align-items:center;gap:10px;min-width:0}
+.logo-icon{font-size:30px;animation:bounce 2s ease-in-out infinite;flex-shrink:0}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.logo-text{min-width:0}
+h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;white-space:nowrap}
+h1 .highlight{color:var(--accent);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.subtitle{font-size:11px;opacity:.7;letter-spacing:.3px;margin-top:2px}
+.last-update{text-align:right;font-size:11px;opacity:.6;font-family:'Space Mono',monospace;flex-shrink:0;white-space:nowrap}
+.last-update b{color:var(--accent);opacity:1;display:block;font-size:12px;white-space:nowrap}
+
+/* ── MAIN ── */
+.main{max-width:1400px;margin:0 auto;padding:24px 16px}
+
+/* ── SEARCH ── */
+.search-box{position:relative;margin-bottom:28px}
+.search-box input{
+  width:100%;padding:15px 48px 15px 18px;
+  border:2px solid var(--border);background:var(--card);
+  font-family:inherit;font-size:15px;border-radius:14px;
+  outline:none;transition:all .3s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  -webkit-appearance:none;
+}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 6px 20px rgba(255,107,53,0.12)}
+.search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:20px;opacity:.3;pointer-events:none}
 
 /* ── CATEGORY GRID ── */
-.categories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:20px;margin-bottom:48px}
+.categories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:40px}
 
 .category-card{
   background:var(--card);
   border:2px solid var(--border);
-  border-radius:18px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:all .4s cubic-bezier(0.34,1.56,0.64,1);
-  position:relative;
-  display:flex;
-  flex-direction:column;
+  border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;
+  transition:all .35s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;display:flex;flex-direction:column;
+  -webkit-tap-highlight-color:transparent;
 }
 .category-card:hover{
-  border-color:var(--cat-color, var(--accent));
-  transform:translateY(-8px) scale(1.02);
-  box-shadow:0 16px 40px rgba(0,0,0,0.14);
+  border-color:var(--cat-color,var(--accent));
+  transform:translateY(-6px) scale(1.02);
+  box-shadow:0 14px 36px rgba(0,0,0,0.12);
 }
+.category-card:active{transform:scale(0.97);transition:transform .1s}
 .category-card.active{border-color:var(--cat-color,var(--accent));border-width:3px;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
 
 /* ── UNIT PRICE BAR ── */
 .cat-price-bar{
-  width:100%;
-  padding:7px 14px;
-  font-family:'Space Mono',monospace;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:.3px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-shrink:0;
-  background:var(--cat-color,#e0e0e0);
-  color:#fff;
-  min-height:30px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.25);
-  transition:filter .3s;
+  width:100%;padding:6px 12px;
+  font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.3px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  background:var(--cat-color,#e0e0e0);color:#fff;min-height:28px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.25);transition:filter .3s;
 }
 .cat-price-bar.loading{
   background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.4s infinite;
-  color:transparent;
+  background-size:200% 100%;animation:shimmer 1.4s infinite;color:transparent;
 }
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-.cat-price-bar .bar-label{opacity:.85;font-size:9px;text-transform:uppercase;letter-spacing:.5px}
-.cat-price-bar .bar-value{font-size:12px;font-weight:700}
+.cat-price-bar .bar-label{opacity:.85;font-size:8.5px;text-transform:uppercase;letter-spacing:.4px}
+.cat-price-bar .bar-value{font-size:11px;font-weight:700}
 .cat-price-bar .bar-store{
-  background:rgba(255,255,255,0.25);
-  padding:2px 7px;
-  border-radius:4px;
-  font-size:9px;
-  letter-spacing:.5px;
+  background:rgba(255,255,255,0.25);padding:2px 6px;
+  border-radius:4px;font-size:8.5px;letter-spacing:.4px;
 }
 
 /* ── CARD BODY ── */
-.cat-body{padding:20px 18px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:1}
-.cat-icon{font-size:46px;margin-bottom:10px;filter:grayscale(0.2);transition:all .35s ease;line-height:1}
+.cat-body{padding:16px 14px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:1}
+.cat-icon{font-size:42px;margin-bottom:8px;filter:grayscale(0.2);transition:all .35s ease;line-height:1}
 .category-card:hover .cat-icon{filter:grayscale(0);transform:scale(1.18) rotate(6deg)}
-.cat-name{font-weight:700;font-size:14px;letter-spacing:.2px}
-.cat-count{font-size:11px;opacity:.45;margin-top:4px;font-family:'Space Mono',monospace}
+.cat-name{font-weight:700;font-size:13px;letter-spacing:.2px}
+.cat-count{font-size:10px;opacity:.45;margin-top:3px;font-family:'Space Mono',monospace}
 
 /* ── UNIT PRICE PILLS ── */
-.cat-unit-pills{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:4px;
-  margin-top:8px;
-}
+.cat-unit-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:7px}
 .unit-pill{
-  font-family:'Space Mono',monospace;
-  font-size:9.5px;
-  font-weight:700;
-  padding:3px 8px;
-  border-radius:20px;
-  border:1.5px solid var(--cat-color,#ddd);
-  color:var(--cat-color,#666);
-  background:transparent;
-  white-space:nowrap;
-  transition:background .2s,color .2s;
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  padding:2px 7px;border-radius:20px;
+  border:1.5px solid var(--cat-color,#ddd);color:var(--cat-color,#666);
+  background:transparent;white-space:nowrap;transition:background .2s,color .2s;
 }
-.unit-pill.best-pill{
-  background:var(--cat-color,#ff6b35);
-  color:#fff;
-  border-color:transparent;
-}
+.unit-pill.best-pill{background:var(--cat-color,#ff6b35);color:#fff;border-color:transparent}
 
 /* ── DETAIL VIEW ── */
 .back-btn{
   display:inline-flex;align-items:center;gap:8px;
-  padding:10px 20px;margin-bottom:24px;
+  padding:10px 18px;margin-bottom:20px;
   border:2px solid var(--border);border-radius:12px;
   background:var(--card);font-family:inherit;font-size:14px;font-weight:600;
   cursor:pointer;transition:all .2s;color:var(--text);
+  -webkit-tap-highlight-color:transparent;
 }
 .back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.back-btn:active{transform:scale(0.97)}
 
-.section-title{background:var(--text);color:var(--bg);padding:16px 28px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin:32px 0 16px;border-radius:12px;font-weight:700;display:flex;align-items:center;gap:12px}
-.section-icon{font-size:24px}
-.table-wrap{overflow-x:auto;border:2px solid var(--border);border-radius:16px;margin-bottom:24px;background:var(--card);box-shadow:0 4px 16px rgba(0,0,0,0.06)}
-table{width:100%;border-collapse:collapse}
+.section-title{
+  background:var(--text);color:var(--bg);
+  padding:14px 22px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;
+  margin:28px 0 14px;border-radius:12px;font-weight:700;
+  display:flex;align-items:center;gap:10px;
+}
+.section-icon{font-size:20px}
+.table-wrap{overflow-x:auto;border:2px solid var(--border);border-radius:14px;margin-bottom:20px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,0.05);-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:480px}
 thead tr{background:linear-gradient(135deg,#f8f7f4,#f0ede8)}
-th{padding:16px 20px;text-align:center;font-size:11px;letter-spacing:1px;font-weight:700;text-transform:uppercase;border-bottom:2px solid var(--border)}
-th.left{text-align:left;min-width:240px}
-td{padding:14px 20px;border-bottom:1px solid var(--border);font-size:14px;text-align:center}
-td.left{text-align:left;font-weight:500}
+th{padding:13px 16px;text-align:center;font-size:10px;letter-spacing:.8px;font-weight:700;text-transform:uppercase;border-bottom:2px solid var(--border);white-space:nowrap}
+th.left{text-align:left;min-width:180px}
+td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;text-align:center;white-space:nowrap}
+td.left{text-align:left;font-weight:500;white-space:normal;word-break:break-word}
 tr:last-child td{border-bottom:none}
 tr.even{background:var(--bg)}
 tr.odd{background:var(--card)}
 tr:hover{background:#fff9f5}
 .best{background:#fff8e1;font-weight:700;color:#f57c00;position:relative}
-.best::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#f57c00}
+.best::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#f57c00}
 .worst{background:#ffebee;color:#c62828}
 .none{color:#bbb}
-.saving{display:inline-block;padding:4px 12px;font-size:11px;font-weight:700;border-radius:6px}
+.saving{display:inline-block;padding:3px 10px;font-size:10px;font-weight:700;border-radius:6px}
 .saving.g{background:#e8f5e9;color:#2e7d32}
 .saving.s{background:#f5f5f5;color:#999}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
-.store-tag{display:inline-block;padding:4px 12px;font-size:11px;color:white;font-weight:600;border-radius:6px;letter-spacing:.3px;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+.store-tag{display:inline-block;padding:3px 10px;font-size:10px;color:white;font-weight:600;border-radius:6px;letter-spacing:.2px;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
 
-.footer{margin-top:64px;padding:24px 0;border-top:2px solid var(--border);font-size:12px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-family:'Space Mono',monospace}
-.empty{text-align:center;padding:80px;color:#aaa;font-size:16px;opacity:.7}
+.footer{margin-top:48px;padding:20px 0;border-top:2px solid var(--border);font-size:11px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:'Space Mono',monospace}
+.empty{text-align:center;padding:60px 20px;color:#aaa;font-size:15px;opacity:.7}
 
-@media(max-width:768px){
-  .categories-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
-  .cat-body{padding:14px 12px 12px}
-  .cat-icon{font-size:36px}
-  .cat-name{font-size:12px}
+/* ── MOBILE ── */
+@media(max-width:600px){
+  header{padding:14px 14px}
+  h1{font-size:18px}
+  .subtitle{display:none}
+  .logo-icon{font-size:26px}
+  .last-update{font-size:10px}
+  .last-update b{font-size:11px}
+
+  .main{padding:16px 12px}
+  .search-box{margin-bottom:20px}
+  .search-box input{padding:13px 44px 13px 14px;font-size:14px;border-radius:12px}
+
+  .categories-grid{
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;margin-bottom:28px;
+  }
+  .cat-price-bar{padding:5px 8px;min-height:24px}
+  .cat-price-bar .bar-label{display:none}
+  .cat-price-bar .bar-value{font-size:10px}
+  .cat-price-bar .bar-store{font-size:8px;padding:1px 5px}
+
+  .cat-body{padding:10px 8px 10px}
+  .cat-icon{font-size:28px;margin-bottom:6px}
+  .cat-name{font-size:11px}
+  .cat-count{font-size:9px}
+  .cat-unit-pills{gap:2px;margin-top:5px}
+  .unit-pill{font-size:8px;padding:2px 5px}
+
+  .back-btn{font-size:13px;padding:9px 14px;width:100%;justify-content:center;margin-bottom:16px}
+  .section-title{font-size:11px;padding:12px 16px;letter-spacing:.8px;margin:20px 0 12px}
+  .section-icon{font-size:17px}
+
+  table{min-width:360px}
+  th{padding:10px 10px;font-size:9px}
+  th.left{min-width:120px}
+  td{padding:10px 10px;font-size:12px}
+  td.left{min-width:120px}
+
+  .saving{font-size:9px;padding:2px 8px}
+  .store-tag{font-size:9px;padding:2px 8px}
+  .footer{font-size:10px;flex-direction:column;gap:6px;padding:16px 0}
+}
+
+@media(max-width:380px){
+  .categories-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .cat-icon{font-size:24px}
+  .cat-name{font-size:10px}
+}
+
+@media(min-width:601px) and (max-width:900px){
+  .categories-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .main{padding:28px 18px}
 }
 </style>
 </head>
@@ -171,7 +213,7 @@ tr:hover{background:#fff9f5}
   <div class="header-inner">
     <div class="logo">
       <div class="logo-icon">🛒</div>
-      <div>
+      <div class="logo-text">
         <h1>QIYMƏT<span class="highlight">MÜQAYISƏ</span></h1>
         <p class="subtitle">Azərbaycan ərzaq bazarı</p>
       </div>
@@ -182,13 +224,11 @@ tr:hover{background:#fff9f5}
 
 <div class="main">
   <div class="search-box">
-    <input id="search" type="text" placeholder="Məhsul axtar... (məs: Milla 1.5%, Azərsüd)" oninput="handleSearch()"/>
+    <input id="search" type="text" placeholder="Məhsul axtar..." oninput="handleSearch()"/>
     <span class="search-icon">🔍</span>
   </div>
-
   <div id="categoriesView" class="categories-grid"></div>
   <div id="detailView" style="display:none"></div>
-
   <div class="footer">
     <span>© 2026 QiymətMüqayisə · Qiymətlər AZN (₼)</span>
     <span>Bravo · Neptun · Rahat · OBA</span>
@@ -198,37 +238,133 @@ tr:hover{background:#fff9f5}
 <script>
 const COLORS = { Bravo:"#e63946", Neptun:"#6366f1", Rahat:"#2a9d8f", OBA:"#f4a261" };
 
+// Global "juice/drink" suffixes — any produce item whose name contains these
+// gets excluded from produce categories and matched by the sire/su/kola cats instead.
+const JUICE_SUFFIXES = [
+  "şirəsi","şirə","suyu"," suyu","nektarı","nektar","konsentrat","morsу","mors",
+  "şərbəti","şərbət","kompot","çay suyu","içki"
+];
+// Helper: does a product name contain a juice/drink suffix?
+function hasJuiceSuffix(name) {
+  const n = name.toLowerCase();
+  return JUICE_SUFFIXES.some(s => n.includes(s));
+}
+
 const CAT_CFG = {
-  sud:       { icon:"🥛", color:"#4FC3F7", label:"Süd",         unit:"l",    per:1000, keywords:["süd","milk"], exclude:["süd şokolad","südlü şokolad","südlü konfet","südlü peçenye","aromatik","aromali"] },
+  /* ── DAIRY ─────────────────────────────────────────────── */
+  sud: {
+    icon:"🥛", color:"#4FC3F7", label:"Süd", unit:"l", per:1000,
+    keywords:["süd","milk"],
+    exclude:["süd şokolad","südlü şokolad","südlü konfet","südlü peçenye",
+             "aromatik","aromali","qaymaqlı","buzlu","kokos","kokosu",
+             "dondurma","yoqurt","qatıq","kefir","xama","pendir","kərə"],
+    noJuice: false  // dairy is not produce, skip juice filter
+  },
   yumurta:   { icon:"🥚", color:"#FFD54F", label:"Yumurta",     unit:"ədəd", per:null, keywords:["yumurta"] },
   kere_yagi: { icon:"🧈", color:"#F9A825", label:"Kərə yağı",   unit:"100g", per:100,  keywords:["kərə yağ","butter"], exclude:["spred","margarin"] },
   pendir:    { icon:"🧀", color:"#FFF176", label:"Pendir",       unit:"100g", per:100,  keywords:["pendir","cheese"] },
-  qatiq:     { icon:"🫙", color:"#CE93D8", label:"Qatıq",       unit:"100g", per:100,  keywords:["qatıq","yoqurt","yogurt"], exclude:["aromatik","aromali"] },
-  xama:      { icon:"🍦", color:"#F3E5F5", label:"Xama",         unit:"100g", per:100,  keywords:["xama","krem"] },
+  qatiq:     { icon:"🫙", color:"#CE93D8", label:"Qatıq",       unit:"100g", per:100,  keywords:["qatıq","yoqurt","yogurt"], exclude:["aromatik","aromali","üzüm","gilas","çilek","çiyələk","alma","şaftalı","limon","portağal","banan","kivi","nar","meyvə"] },
+  xama:      { icon:"🍦", color:"#F3E5F5", label:"Xama",         unit:"100g", per:100,  keywords:["xama"] },
   kefir:     { icon:"🧋", color:"#81D4FA", label:"Kefir",        unit:"l",    per:1000, keywords:["kefir"] },
-  kartof:    { icon:"🥔", color:"#D7CCC8", label:"Kartof",       unit:"kg",   per:1000, keywords:["kartof"] },
-  pomidor:   { icon:"🍅", color:"#EF5350", label:"Pomidor",      unit:"kg",   per:1000, keywords:["pomidor","tomat"], exclude:["pomidor sousu","pomidor pastası","ketçup","aromatik","aromali"] },
-  xiyar:     { icon:"🥒", color:"#66BB6A", label:"Xiyar",        unit:"kg",   per:1000, keywords:["xiyar","salatalıq"] },
-  soyan:     { icon:"🧅", color:"#D4A574", label:"Soğan",        unit:"kg",   per:1000, keywords:["soğan"] },
-  kelem:     { icon:"🥬", color:"#81C784", label:"Kələm",        unit:"kg",   per:1000, keywords:["kələm","lahana"] },
-  yerkoyu:   { icon:"🥕", color:"#FF9800", label:"Yerkökü",      unit:"kg",   per:1000, keywords:["yerkökü","havuç"] },
-  cuqundur:  { icon:"🟣", color:"#CE93D8", label:"Çuğundur",     unit:"kg",   per:1000, keywords:["çuğundur","çügündür"] },
-  qabaq:     { icon:"🎃", color:"#FF7043", label:"Qabaq",        unit:"kg",   per:1000, keywords:["qabaq"] },
-  badimcan:  { icon:"🍆", color:"#9575CD", label:"Badımcan",     unit:"kg",   per:1000, keywords:["badımcan"] },
-  biber:     { icon:"🫑", color:"#F06292", label:"Bibər",        unit:"kg",   per:1000, keywords:["bibər","biber"], exclude:["istiot","qırmızı istiot"] },
-  sarimsaq:  { icon:"🧄", color:"#A5D6A7", label:"Sarımsaq",     unit:"100g", per:100,  keywords:["sarımsaq","sarimsaq"] },
-  ispanaq:   { icon:"🌿", color:"#558B2F", label:"İspanaq",      unit:"kg",   per:1000, keywords:["ispanaq"] },
+
+  /* ── VEGETABLES ─────────────────────────────────────────── */
+  kartof:    { icon:"🥔", color:"#D7CCC8", label:"Kartof",       unit:"kg",   per:1000, keywords:["kartof"],                       isProduce:true },
+  pomidor:   { icon:"🍅", color:"#EF5350", label:"Pomidor",      unit:"kg",   per:1000, keywords:["pomidor","tomat"],
+               exclude:["pomidor sousu","pomidor pastası","ketçup","tomat sousu","tomat pastası","aromatik","aromali","konservləşdirilmiş","kons."], isProduce:true },
+  xiyar:     { icon:"🥒", color:"#66BB6A", label:"Xiyar",        unit:"kg",   per:1000, keywords:["xiyar","salatalıq"],             isProduce:true, exclude:["turşu","marinad"] },
+  soyan:     { icon:"🧅", color:"#D4A574", label:"Soğan",        unit:"kg",   per:1000, keywords:["soğan"],                        isProduce:true },
+  kelem:     { icon:"🥬", color:"#81C784", label:"Kələm",        unit:"kg",   per:1000, keywords:["kələm","lahana"],               isProduce:true },
+  yerkoyu:   { icon:"🥕", color:"#FF9800", label:"Yerkökü",      unit:"kg",   per:1000, keywords:["yerkökü","havuç"],              isProduce:true },
+  cuqundur:  { icon:"🟣", color:"#CE93D8", label:"Çuğundur",     unit:"kg",   per:1000, keywords:["çuğundur","çügündür"],          isProduce:true },
+  qabaq:     { icon:"🎃", color:"#FF7043", label:"Qabaq",        unit:"kg",   per:1000, keywords:["qabaq"],                        isProduce:true },
+  badimcan:  { icon:"🍆", color:"#9575CD", label:"Badımcan",     unit:"kg",   per:1000, keywords:["badımcan"],                     isProduce:true },
+  biber:     { icon:"🫑", color:"#F06292", label:"Bibər",        unit:"kg",   per:1000, keywords:["bibər","biber"],
+               exclude:["istiot","qırmızı istiot","ədviyyat","ədviy"],       isProduce:true },
+  sarimsaq:  { icon:"🧄", color:"#A5D6A7", label:"Sarımsaq",     unit:"100g", per:100,  keywords:["sarımsaq","sarimsaq"],          isProduce:true },
+  ispanaq:   { icon:"🌿", color:"#558B2F", label:"İspanaq",      unit:"kg",   per:1000, keywords:["ispanaq"],                      isProduce:true },
   goyerti:   { icon:"🪴", color:"#8BC34A", label:"Göyərti",      unit:"dəstə",per:null, keywords:["göyərti","cəfəri","şüyüd","kinza","reyhan","nanə","kərəviz"] },
-  alma:      { icon:"🍎", color:"#EF5350", label:"Alma",         unit:"kg",   per:1000, keywords:["alma"], exclude:["alma şirəsi","alma suyu","aromatik","aromali"] },
-  armud:     { icon:"🍐", color:"#C6E05A", label:"Armud",        unit:"kg",   per:1000, keywords:["armud"], exclude:["aromatik","aromali"] },
-  saftal:    { icon:"🍑", color:"#FFAB91", label:"Şaftalı",      unit:"kg",   per:1000, keywords:["şaftalı","nektarin"], exclude:["aromatik","aromali"] },
-  gilas:     { icon:"🍒", color:"#E53935", label:"Gilas",        unit:"kg",   per:1000, keywords:["gilas","albalı"], exclude:["aromatik","aromali"] },
-  uzum:      { icon:"🍇", color:"#AB47BC", label:"Üzüm",         unit:"kg",   per:1000, keywords:["üzüm"], exclude:["üzümlü","üzüm şirəsi","üzüm suyu","kişmiş","aromatik","aromali","üzüm ətirli","üzüm dadlı"] },
-  banan:     { icon:"🍌", color:"#FFEB3B", label:"Banan",        unit:"kg",   per:1000, keywords:["banan"], exclude:["aromatik","aromali"] },
-  kivi:      { icon:"🥝", color:"#AED581", label:"Kivi",         unit:"kg",   per:1000, keywords:["kivi"], exclude:["aromatik","aromali"] },
-  limon:     { icon:"🍋", color:"#FFF59D", label:"Limon",        unit:"kg",   per:1000, keywords:["limon"], exclude:["limon şirəsi","limon turşusu","aromatik","aromali"] },
-  portaqal:  { icon:"🍊", color:"#FFB74D", label:"Portağal",     unit:"kg",   per:1000, keywords:["portağal"], exclude:["portağal şirəsi","aromatik","aromali"] },
-  nar:       { icon:"🌺", color:"#D32F2F", label:"Nar",          unit:"kg",   per:1000, keywords:["nar"], exclude:["nar şirəsi","narşərab","aromatik","aromali"] },
+
+  /* ── FRUITS ─────────────────────────────────────────────── */
+  alma: {
+    icon:"🍎", color:"#EF5350", label:"Alma", unit:"kg", per:1000,
+    keywords:["alma"],
+    exclude:["alma şirəsi","alma suyu","alma nektarı","alma morsу","alma içkisi",
+             "aromatik","aromali","alma ətirli","alma dadlı","alma aromali",
+             "alma qoxulu","alma kompot","qaxac",
+             "sir sauce","vinegr","sirkə","sider"],
+    isProduce:true
+  },
+  armud: {
+    icon:"🍐", color:"#C6E05A", label:"Armud", unit:"kg", per:1000,
+    keywords:["armud"],
+    exclude:["armud şirəsi","armud suyu","armud nektarı","aromatik","aromali",
+             "armud ətirli","armud dadlı","armud kompot"],
+    isProduce:true
+  },
+  saftal: {
+    icon:"🍑", color:"#FFAB91", label:"Şaftalı", unit:"kg", per:1000,
+    keywords:["şaftalı","nektarin"],
+    exclude:["şaftalı şirəsi","şaftalı suyu","şaftalı nektarı","aromatik","aromali",
+             "şaftalı ətirli","şaftalı dadlı","şaftalı kompot"],
+    isProduce:true
+  },
+  gilas: {
+    icon:"🍒", color:"#E53935", label:"Gilas", unit:"kg", per:1000,
+    keywords:["gilas","albalı"],
+    exclude:["gilas şirəsi","gilas suyu","albalı şirəsi","albalı suyu","aromatik","aromali",
+             "gilas ətirli","gilas dadlı","albalı kompot","gilas kompot"],
+    isProduce:true
+  },
+  uzum: {
+    icon:"🍇", color:"#AB47BC", label:"Üzüm", unit:"kg", per:1000,
+    keywords:["üzüm"],
+    exclude:[
+      "üzüm şirəsi","üzüm suyu","üzüm nektarı","üzüm mors","üzüm içkisi",
+      "üzümlü","kişmiş","aromatik","aromali",
+      "üzüm ətirli","üzüm dadlı","üzüm qoxulu","üzüm aromali",
+      "şərab","vino","vine","şirniyyat","konfet","peçenye","biskvit",
+      "üzüm kompot","üzüm sirkəsi"
+    ],
+    isProduce:true
+  },
+  banan: {
+    icon:"🍌", color:"#FFEB3B", label:"Banan", unit:"kg", per:1000,
+    keywords:["banan"],
+    exclude:["banan şirəsi","banan suyu","banan nektarı","aromatik","aromali",
+             "banan ətirli","banan dadlı","banan qoxulu"],
+    isProduce:true
+  },
+  kivi: {
+    icon:"🥝", color:"#AED581", label:"Kivi", unit:"kg", per:1000,
+    keywords:["kivi"],
+    exclude:["kivi şirəsi","kivi suyu","kivi nektarı","aromatik","aromali",
+             "kivi ətirli","kivi dadlı"],
+    isProduce:true
+  },
+  limon: {
+    icon:"🍋", color:"#FFF59D", label:"Limon", unit:"kg", per:1000,
+    keywords:["limon"],
+    exclude:["limon şirəsi","limon suyu","limon turşusu","limon nektarı",
+             "aromatik","aromali","limon ətirli","limon dadlı","limonad",
+             "limon qoxulu"],
+    isProduce:true
+  },
+  portaqal: {
+    icon:"🍊", color:"#FFB74D", label:"Portağal", unit:"kg", per:1000,
+    keywords:["portağal"],
+    exclude:["portağal şirəsi","portağal suyu","portağal nektarı","aromatik","aromali",
+             "portağal ətirli","portağal dadlı","portağal kompot"],
+    isProduce:true
+  },
+  nar: {
+    icon:"🌺", color:"#D32F2F", label:"Nar", unit:"kg", per:1000,
+    keywords:["nar"],
+    exclude:["nar şirəsi","nar suyu","narşərab","nar nektarı","aromatik","aromali",
+             "nar ətirli","nar dadlı","nar kompot"],
+    isProduce:true
+  },
+
+  /* ── MEAT / PROTEIN ─────────────────────────────────────── */
   toyuq:     { icon:"🍗", color:"#BCAAA4", label:"Toyuq",        unit:"kg",   per:1000, keywords:["toyuq","cücə","broyle"] },
   dana_ati:  { icon:"🥩", color:"#8D6E63", label:"Dana əti",     unit:"kg",   per:1000, keywords:["dana"] },
   qoyun_ati: { icon:"🍖", color:"#6D4C41", label:"Qoyun əti",    unit:"kg",   per:1000, keywords:["qoyun","quzu"] },
@@ -236,6 +372,8 @@ const CAT_CFG = {
   kolbasa:   { icon:"🥓", color:"#FF7043", label:"Kolbasa",      unit:"100g", per:100,  keywords:["kolbasa"] },
   sosis:     { icon:"🌭", color:"#FF8A65", label:"Sosis",        unit:"100g", per:100,  keywords:["sosis","sosiska"] },
   baliq:     { icon:"🐟", color:"#4DD0E1", label:"Balıq",        unit:"kg",   per:1000, keywords:["balıq","lakerda","nərə","qızılbalıq","tuna","sardina","skumbriya"] },
+
+  /* ── GRAINS / BAKERY ─────────────────────────────────────── */
   duyu:      { icon:"🍚", color:"#BDBDBD", label:"Düyü",         unit:"kg",   per:1000, keywords:["düyü","pirinc"] },
   merci:     { icon:"🫘", color:"#A1887F", label:"Mərcimək",     unit:"kg",   per:1000, keywords:["mərcimək"] },
   noxud:     { icon:"🟡", color:"#FFCC02", label:"Noxud",        unit:"kg",   per:1000, keywords:["noxud","lobya"] },
@@ -244,18 +382,44 @@ const CAT_CFG = {
   makaron:   { icon:"🍝", color:"#FFECB3", label:"Makaron",      unit:"kg",   per:1000, keywords:["makaron","pasta","spagetti","vermişel"] },
   corek:     { icon:"🍞", color:"#FF8F00", label:"Çörək",        unit:"ədəd", per:null, keywords:["çörək","lavaş","lavash"], exclude:["çörək qabi","çörəkqabı"] },
   pecenye:   { icon:"🍪", color:"#FFCC80", label:"Peçenye",      unit:"100g", per:100,  keywords:["peçenye","biskvit","kraker","wafer","vafli"] },
-  tort:      { icon:"🎂", color:"#F48FB1", label:"Tort/Pasta",   unit:"100g", per:100,  keywords:["tort","pasta","keks","baklava","şəkərbura","paxlava"] },
+  tort:      { icon:"🎂", color:"#F48FB1", label:"Tort/Pasta",   unit:"100g", per:100,  keywords:["tort","keks","baklava","şəkərbura","paxlava"] },
+
+  /* ── HOT DRINKS ──────────────────────────────────────────── */
   cay:       { icon:"🍵", color:"#8D6E63", label:"Çay",          unit:"100g", per:100,  keywords:["çay"], exclude:["çay qaşığı","çay stəkanı","aromatik","aromali"] },
   qehve:     { icon:"☕", color:"#4E342E", label:"Qəhvə",        unit:"100g", per:100,  keywords:["qəhvə","nescafe","kapuçino","espresso"] },
-  sire:      { icon:"🧃", color:"#FF9800", label:"Şirə/Mors",    unit:"l",    per:1000, keywords:["şirə","mors","nektar","şərbət"] },
+
+  /* ── DRINKS ──────────────────────────────────────────────── */
+  sire: {
+    icon:"🧃", color:"#FF9800", label:"Şirə/Mors/Şirəsi",    unit:"l", per:1000,
+    // Capture: şirə, mors, nektar, şərbət, meyvə suyu, and all fruit+suyu/şirəsi combos
+    keywords:[
+      "şirə","mors","nektar","şərbət","meyvə suyu","meyvə nektarı",
+      "alma şirəsi","alma suyu","üzüm şirəsi","üzüm suyu",
+      "nar şirəsi","nar suyu","portağal şirəsi","portağal suyu",
+      "şaftalı şirəsi","şaftalı suyu","gilas şirəsi","albalı suyu",
+      "armud şirəsi","armud suyu","banan şirəsi","kivi suyu",
+      "limon şirəsi","limon suyu","meyvə içkisi","tərəvəz şirəsi",
+      "kəvər şirəsi","kərəviz şirəsi","tomat şirəsi","pomidor şirəsi"
+    ],
+    exclude:["aromatik","aromali"]
+  },
   ayran:     { icon:"🥤", color:"#B3E5FC", label:"Ayran",        unit:"l",    per:1000, keywords:["ayran"] },
-  su:        { icon:"💧", color:"#29B6F6", label:"Su",           unit:"l",    per:1000, keywords:["mineral su","içməli su","mənbə suyu"], exclude:["meyvə suyu","alma suyu","üzüm suyu"] },
+  su: {
+    icon:"💧", color:"#29B6F6", label:"Su",  unit:"l", per:1000,
+    keywords:["mineral su","içməli su","mənbə suyu","damla su"],
+    exclude:["meyvə suyu","alma suyu","üzüm suyu","portağal suyu","limon suyu",
+             "nar suyu","şirə","nektar","aromatik","aromali"]
+  },
   kola:      { icon:"🫙", color:"#37474F", label:"Kola/Limonad", unit:"l",    per:1000, keywords:["kola","limonad","sprite","fanta","pepsi"] },
+
+  /* ── SWEETS / SNACKS ─────────────────────────────────────── */
   sokolad:   { icon:"🍫", color:"#4E342E", label:"Şokolad",      unit:"100g", per:100,  keywords:["şokolad","çokolad"], exclude:["şokoladlı peçenye","şokoladlı biskvit"] },
   halva:     { icon:"🍬", color:"#FFD54F", label:"Halva/Şirniyyat",unit:"100g",per:100, keywords:["halva","konfet","karamel","marmelad","zefir"] },
   dondurma:  { icon:"🍨", color:"#81D4FA", label:"Dondurma",     unit:"ədəd", per:null, keywords:["dondurma"] },
-  zeytun_yagi:    { icon:"🫒", color:"#AED581", label:"Zeytun yağı",    unit:"l", per:1000, keywords:["zeytun yağ"] },
-  ay_cicayi:      { icon:"🌻", color:"#FBC02D", label:"Günəbaxan yağı", unit:"l", per:1000, keywords:["günəbaxan yağ","ayçiçəyi yağ","bitki yağ"] },
+
+  /* ── OILS / CONDIMENTS ───────────────────────────────────── */
+  zeytun_yagi:  { icon:"🫒", color:"#AED581", label:"Zeytun yağı",    unit:"l", per:1000, keywords:["zeytun yağ"] },
+  ay_cicayi:    { icon:"🌻", color:"#FBC02D", label:"Günəbaxan yağı", unit:"l", per:1000, keywords:["günəbaxan yağ","ayçiçəyi yağ","bitki yağ"] },
   mayonez:   { icon:"🥄", color:"#FFF9C4", label:"Mayonez",      unit:"100g", per:100,  keywords:["mayonez"] },
   ketcup:    { icon:"🍅", color:"#EF9A9A", label:"Ketçup/Sous",  unit:"100g", per:100,  keywords:["ketçup","sous","adjika"], exclude:["pomidor"] },
   duz:       { icon:"🧂", color:"#CFD8DC", label:"Duz",          unit:"kg",   per:1000, keywords:["duz"] },
@@ -292,10 +456,19 @@ function parseUnit(name) {
 }
 
 function itemMatchesCat(name, cfg) {
-  if (!cfg.keywords || !cfg.keywords.length) return true;
+  if (!cfg || !cfg.keywords || !cfg.keywords.length) return true;
   const n = name.toLowerCase();
+
+  // Check keywords
   if (!cfg.keywords.some(kw => n.includes(kw.toLowerCase()))) return false;
+
+  // Check explicit excludes
   if (cfg.exclude && cfg.exclude.some(ex => n.includes(ex.toLowerCase()))) return false;
+
+  // For produce (fruits/veg): automatically exclude anything with a juice suffix
+  // unless this category is the juice category itself
+  if (cfg.isProduce && hasJuiceSuffix(n)) return false;
+
   return true;
 }
 
@@ -387,11 +560,8 @@ function renderCategories() {
 
 /* ── SEARCH ── */
 function handleSearch() {
-  if (activeCat) {
-    renderDetail(activeCat);
-  } else {
-    renderCategories();
-  }
+  if (activeCat) renderDetail(activeCat);
+  else renderCategories();
 }
 
 /* ── SELECT CATEGORY → DETAIL ── */
@@ -401,6 +571,7 @@ function selectCategory(catId) {
   document.getElementById("detailView").style.display = "block";
   document.getElementById("search").value = "";
   renderDetail(catId);
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function goBack() {
@@ -408,6 +579,7 @@ function goBack() {
   document.getElementById("categoriesView").style.display = "grid";
   document.getElementById("detailView").style.display = "none";
   document.getElementById("search").value = "";
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 /* ── PRODUCT MATCHING ── */
