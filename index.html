@@ -13,6 +13,7 @@
   --exp-c:#dc2626; --exp-bg:#fff5f5; --exp-border:#fecaca;
   --wolt-c:#64b5d4;
   --r:10px; --r2:6px;
+  --filter-h:44px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
@@ -124,6 +125,76 @@ header{
 }
 .srt.on{background:var(--ink);border-color:var(--ink);color:#fff;}
 
+/* ── WEIGHT/VOLUME FILTER BAR ── */
+.filter-bar{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:8px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  position:sticky;top:calc(44px + var(--filter-h));z-index:99;
+}
+
+/* Type toggle group */
+.ftype-group{
+  display:flex;border:1.5px solid var(--border);border-radius:var(--r2);overflow:hidden;
+  flex-shrink:0;
+}
+.ftype-btn{
+  padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:'Outfit',sans-serif;border:none;background:transparent;
+  color:var(--muted);transition:all .13s;white-space:nowrap;
+}
+.ftype-btn.on{background:var(--ink);color:#fff;}
+.ftype-btn:not(:last-child){border-right:1px solid var(--border);}
+
+/* Range chips */
+.frange-wrap{
+  display:flex;gap:5px;flex-wrap:wrap;align-items:center;flex:1;
+}
+.fchip{
+  padding:3px 9px;font-size:10px;font-weight:700;
+  border:1.5px solid var(--border);border-radius:20px;
+  cursor:pointer;font-family:'Outfit',sans-serif;
+  color:var(--muted);background:var(--bg3);
+  transition:all .13s;white-space:nowrap;user-select:none;
+}
+.fchip:hover{border-color:var(--accent);color:var(--accent);}
+.fchip.on{
+  background:var(--accent);border-color:var(--accent);
+  color:#fff;
+}
+.fchip.on:hover{opacity:.88;}
+
+/* Active filter badge on cat-view show */
+.filter-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(200,65,11,.1);border:1px solid rgba(200,65,11,.2);
+  color:var(--accent);padding:2px 7px;border-radius:12px;
+  font-size:9px;font-weight:700;font-family:'Space Mono',monospace;
+  margin-left:auto;flex-shrink:0;cursor:pointer;
+}
+.filter-badge:hover{background:rgba(200,65,11,.18);}
+.filter-badge svg{width:9px;height:9px;stroke-width:2.5;}
+.filter-badge.hidden{display:none;}
+
+/* Custom range inputs */
+.custom-range-wrap{
+  display:none;align-items:center;gap:6px;margin-top:6px;
+  width:100%;padding-top:2px;
+}
+.custom-range-wrap.show{display:flex;}
+.cr-input{
+  width:72px;background:var(--bg3);border:1.5px solid var(--border);
+  color:var(--text);padding:4px 7px;border-radius:var(--r2);
+  font-size:11px;font-family:'Space Mono',monospace;outline:none;
+}
+.cr-input:focus{border-color:var(--accent);}
+.cr-label{font-size:10px;color:var(--muted);font-weight:600;}
+.cr-unit{font-size:10px;color:var(--muted);}
+.cr-apply{
+  padding:4px 10px;font-size:10px;font-weight:700;
+  background:var(--accent);border:none;border-radius:var(--r2);
+  color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;
+}
+
 /* ── TABLE (Excel style) ── */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:14px 18px 40px;}
 table{width:100%;border-collapse:collapse;min-width:520px;font-size:13px;}
@@ -141,7 +212,6 @@ thead th.right{text-align:right;}
 thead th:first-child{text-align:left;border-radius:var(--r2) 0 0 0;min-width:160px;}
 thead th:last-child{border-radius:0 var(--r2) 0 0;}
 
-/* Store header pill */
 .th-store-pill{
   display:inline-flex;align-items:center;justify-content:center;gap:4px;
 }
@@ -154,10 +224,17 @@ tbody tr:last-child{border-bottom:none;}
 td{padding:9px 12px;vertical-align:middle;}
 .td-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;max-width:175px;}
 
-/* Price cells — center aligned like Excel */
+/* Per-kg badge inside product name */
+.pkg-badge{
+  display:inline-block;
+  font-family:'Space Mono',monospace;font-size:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--muted);border-radius:4px;padding:1px 4px;
+  margin-left:4px;vertical-align:middle;white-space:nowrap;
+}
+
 .td-price{text-align:center;white-space:nowrap;min-width:80px;}
 
-/* Price value states */
 .pval{
   display:inline-flex;align-items:center;gap:3px;
   font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
@@ -165,13 +242,11 @@ td{padding:9px 12px;vertical-align:middle;}
   border-radius:5px;padding:3px 7px;
   background:transparent;
 }
-/* cheapest */
 .pval.cheap{
   color:var(--cheap-c);background:var(--cheap-bg);
   border:1px solid var(--cheap-border);
 }
 .pval .star{font-size:9px;color:var(--cheap-c);}
-/* most expensive */
 .pval.xpen{
   color:var(--exp-c);background:var(--exp-bg);
   border:1px solid var(--exp-border);
@@ -180,9 +255,7 @@ td{padding:9px 12px;vertical-align:middle;}
   width:6px;height:6px;border-radius:50%;
   background:var(--exp-c);flex-shrink:0;
 }
-/* wolt-only */
 .pval.wonly{color:var(--wolt-c);opacity:.8;}
-/* wolt suffix — small, subdued */
 .wsuf{
   font-family:'Space Mono',monospace;font-size:7px;
   color:var(--wolt-c);opacity:.7;
@@ -191,7 +264,6 @@ td{padding:9px 12px;vertical-align:middle;}
 
 .dash{color:var(--border);font-size:16px;}
 
-/* Savings column */
 .td-saving{text-align:right;white-space:nowrap;min-width:60px;}
 .sav-val{
   font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
@@ -199,12 +271,20 @@ td{padding:9px 12px;vertical-align:middle;}
 }
 .sav-none{color:var(--border);font-size:14px;}
 
+/* result counter */
+.result-count{
+  padding:6px 18px 0;
+  font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;
+}
+
 .empty-st{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
 
 /* ── MOBILE ── */
 @media(max-width:600px){
+  :root{--filter-h:88px;}
   .unit-cards{grid-template-columns:repeat(2,1fr);}
   .toolbar{top:40px;padding:8px 12px;}
+  .filter-bar{top:calc(40px + 43px);padding:7px 12px;gap:6px;}
   .tbl-wrap{padding:10px 10px 30px;}
   #home-view{padding:12px;}
   thead th{font-size:8px;padding:7px 8px;}
@@ -214,6 +294,8 @@ td{padding:9px 12px;vertical-align:middle;}
   #cat-title{font-size:15px;}
   .cat-top{padding:12px;}
   .unit-section{padding:9px 12px 11px;}
+  .ftype-btn{padding:3px 7px;font-size:10px;}
+  .fchip{font-size:9px;padding:2px 7px;}
 }
 @media(max-width:380px){
   .cat-grid{grid-template-columns:repeat(2,1fr);}
@@ -265,6 +347,43 @@ td{padding:9px 12px;vertical-align:middle;}
     <button class="srt"    onclick="setSort('sav',this)">Qənaət↓</button>
   </div>
 
+  <!-- ── WEIGHT / VOLUME FILTER BAR ── -->
+  <div class="filter-bar" id="filter-bar">
+
+    <!-- Type toggle: All / Solid / Liquid / No-weight -->
+    <div class="ftype-group">
+      <button class="ftype-btn on" data-type="all"   onclick="setFType('all',this)">Hamısı</button>
+      <button class="ftype-btn"    data-type="solid"  onclick="setFType('solid',this)">⚖ Çəki</button>
+      <button class="ftype-btn"    data-type="liquid" onclick="setFType('liquid',this)">💧 Həcm</button>
+      <button class="ftype-btn"    data-type="none"   onclick="setFType('none',this)">📦 Digər</button>
+    </div>
+
+    <!-- Range chips (shown for solid/liquid) -->
+    <div class="frange-wrap" id="frange-wrap">
+      <!-- chips injected by JS -->
+    </div>
+
+    <!-- Active filter clear badge -->
+    <div class="filter-badge hidden" id="filter-badge" onclick="clearFilter()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      Filtri sil
+    </div>
+  </div>
+
+  <!-- Custom range row (shown on "öz aralığı" chip) -->
+  <div class="custom-range-wrap" id="custom-range-wrap">
+    <span class="cr-label">Aralıq:</span>
+    <input class="cr-input" id="cr-min" type="number" min="0" placeholder="min"/>
+    <span class="cr-unit" id="cr-unit-label">q</span>
+    <span class="cr-label" style="opacity:.5">—</span>
+    <input class="cr-input" id="cr-max" type="number" min="0" placeholder="max"/>
+    <span class="cr-unit" id="cr-unit-label2">q</span>
+    <button class="cr-apply" onclick="applyCustomRange()">Tətbiq et</button>
+  </div>
+
+  <!-- Result count -->
+  <div class="result-count" id="result-count"></div>
+
   <!-- Excel table -->
   <div class="tbl-wrap">
     <table id="tbl">
@@ -292,10 +411,36 @@ const CI={
   duz:"🧂",sekerqum:"🍬",istiot:"🌶️",
 };
 
+/* ── Filter state ── */
+const FILTER = {
+  type: 'all',    // 'all' | 'solid' | 'liquid' | 'none'
+  range: null,    // null | {min, max}  (in grams/ml)
+  customActive: false,
+};
+
+/* Preset ranges per type (in grams / ml) */
+const RANGES = {
+  solid:  [
+    {label:'< 250 q',   min:0,    max:250},
+    {label:'250–500 q', min:250,  max:500},
+    {label:'500q–1 kq', min:500,  max:1000},
+    {label:'1–2 kq',    min:1000, max:2000},
+    {label:'2 kq +',    min:2000, max:Infinity},
+    {label:'Öz aralığı',custom:true},
+  ],
+  liquid: [
+    {label:'< 250 ml',   min:0,    max:250},
+    {label:'250–500 ml', min:250,  max:500},
+    {label:'500ml–1 L',  min:500,  max:1000},
+    {label:'1–2 L',      min:1000, max:2000},
+    {label:'2 L +',      min:2000, max:Infinity},
+    {label:'Öz aralığı', custom:true},
+  ],
+};
+
 let DATA=null, STORES=[], sortMode='name', allRows=[];
 
-// ── Weight parsing ────────────────────────────────────────────────────────
-// Returns {grams: number, isLiquid: bool} or null
+/* ── Weight parsing ── */
 function parseWeight(name){
   const n = name.toLowerCase();
   const pats = [
@@ -320,13 +465,12 @@ function parseWeight(name){
   return null;
 }
 
-// Price per 1000g (= per kq or per L)
 function perKg(price, wg){
   if(!wg || price == null || wg.grams <= 0) return null;
   return price / wg.grams * 1000;
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────
+/* ── Init ── */
 async function init(){
   try{
     const r = await fetch('data/prices.json');
@@ -364,7 +508,7 @@ function buildGrid(){
   grid.innerHTML = html||'<div style="color:var(--muted)">Məlumat yoxdur</div>';
 }
 
-// ── Similarity ────────────────────────────────────────────────────────────
+/* ── Similarity ── */
 function sim(a,b){
   const wa=new Set(a.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
   const wb=new Set(b.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
@@ -372,11 +516,17 @@ function sim(a,b){
   return i/Math.max(wa.size,wb.size,1);
 }
 
-// ── Open category ─────────────────────────────────────────────────────────
+/* ── Open category ── */
 function openCat(catId){
   sortMode='name';
   document.querySelectorAll('.srt').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.getElementById('srch').value='';
+
+  // Reset filter
+  FILTER.type='all';
+  FILTER.range=null;
+  FILTER.customActive=false;
+  updateFilterUI();
 
   const cat = DATA.categories[catId];
   document.getElementById('cat-icon').textContent = CI[catId]||'📦';
@@ -385,7 +535,6 @@ function openCat(catId){
   const storeItems={};
   STORES.forEach(s=>{storeItems[s]=(cat.stores&&cat.stores[s])?[...cat.stores[s]]:[];});
 
-  // Build unified rows (match same products across stores)
   const anchor=STORES.slice().sort((a,b)=>storeItems[b].length-storeItems[a].length)[0];
   const used={};STORES.forEach(s=>used[s]=new Set());
   const unified=[];
@@ -415,7 +564,6 @@ function openCat(catId){
     });
   });
 
-  // Pre-compute per-row stats
   unified.forEach(row=>{
     row._wg = parseWeight(row.name);
     const ownEntries = STORES
@@ -426,7 +574,6 @@ function openCat(catId){
     row._expStore   = ownEntries.length>1 ? ownEntries[ownEntries.length-1] : null;
     row._saving     = ownEntries.length>1
       ? Math.round((row._expStore.p - row._cheapStore.p)*100)/100 : 0;
-    // per-kg price at cheapest store
     row._cheapPerKg = (row._cheapStore && row._wg)
       ? perKg(row._cheapStore.p, row._wg) : null;
   });
@@ -445,12 +592,117 @@ function openCat(catId){
   window.scrollTo(0,0);
 }
 
-// ── Smart unit price cards ────────────────────────────────────────────────
-// For each product+store, compute ₼/kq or ₼/L. Show the one with lowest ₼/unit.
-// Separate solid vs liquid.
+/* ── Filter UI helpers ── */
+function setFType(type, btn){
+  FILTER.type = type;
+  FILTER.range = null;
+  FILTER.customActive = false;
+  document.getElementById('custom-range-wrap').classList.remove('show');
+  document.querySelectorAll('.ftype-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  updateRangeChips();
+  updateFilterBadge();
+  rerender();
+}
+
+function updateRangeChips(){
+  const wrap = document.getElementById('frange-wrap');
+  const list = RANGES[FILTER.type];
+  if(!list){wrap.innerHTML='';return;}
+
+  let html='';
+  list.forEach((r,i)=>{
+    const label = esc(r.label);
+    if(r.custom){
+      html+=`<div class="fchip" id="fchip-custom" onclick="toggleCustomRange(this)">${label}</div>`;
+    } else {
+      html+=`<div class="fchip" onclick="setFRange(${r.min},${r.max==='Infinity'?'Infinity':r.max},this)">${label}</div>`;
+    }
+  });
+  wrap.innerHTML=html;
+}
+
+function setFRange(min, max, chip){
+  FILTER.range = {min, max: max===Infinity||max==='Infinity'?Infinity:Number(max)};
+  FILTER.customActive = false;
+  document.getElementById('custom-range-wrap').classList.remove('show');
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on');
+  updateFilterBadge();
+  rerender();
+}
+
+function toggleCustomRange(chip){
+  const wrap = document.getElementById('custom-range-wrap');
+  const showing = wrap.classList.contains('show');
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+  if(showing){
+    wrap.classList.remove('show');
+    FILTER.customActive=false;
+    FILTER.range=null;
+  } else {
+    wrap.classList.add('show');
+    chip.classList.add('on');
+    const unitLabel = FILTER.type==='liquid'?'ml':'q';
+    document.getElementById('cr-unit-label').textContent=unitLabel;
+    document.getElementById('cr-unit-label2').textContent=unitLabel;
+    document.getElementById('cr-min').value='';
+    document.getElementById('cr-max').value='';
+  }
+  updateFilterBadge();
+  rerender();
+}
+
+function applyCustomRange(){
+  const mn = parseFloat(document.getElementById('cr-min').value)||0;
+  const mx = parseFloat(document.getElementById('cr-max').value)||Infinity;
+  FILTER.range = {min:mn, max:mx===0?Infinity:mx};
+  FILTER.customActive = true;
+  updateFilterBadge();
+  rerender();
+}
+
+function clearFilter(){
+  FILTER.type='all';
+  FILTER.range=null;
+  FILTER.customActive=false;
+  document.querySelectorAll('.ftype-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
+  document.getElementById('custom-range-wrap').classList.remove('show');
+  updateFilterUI();
+  rerender();
+}
+
+function updateFilterUI(){
+  updateRangeChips();
+  updateFilterBadge();
+}
+
+function updateFilterBadge(){
+  const badge = document.getElementById('filter-badge');
+  const hasFilter = FILTER.type!=='all' || FILTER.range!=null;
+  badge.classList.toggle('hidden', !hasFilter);
+}
+
+/* ── Apply weight/volume filter to a row ── */
+function rowPassesFilter(row){
+  if(FILTER.type==='all' && !FILTER.range) return true;
+
+  const wg = row._wg;
+
+  if(FILTER.type==='solid')  { if(!wg || wg.isLiquid)  return false; }
+  if(FILTER.type==='liquid') { if(!wg || !wg.isLiquid) return false; }
+  if(FILTER.type==='none')   { return !wg; }
+
+  if(FILTER.range && wg){
+    const g = wg.grams;
+    if(g < FILTER.range.min || g > FILTER.range.max) return false;
+  }
+  return true;
+}
+
+/* ── Smart unit price cards ── */
 function buildUnitCards(rows){
-  // Find best (min ₼/kq) for solid and liquid separately
-  let bestSolid=null, bestLiquid=null;
+  let bestSolid=null, bestLiquid=null, best100g=null, best100ml=null;
 
   rows.forEach(row=>{
     if(!row._wg) return;
@@ -459,35 +711,21 @@ function buildUnitCards(rows){
       if(!p||p.own==null) return;
       const pk = perKg(p.own, row._wg);
       if(pk==null||pk<=0) return;
+      const p100 = pk / 10;
 
       if(!row._wg.isLiquid){
         if(!bestSolid||pk<bestSolid.pk)
           bestSolid={pk, store:s, name:row.name, price:p.own, wg:row._wg};
+        if(!best100g||p100<best100g.p100) best100g={p100,store:s,name:row.name};
       } else {
         if(!bestLiquid||pk<bestLiquid.pk)
           bestLiquid={pk, store:s, name:row.name, price:p.own, wg:row._wg};
-      }
-    });
-  });
-
-  // Also find best per 100g and per 100ml
-  let best100g=null, best100ml=null;
-  rows.forEach(row=>{
-    if(!row._wg) return;
-    STORES.forEach(s=>{
-      const p=row.prices[s];
-      if(!p||p.own==null) return;
-      const p100 = perKg(p.own, row._wg) / 10; // /10 = per 100g
-      if(p100<=0) return;
-      if(!row._wg.isLiquid){
-        if(!best100g||p100<best100g.p100) best100g={p100,store:s,name:row.name};
-      } else {
         if(!best100ml||p100<best100ml.p100) best100ml={p100,store:s,name:row.name};
       }
     });
   });
 
-  function cardHTML(label, data, priceVal, priceLabel){
+  function cardHTML(label, data, priceVal){
     if(!data){
       return `<div class="unit-card">
         <div class="unit-card-heading">${label}</div>
@@ -508,13 +746,13 @@ function buildUnitCards(rows){
   }
 
   document.getElementById('unit-cards').innerHTML =
-    cardHTML('100 q',  best100g,  best100g  ? best100g.p100  : null, '₼/100q') +
-    cardHTML('100 ml', best100ml, best100ml ? best100ml.p100 : null, '₼/100ml')+
-    cardHTML('1 kq',   bestSolid, bestSolid ? bestSolid.pk   : null, '₼/kq')   +
-    cardHTML('1 L',    bestLiquid,bestLiquid? bestLiquid.pk  : null, '₼/L');
+    cardHTML('100 q',  best100g,  best100g  ? best100g.p100  : null) +
+    cardHTML('100 ml', best100ml, best100ml ? best100ml.p100 : null) +
+    cardHTML('1 kq',   bestSolid, bestSolid ? bestSolid.pk   : null) +
+    cardHTML('1 L',    bestLiquid,bestLiquid? bestLiquid.pk  : null);
 }
 
-// ── Table header ──────────────────────────────────────────────────────────
+/* ── Table header ── */
 function buildTableHeader(){
   let h='<tr><th>Məhsul</th>';
   STORES.forEach(s=>{
@@ -526,10 +764,13 @@ function buildTableHeader(){
   document.getElementById('thead').innerHTML=h;
 }
 
-// ── Sort + filter ─────────────────────────────────────────────────────────
+/* ── Sort + filter ── */
 function getSorted(){
   const q=(document.getElementById('srch').value||'').toLowerCase().trim();
   let rows=q?allRows.filter(r=>r.name.toLowerCase().includes(q)):[...allRows];
+  // Apply weight/volume filter
+  rows=rows.filter(rowPassesFilter);
+
   if(sortMode==='name')
     rows.sort((a,b)=>a.name.localeCompare(b.name,'az'));
   else if(sortMode==='asc')
@@ -541,15 +782,32 @@ function getSorted(){
 
 function rerender(){ renderRows(getSorted()); }
 
-// ── Render table rows ─────────────────────────────────────────────────────
+/* ── Render table rows ── */
 function renderRows(rows){
   const body=document.getElementById('tbody');
   const empty=document.getElementById('empty');
-  if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
+  const cnt=document.getElementById('result-count');
+
+  if(!rows.length){
+    body.innerHTML='';
+    empty.style.display='block';
+    cnt.textContent='';
+    return;
+  }
   empty.style.display='none';
+
+  const hasFilter = FILTER.type!=='all' || FILTER.range!=null;
+  cnt.textContent = hasFilter ? `${rows.length} nəticə göstərilir` : '';
 
   let html='';
   rows.forEach(row=>{
+    // per-kg badge for name column
+    let pkgBadge='';
+    if(row._wg && row._cheapPerKg){
+      const unit = row._wg.isLiquid ? 'L' : 'kq';
+      pkgBadge=`<span class="pkg-badge">₼${fmt(row._cheapPerKg)}/${unit}</span>`;
+    }
+
     let cells='';
     STORES.forEach(s=>{
       const p=row.prices[s];
@@ -569,11 +827,9 @@ function renderRows(rows){
         let cls='pval';
         if(isCheap) cls+=' cheap';
         else if(isExp) cls+=' xpen';
-
         let badge='';
         if(isCheap) badge=`<span class="star">★</span>`;
         else if(isExp) badge=`<div class="reddot"></div>`;
-
         inner=`<span class="${cls}">₼${fmt(p.own)}${woltSuffix}${badge}</span>`;
       } else if(hasWolt){
         inner=`<span class="pval wonly">₼${fmt(p.wolt)}<span class="wsuf">w</span></span>`;
@@ -583,20 +839,19 @@ function renderRows(rows){
       cells+=`<td class="td-price">${inner}</td>`;
     });
 
-    // Savings
     const savCell = row._saving>0
       ?`<td class="td-saving"><span class="sav-val">−₼${fmt(row._saving)}</span></td>`
       :`<td class="td-saving"><span class="sav-none">—</span></td>`;
 
     html+=`<tr>
-      <td class="td-name">${esc(row.name)}</td>
+      <td class="td-name">${esc(row.name)}${pkgBadge}</td>
       ${cells}${savCell}
     </tr>`;
   });
   body.innerHTML=html;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
+/* ── Helpers ── */
 function setSort(m,btn){
   sortMode=m;
   document.querySelectorAll('.srt').forEach(b=>b.classList.remove('on'));
