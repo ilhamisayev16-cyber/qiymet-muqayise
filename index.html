@@ -2,728 +2,608 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>QİYMƏTMÜQAYİSƏ — Azərbaycan</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QiymətMüqayisə — Azərbaycan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#fdfcf8;
-  --text:#1a1614;
-  --accent:#ff6b35;
-  --card:#fff;
-  --border:#e8e4df;
-  --radius:16px;
+:root {
+  --bg: #0e1117;
+  --bg2: #161b27;
+  --bg3: #1e2535;
+  --border: #2a3248;
+  --text: #e8eaf2;
+  --muted: #7a85a3;
+  --accent: #f0a500;
+  --accent2: #2fb8ac;
+  --bravo: #e63946;
+  --oba: #3a86ff;
+  --araz: #8338ec;
+  --neptun: #06d6a0;
+  --rahat: #fb5607;
+  --wolt: #009de0;
+  --cheap: #22c55e;
+  --r: 10px;
+  --r2: 6px;
 }
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-text-size-adjust:100%}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.5;
+}
 
-/* ── HEADER ── */
+/* ── HEADER ──────────────────────────────────── */
 header{
-  background:var(--text);color:var(--bg);
-  padding:20px 20px;
-  border-bottom:4px solid var(--accent);
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:16px 20px;
   position:sticky;top:0;z-index:100;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15)
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
 }
-.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}
-.logo{display:flex;align-items:center;gap:10px;min-width:0}
-.logo-icon{font-size:30px;animation:bounce 2s ease-in-out infinite;flex-shrink:0}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.logo-text{min-width:0}
-h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;white-space:nowrap}
-h1 .highlight{color:var(--accent);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
-.subtitle{font-size:11px;opacity:.7;letter-spacing:.3px;margin-top:2px}
-.last-update{text-align:right;font-size:11px;opacity:.6;font-family:'Space Mono',monospace;flex-shrink:0;white-space:nowrap}
-.last-update b{color:var(--accent);opacity:1;display:block;font-size:12px;white-space:nowrap}
-
-/* ── MAIN ── */
-.main{max-width:1400px;margin:0 auto;padding:24px 16px}
-
-/* ── SEARCH ── */
-.search-box{position:relative;margin-bottom:28px}
-.search-box input{
-  width:100%;padding:15px 48px 15px 18px;
-  border:2px solid var(--border);background:var(--card);
-  font-family:inherit;font-size:15px;border-radius:14px;
-  outline:none;transition:all .3s ease;
-  box-shadow:0 2px 8px rgba(0,0,0,0.04);
-  -webkit-appearance:none;
+.logo{
+  font-size:18px;font-weight:700;letter-spacing:-0.5px;
+  color:var(--accent);flex:1;min-width:140px;
 }
-.search-box input:focus{border-color:var(--accent);box-shadow:0 6px 20px rgba(255,107,53,0.12)}
-.search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:20px;opacity:.3;pointer-events:none}
-
-/* ── CATEGORY GRID ── */
-.categories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:40px}
-
-.category-card{
-  background:var(--card);
-  border:2px solid var(--border);
-  border-radius:var(--radius);
-  overflow:hidden;cursor:pointer;
-  transition:all .35s cubic-bezier(0.34,1.56,0.64,1);
-  position:relative;display:flex;flex-direction:column;
-  -webkit-tap-highlight-color:transparent;
+.logo span{color:var(--text);font-weight:400;}
+#last-updated{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+#back-btn{
+  display:none;
+  align-items:center;gap:6px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);padding:7px 14px;border-radius:var(--r2);
+  cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;
+  transition:background .15s;
 }
-.category-card:hover{
-  border-color:var(--cat-color,var(--accent));
-  transform:translateY(-6px) scale(1.02);
-  box-shadow:0 14px 36px rgba(0,0,0,0.12);
-}
-.category-card:active{transform:scale(0.97);transition:transform .1s}
-.category-card.active{border-color:var(--cat-color,var(--accent));border-width:3px;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+#back-btn:hover{background:var(--border);}
+#back-btn svg{width:14px;height:14px;}
 
-/* ── UNIT PRICE BAR ── */
-.cat-price-bar{
-  width:100%;padding:6px 12px;
-  font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.3px;
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-  background:var(--cat-color,#e0e0e0);color:#fff;min-height:28px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.25);transition:filter .3s;
+/* ── SEARCH BAR ──────────────────────────────── */
+.search-wrap{
+  padding:16px 20px 8px;
+  display:none;
 }
-.cat-price-bar.loading{
-  background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);
-  background-size:200% 100%;animation:shimmer 1.4s infinite;color:transparent;
+.search-wrap.visible{display:block;}
+#search-input{
+  width:100%;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text);padding:10px 14px;border-radius:var(--r);
+  font-size:14px;font-family:'DM Sans',sans-serif;
+  outline:none;transition:border-color .15s;
 }
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.cat-price-bar .bar-label{opacity:.85;font-size:8.5px;text-transform:uppercase;letter-spacing:.4px}
-.cat-price-bar .bar-value{font-size:11px;font-weight:700}
-.cat-price-bar .bar-store{
-  background:rgba(255,255,255,0.25);padding:2px 6px;
-  border-radius:4px;font-size:8.5px;letter-spacing:.4px;
-}
+#search-input:focus{border-color:var(--accent2);}
+#search-input::placeholder{color:var(--muted);}
 
-/* ── CARD BODY ── */
-.cat-body{padding:16px 14px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:1}
-.cat-icon{font-size:42px;margin-bottom:8px;filter:grayscale(0.2);transition:all .35s ease;line-height:1}
-.category-card:hover .cat-icon{filter:grayscale(0);transform:scale(1.18) rotate(6deg)}
-.cat-name{font-weight:700;font-size:13px;letter-spacing:.2px}
-.cat-count{font-size:10px;opacity:.45;margin-top:3px;font-family:'Space Mono',monospace}
-
-/* ── UNIT PRICE PILLS ── */
-.cat-unit-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-top:7px}
-.unit-pill{
-  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
-  padding:2px 7px;border-radius:20px;
-  border:1.5px solid var(--cat-color,#ddd);color:var(--cat-color,#666);
-  background:transparent;white-space:nowrap;transition:background .2s,color .2s;
+/* ── SORT BAR ──────────────────────────────── */
+.sort-bar{
+  padding:8px 20px;
+  display:none;align-items:center;gap:8px;flex-wrap:wrap;
 }
-.unit-pill.best-pill{background:var(--cat-color,#ff6b35);color:#fff;border-color:transparent}
-
-/* ── DETAIL VIEW ── */
-.back-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:10px 18px;margin-bottom:20px;
-  border:2px solid var(--border);border-radius:12px;
-  background:var(--card);font-family:inherit;font-size:14px;font-weight:600;
-  cursor:pointer;transition:all .2s;color:var(--text);
-  -webkit-tap-highlight-color:transparent;
+.sort-bar.visible{display:flex;}
+.sort-bar span{font-size:12px;color:var(--muted);}
+.sort-btn{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--muted);padding:5px 12px;border-radius:20px;
+  cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;
+  transition:all .15s;
 }
-.back-btn:hover{border-color:var(--accent);color:var(--accent)}
-.back-btn:active{transform:scale(0.97)}
+.sort-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600;}
+.sort-btn:hover:not(.active){border-color:var(--accent2);color:var(--text);}
 
+/* ── CATEGORY GRID ───────────────────────────── */
+#home-view{padding:20px;}
 .section-title{
-  background:var(--text);color:var(--bg);
-  padding:14px 22px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;
-  margin:28px 0 14px;border-radius:12px;font-weight:700;
+  font-size:12px;font-weight:600;letter-spacing:1.5px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:14px;
+}
+.cat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:10px;
+}
+.cat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px 14px;
+  cursor:pointer;transition:all .18s;
+  display:flex;flex-direction:column;gap:8px;
+  position:relative;overflow:hidden;
+}
+.cat-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--accent);opacity:0;transition:opacity .18s;
+}
+.cat-card:hover{background:var(--bg3);border-color:var(--accent);transform:translateY(-1px);}
+.cat-card:hover::before{opacity:1;}
+.cat-card:active{transform:translateY(0);transition:none;}
+.cat-icon{font-size:24px;}
+.cat-name{font-size:13px;font-weight:600;color:var(--text);}
+.cat-count{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+.cat-stores{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px;}
+.dot{
+  width:7px;height:7px;border-radius:50%;
+}
+
+/* ── CATEGORY VIEW ───────────────────────────── */
+#cat-view{display:none;padding:0 0 40px;}
+#cat-header{
+  padding:20px 20px 12px;
   display:flex;align-items:center;gap:10px;
 }
-.section-icon{font-size:20px}
-.table-wrap{overflow-x:auto;border:2px solid var(--border);border-radius:14px;margin-bottom:20px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,0.05);-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;min-width:480px}
-thead tr{background:linear-gradient(135deg,#f8f7f4,#f0ede8)}
-th{padding:13px 16px;text-align:center;font-size:10px;letter-spacing:.8px;font-weight:700;text-transform:uppercase;border-bottom:2px solid var(--border);white-space:nowrap}
-th.left{text-align:left;min-width:180px}
-td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;text-align:center;white-space:nowrap}
-td.left{text-align:left;font-weight:500;white-space:normal;word-break:break-word}
-tr:last-child td{border-bottom:none}
-tr.even{background:var(--bg)}
-tr.odd{background:var(--card)}
-tr:hover{background:#fff9f5}
-.best{background:#fff8e1;font-weight:700;color:#f57c00;position:relative}
-.best::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#f57c00}
-.worst{background:#ffebee;color:#c62828}
-.none{color:#bbb}
-.saving{display:inline-block;padding:3px 10px;font-size:10px;font-weight:700;border-radius:6px}
-.saving.g{background:#e8f5e9;color:#2e7d32}
-.saving.s{background:#f5f5f5;color:#999}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
-.store-tag{display:inline-block;padding:3px 10px;font-size:10px;color:white;font-weight:600;border-radius:6px;letter-spacing:.2px;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+.cat-view-icon{font-size:28px;}
+#cat-title{font-size:20px;font-weight:700;}
+#cat-subtitle{font-size:12px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;}
 
-.footer{margin-top:48px;padding:20px 0;border-top:2px solid var(--border);font-size:11px;color:#999;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:'Space Mono',monospace}
-.empty{text-align:center;padding:60px 20px;color:#aaa;font-size:15px;opacity:.7}
+/* ── PRODUCT TABLE ───────────────────────────── */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 20px;}
+table{
+  width:100%;border-collapse:collapse;
+  min-width:500px;
+  font-size:13px;
+}
+thead th{
+  background:var(--bg3);padding:10px 12px;text-align:left;
+  font-size:11px;font-weight:600;letter-spacing:0.8px;
+  color:var(--muted);text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+thead th:first-child{border-radius:var(--r2) 0 0 0;}
+thead th:last-child{border-radius:0 var(--r2) 0 0;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:var(--bg2);}
+tbody tr:last-child{border-bottom:none;}
+td{padding:10px 12px;vertical-align:top;}
+.td-name{
+  font-size:13px;font-weight:500;color:var(--text);
+  max-width:200px;line-height:1.4;
+}
+.price-cell{white-space:nowrap;}
+.price-own{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:500;
+}
+.price-own.cheapest{
+  color:var(--cheap);font-weight:700;
+}
+.price-own.cheapest::after{
+  content:'↓';font-size:10px;
+}
+.wolt-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  background:rgba(0,157,224,.12);border:1px solid rgba(0,157,224,.25);
+  color:var(--wolt);border-radius:4px;
+  padding:2px 6px;font-size:11px;font-family:'DM Mono',monospace;
+  margin-top:3px;
+}
+.wolt-badge.cheaper{
+  background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.25);
+  color:var(--cheap);
+}
+.wolt-badge.pricier{
+  background:rgba(240,165,0,.08);border-color:rgba(240,165,0,.2);
+  color:var(--accent);
+}
+.wolt-only{
+  font-family:'DM Mono',monospace;font-size:12px;
+  color:var(--wolt);opacity:.8;
+}
+.dash{color:var(--border);font-size:18px;}
+.store-header{display:flex;align-items:center;gap:6px;}
+.store-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-/* ── MOBILE ── */
+/* loading */
+#loading{
+  display:none;text-align:center;padding:60px 20px;
+  color:var(--muted);font-size:14px;
+}
+#loading.visible{display:block;}
+.spinner{
+  width:32px;height:32px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;margin:0 auto 12px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;}
+
+/* store legend */
+.legend{
+  display:flex;gap:16px;flex-wrap:wrap;
+  padding:8px 20px 16px;
+}
+.legend-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:11px;color:var(--muted);
+}
+
+/* ── MOBILE ──────────────────────────────────── */
 @media(max-width:600px){
-  header{padding:14px 14px}
-  h1{font-size:18px}
-  .subtitle{display:none}
-  .logo-icon{font-size:26px}
-  .last-update{font-size:10px}
-  .last-update b{font-size:11px}
-
-  .main{padding:16px 12px}
-  .search-box{margin-bottom:20px}
-  .search-box input{padding:13px 44px 13px 14px;font-size:14px;border-radius:12px}
-
-  .categories-grid{
-    grid-template-columns:repeat(3,1fr);
-    gap:9px;margin-bottom:28px;
-  }
-  .cat-price-bar{padding:5px 8px;min-height:24px}
-  .cat-price-bar .bar-label{display:none}
-  .cat-price-bar .bar-value{font-size:10px}
-  .cat-price-bar .bar-store{font-size:8px;padding:1px 5px}
-
-  .cat-body{padding:10px 8px 10px}
-  .cat-icon{font-size:28px;margin-bottom:6px}
-  .cat-name{font-size:11px}
-  .cat-count{font-size:9px}
-  .cat-unit-pills{gap:2px;margin-top:5px}
-  .unit-pill{font-size:8px;padding:2px 5px}
-
-  .back-btn{font-size:13px;padding:9px 14px;width:100%;justify-content:center;margin-bottom:16px}
-  .section-title{font-size:11px;padding:12px 16px;letter-spacing:.8px;margin:20px 0 12px}
-  .section-icon{font-size:17px}
-
-  table{min-width:360px}
-  th{padding:10px 10px;font-size:9px}
-  th.left{min-width:120px}
-  td{padding:10px 10px;font-size:12px}
-  td.left{min-width:120px}
-
-  .saving{font-size:9px;padding:2px 8px}
-  .store-tag{font-size:9px;padding:2px 8px}
-  .footer{font-size:10px;flex-direction:column;gap:6px;padding:16px 0}
+  .logo{font-size:15px;}
+  .cat-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .cat-card{padding:12px 10px;gap:6px;}
+  .cat-icon{font-size:20px;}
+  .cat-name{font-size:12px;}
+  .cat-count{font-size:10px;}
+  #cat-title{font-size:17px;}
+  thead th{font-size:10px;padding:8px 8px;}
+  td{padding:8px 8px;}
+  .td-name{font-size:12px;max-width:120px;}
+  .price-own{font-size:12px;}
+  .wolt-badge{font-size:10px;}
+  .table-scroll{padding:0 12px;}
+  #home-view{padding:16px 12px;}
+  .search-wrap{padding:12px 12px 6px;}
+  .sort-bar{padding:6px 12px;}
+  #cat-header{padding:16px 12px 10px;}
+  .legend{padding:6px 12px 12px;gap:10px;}
 }
-
 @media(max-width:380px){
-  .categories-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .cat-icon{font-size:24px}
-  .cat-name{font-size:10px}
-}
-
-@media(min-width:601px) and (max-width:900px){
-  .categories-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-  .main{padding:28px 18px}
+  .cat-grid{grid-template-columns:repeat(2,1fr);}
+  #back-btn{font-size:12px;padding:6px 10px;}
 }
 </style>
 </head>
 <body>
+
 <header>
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-icon">🛒</div>
-      <div class="logo-text">
-        <h1>QIYMƏT<span class="highlight">MÜQAYISƏ</span></h1>
-        <p class="subtitle">Azərbaycan ərzaq bazarı</p>
-      </div>
-    </div>
-    <div class="last-update">📡 Son yenilənmə<b id="lastUpdate">yüklənir...</b></div>
-  </div>
+  <button id="back-btn" onclick="showHome()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Geri
+  </button>
+  <div class="logo">Qiymət<span>Müqayisə</span></div>
+  <div id="last-updated"></div>
 </header>
 
-<div class="main">
-  <div class="search-box">
-    <input id="search" type="text" placeholder="Məhsul axtar..." oninput="handleSearch()"/>
-    <span class="search-icon">🔍</span>
+<!-- HOME: category grid -->
+<div id="home-view">
+  <div class="section-title">Kateqoriyalar</div>
+  <div id="loading" class="visible">
+    <div class="spinner"></div>
+    Məlumatlar yüklənir…
   </div>
-  <div id="categoriesView" class="categories-grid"></div>
-  <div id="detailView" style="display:none"></div>
-  <div class="footer">
-    <span>© 2026 QiymətMüqayisə · Qiymətlər AZN (₼)</span>
-    <span>Bravo · Neptun · Rahat · OBA</span>
+  <div class="cat-grid" id="cat-grid"></div>
+</div>
+
+<!-- CATEGORY VIEW -->
+<div id="cat-view">
+  <div id="cat-header">
+    <div class="cat-view-icon" id="cat-icon-big"></div>
+    <div>
+      <div id="cat-title"></div>
+      <div id="cat-subtitle"></div>
+    </div>
+  </div>
+  <div class="legend" id="store-legend"></div>
+  <div class="search-wrap visible">
+    <input type="search" id="search-input" placeholder="Məhsul axtar…" oninput="filterTable()"/>
+  </div>
+  <div class="sort-bar visible" id="sort-bar">
+    <span>Sırala:</span>
+    <button class="sort-btn active" onclick="setSort('name')">Ad</button>
+    <button class="sort-btn" onclick="setSort('price_asc')">Qiymət ↑</button>
+    <button class="sort-btn" onclick="setSort('price_desc')">Qiymət ↓</button>
+  </div>
+  <div class="table-scroll">
+    <table id="product-table">
+      <thead id="table-head"></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div class="empty" id="no-results" style="display:none">Məhsul tapılmadı</div>
   </div>
 </div>
 
 <script>
-const COLORS = { Bravo:"#e63946", Neptun:"#6366f1", Rahat:"#2a9d8f", OBA:"#f4a261" };
-
-// Global "juice/drink" suffixes — any produce item whose name contains these
-// gets excluded from produce categories and matched by the sire/su/kola cats instead.
-const JUICE_SUFFIXES = [
-  "şirəsi","şirə","suyu"," suyu","nektarı","nektar","konsentrat","morsу","mors",
-  "şərbəti","şərbət","kompot","çay suyu","içki"
-];
-// Helper: does a product name contain a juice/drink suffix?
-function hasJuiceSuffix(name) {
-  const n = name.toLowerCase();
-  return JUICE_SUFFIXES.some(s => n.includes(s));
-}
-
-const CAT_CFG = {
-  /* ── DAIRY ─────────────────────────────────────────────── */
-  sud: {
-    icon:"🥛", color:"#4FC3F7", label:"Süd", unit:"l", per:1000,
-    keywords:["süd","milk"],
-    exclude:["süd şokolad","südlü şokolad","südlü konfet","südlü peçenye",
-             "aromatik","aromali","qaymaqlı","buzlu","kokos","kokosu",
-             "dondurma","yoqurt","qatıq","kefir","xama","pendir","kərə"],
-    noJuice: false  // dairy is not produce, skip juice filter
-  },
-  yumurta:   { icon:"🥚", color:"#FFD54F", label:"Yumurta",     unit:"ədəd", per:null, keywords:["yumurta"] },
-  kere_yagi: { icon:"🧈", color:"#F9A825", label:"Kərə yağı",   unit:"100g", per:100,  keywords:["kərə yağ","butter"], exclude:["spred","margarin"] },
-  pendir:    { icon:"🧀", color:"#FFF176", label:"Pendir",       unit:"100g", per:100,  keywords:["pendir","cheese"] },
-  qatiq:     { icon:"🫙", color:"#CE93D8", label:"Qatıq",       unit:"100g", per:100,  keywords:["qatıq","yoqurt","yogurt"], exclude:["aromatik","aromali","üzüm","gilas","çilek","çiyələk","alma","şaftalı","limon","portağal","banan","kivi","nar","meyvə"] },
-  xama:      { icon:"🍦", color:"#F3E5F5", label:"Xama",         unit:"100g", per:100,  keywords:["xama"] },
-  kefir:     { icon:"🧋", color:"#81D4FA", label:"Kefir",        unit:"l",    per:1000, keywords:["kefir"] },
-
-  /* ── VEGETABLES ─────────────────────────────────────────── */
-  kartof:    { icon:"🥔", color:"#D7CCC8", label:"Kartof",       unit:"kg",   per:1000, keywords:["kartof"],                       isProduce:true },
-  pomidor:   { icon:"🍅", color:"#EF5350", label:"Pomidor",      unit:"kg",   per:1000, keywords:["pomidor","tomat"],
-               exclude:["pomidor sousu","pomidor pastası","ketçup","tomat sousu","tomat pastası","aromatik","aromali","konservləşdirilmiş","kons."], isProduce:true },
-  xiyar:     { icon:"🥒", color:"#66BB6A", label:"Xiyar",        unit:"kg",   per:1000, keywords:["xiyar","salatalıq"],             isProduce:true, exclude:["turşu","marinad"] },
-  soyan:     { icon:"🧅", color:"#D4A574", label:"Soğan",        unit:"kg",   per:1000, keywords:["soğan"],                        isProduce:true },
-  kelem:     { icon:"🥬", color:"#81C784", label:"Kələm",        unit:"kg",   per:1000, keywords:["kələm","lahana"],               isProduce:true },
-  yerkoyu:   { icon:"🥕", color:"#FF9800", label:"Yerkökü",      unit:"kg",   per:1000, keywords:["yerkökü","havuç"],              isProduce:true },
-  cuqundur:  { icon:"🟣", color:"#CE93D8", label:"Çuğundur",     unit:"kg",   per:1000, keywords:["çuğundur","çügündür"],          isProduce:true },
-  qabaq:     { icon:"🎃", color:"#FF7043", label:"Qabaq",        unit:"kg",   per:1000, keywords:["qabaq"],                        isProduce:true },
-  badimcan:  { icon:"🍆", color:"#9575CD", label:"Badımcan",     unit:"kg",   per:1000, keywords:["badımcan"],                     isProduce:true },
-  biber:     { icon:"🫑", color:"#F06292", label:"Bibər",        unit:"kg",   per:1000, keywords:["bibər","biber"],
-               exclude:["istiot","qırmızı istiot","ədviyyat","ədviy"],       isProduce:true },
-  sarimsaq:  { icon:"🧄", color:"#A5D6A7", label:"Sarımsaq",     unit:"100g", per:100,  keywords:["sarımsaq","sarimsaq"],          isProduce:true },
-  ispanaq:   { icon:"🌿", color:"#558B2F", label:"İspanaq",      unit:"kg",   per:1000, keywords:["ispanaq"],                      isProduce:true },
-  goyerti:   { icon:"🪴", color:"#8BC34A", label:"Göyərti",      unit:"dəstə",per:null, keywords:["göyərti","cəfəri","şüyüd","kinza","reyhan","nanə","kərəviz"] },
-
-  /* ── FRUITS ─────────────────────────────────────────────── */
-  alma: {
-    icon:"🍎", color:"#EF5350", label:"Alma", unit:"kg", per:1000,
-    keywords:["alma"],
-    exclude:["alma şirəsi","alma suyu","alma nektarı","alma morsу","alma içkisi",
-             "aromatik","aromali","alma ətirli","alma dadlı","alma aromali",
-             "alma qoxulu","alma kompot","qaxac",
-             "sir sauce","vinegr","sirkə","sider"],
-    isProduce:true
-  },
-  armud: {
-    icon:"🍐", color:"#C6E05A", label:"Armud", unit:"kg", per:1000,
-    keywords:["armud"],
-    exclude:["armud şirəsi","armud suyu","armud nektarı","aromatik","aromali",
-             "armud ətirli","armud dadlı","armud kompot"],
-    isProduce:true
-  },
-  saftal: {
-    icon:"🍑", color:"#FFAB91", label:"Şaftalı", unit:"kg", per:1000,
-    keywords:["şaftalı","nektarin"],
-    exclude:["şaftalı şirəsi","şaftalı suyu","şaftalı nektarı","aromatik","aromali",
-             "şaftalı ətirli","şaftalı dadlı","şaftalı kompot"],
-    isProduce:true
-  },
-  gilas: {
-    icon:"🍒", color:"#E53935", label:"Gilas", unit:"kg", per:1000,
-    keywords:["gilas","albalı"],
-    exclude:["gilas şirəsi","gilas suyu","albalı şirəsi","albalı suyu","aromatik","aromali",
-             "gilas ətirli","gilas dadlı","albalı kompot","gilas kompot"],
-    isProduce:true
-  },
-  uzum: {
-    icon:"🍇", color:"#AB47BC", label:"Üzüm", unit:"kg", per:1000,
-    keywords:["üzüm"],
-    exclude:[
-      "üzüm şirəsi","üzüm suyu","üzüm nektarı","üzüm mors","üzüm içkisi",
-      "üzümlü","kişmiş","aromatik","aromali",
-      "üzüm ətirli","üzüm dadlı","üzüm qoxulu","üzüm aromali",
-      "şərab","vino","vine","şirniyyat","konfet","peçenye","biskvit",
-      "üzüm kompot","üzüm sirkəsi"
-    ],
-    isProduce:true
-  },
-  banan: {
-    icon:"🍌", color:"#FFEB3B", label:"Banan", unit:"kg", per:1000,
-    keywords:["banan"],
-    exclude:["banan şirəsi","banan suyu","banan nektarı","aromatik","aromali",
-             "banan ətirli","banan dadlı","banan qoxulu"],
-    isProduce:true
-  },
-  kivi: {
-    icon:"🥝", color:"#AED581", label:"Kivi", unit:"kg", per:1000,
-    keywords:["kivi"],
-    exclude:["kivi şirəsi","kivi suyu","kivi nektarı","aromatik","aromali",
-             "kivi ətirli","kivi dadlı"],
-    isProduce:true
-  },
-  limon: {
-    icon:"🍋", color:"#FFF59D", label:"Limon", unit:"kg", per:1000,
-    keywords:["limon"],
-    exclude:["limon şirəsi","limon suyu","limon turşusu","limon nektarı",
-             "aromatik","aromali","limon ətirli","limon dadlı","limonad",
-             "limon qoxulu"],
-    isProduce:true
-  },
-  portaqal: {
-    icon:"🍊", color:"#FFB74D", label:"Portağal", unit:"kg", per:1000,
-    keywords:["portağal"],
-    exclude:["portağal şirəsi","portağal suyu","portağal nektarı","aromatik","aromali",
-             "portağal ətirli","portağal dadlı","portağal kompot"],
-    isProduce:true
-  },
-  nar: {
-    icon:"🌺", color:"#D32F2F", label:"Nar", unit:"kg", per:1000,
-    keywords:["nar"],
-    exclude:["nar şirəsi","nar suyu","narşərab","nar nektarı","aromatik","aromali",
-             "nar ətirli","nar dadlı","nar kompot"],
-    isProduce:true
-  },
-
-  /* ── MEAT / PROTEIN ─────────────────────────────────────── */
-  toyuq:     { icon:"🍗", color:"#BCAAA4", label:"Toyuq",        unit:"kg",   per:1000, keywords:["toyuq","cücə","broyle"] },
-  dana_ati:  { icon:"🥩", color:"#8D6E63", label:"Dana əti",     unit:"kg",   per:1000, keywords:["dana"] },
-  qoyun_ati: { icon:"🍖", color:"#6D4C41", label:"Qoyun əti",    unit:"kg",   per:1000, keywords:["qoyun","quzu"] },
-  hindi:     { icon:"🦃", color:"#A1887F", label:"Hindi",        unit:"kg",   per:1000, keywords:["hindi"] },
-  kolbasa:   { icon:"🥓", color:"#FF7043", label:"Kolbasa",      unit:"100g", per:100,  keywords:["kolbasa"] },
-  sosis:     { icon:"🌭", color:"#FF8A65", label:"Sosis",        unit:"100g", per:100,  keywords:["sosis","sosiska"] },
-  baliq:     { icon:"🐟", color:"#4DD0E1", label:"Balıq",        unit:"kg",   per:1000, keywords:["balıq","lakerda","nərə","qızılbalıq","tuna","sardina","skumbriya"] },
-
-  /* ── GRAINS / BAKERY ─────────────────────────────────────── */
-  duyu:      { icon:"🍚", color:"#BDBDBD", label:"Düyü",         unit:"kg",   per:1000, keywords:["düyü","pirinc"] },
-  merci:     { icon:"🫘", color:"#A1887F", label:"Mərcimək",     unit:"kg",   per:1000, keywords:["mərcimək"] },
-  noxud:     { icon:"🟡", color:"#FFCC02", label:"Noxud",        unit:"kg",   per:1000, keywords:["noxud","lobya"] },
-  fasulya:   { icon:"🫘", color:"#795548", label:"Fasulya",      unit:"kg",   per:1000, keywords:["fasulya"] },
-  un:        { icon:"🌾", color:"#EFEBE9", label:"Un",           unit:"kg",   per:1000, keywords:[" un ","unun","un,"] },
-  makaron:   { icon:"🍝", color:"#FFECB3", label:"Makaron",      unit:"kg",   per:1000, keywords:["makaron","pasta","spagetti","vermişel"] },
-  corek:     { icon:"🍞", color:"#FF8F00", label:"Çörək",        unit:"ədəd", per:null, keywords:["çörək","lavaş","lavash"], exclude:["çörək qabi","çörəkqabı"] },
-  pecenye:   { icon:"🍪", color:"#FFCC80", label:"Peçenye",      unit:"100g", per:100,  keywords:["peçenye","biskvit","kraker","wafer","vafli"] },
-  tort:      { icon:"🎂", color:"#F48FB1", label:"Tort/Pasta",   unit:"100g", per:100,  keywords:["tort","keks","baklava","şəkərbura","paxlava"] },
-
-  /* ── HOT DRINKS ──────────────────────────────────────────── */
-  cay:       { icon:"🍵", color:"#8D6E63", label:"Çay",          unit:"100g", per:100,  keywords:["çay"], exclude:["çay qaşığı","çay stəkanı","aromatik","aromali"] },
-  qehve:     { icon:"☕", color:"#4E342E", label:"Qəhvə",        unit:"100g", per:100,  keywords:["qəhvə","nescafe","kapuçino","espresso"] },
-
-  /* ── DRINKS ──────────────────────────────────────────────── */
-  sire: {
-    icon:"🧃", color:"#FF9800", label:"Şirə/Mors/Şirəsi",    unit:"l", per:1000,
-    // Capture: şirə, mors, nektar, şərbət, meyvə suyu, and all fruit+suyu/şirəsi combos
-    keywords:[
-      "şirə","mors","nektar","şərbət","meyvə suyu","meyvə nektarı",
-      "alma şirəsi","alma suyu","üzüm şirəsi","üzüm suyu",
-      "nar şirəsi","nar suyu","portağal şirəsi","portağal suyu",
-      "şaftalı şirəsi","şaftalı suyu","gilas şirəsi","albalı suyu",
-      "armud şirəsi","armud suyu","banan şirəsi","kivi suyu",
-      "limon şirəsi","limon suyu","meyvə içkisi","tərəvəz şirəsi",
-      "kəvər şirəsi","kərəviz şirəsi","tomat şirəsi","pomidor şirəsi"
-    ],
-    exclude:["aromatik","aromali"]
-  },
-  ayran:     { icon:"🥤", color:"#B3E5FC", label:"Ayran",        unit:"l",    per:1000, keywords:["ayran"] },
-  su: {
-    icon:"💧", color:"#29B6F6", label:"Su",  unit:"l", per:1000,
-    keywords:["mineral su","içməli su","mənbə suyu","damla su"],
-    exclude:["meyvə suyu","alma suyu","üzüm suyu","portağal suyu","limon suyu",
-             "nar suyu","şirə","nektar","aromatik","aromali"]
-  },
-  kola:      { icon:"🫙", color:"#37474F", label:"Kola/Limonad", unit:"l",    per:1000, keywords:["kola","limonad","sprite","fanta","pepsi"] },
-
-  /* ── SWEETS / SNACKS ─────────────────────────────────────── */
-  sokolad:   { icon:"🍫", color:"#4E342E", label:"Şokolad",      unit:"100g", per:100,  keywords:["şokolad","çokolad"], exclude:["şokoladlı peçenye","şokoladlı biskvit"] },
-  halva:     { icon:"🍬", color:"#FFD54F", label:"Halva/Şirniyyat",unit:"100g",per:100, keywords:["halva","konfet","karamel","marmelad","zefir"] },
-  dondurma:  { icon:"🍨", color:"#81D4FA", label:"Dondurma",     unit:"ədəd", per:null, keywords:["dondurma"] },
-
-  /* ── OILS / CONDIMENTS ───────────────────────────────────── */
-  zeytun_yagi:  { icon:"🫒", color:"#AED581", label:"Zeytun yağı",    unit:"l", per:1000, keywords:["zeytun yağ"] },
-  ay_cicayi:    { icon:"🌻", color:"#FBC02D", label:"Günəbaxan yağı", unit:"l", per:1000, keywords:["günəbaxan yağ","ayçiçəyi yağ","bitki yağ"] },
-  mayonez:   { icon:"🥄", color:"#FFF9C4", label:"Mayonez",      unit:"100g", per:100,  keywords:["mayonez"] },
-  ketcup:    { icon:"🍅", color:"#EF9A9A", label:"Ketçup/Sous",  unit:"100g", per:100,  keywords:["ketçup","sous","adjika"], exclude:["pomidor"] },
-  duz:       { icon:"🧂", color:"#CFD8DC", label:"Duz",          unit:"kg",   per:1000, keywords:["duz"] },
-  sekerqum:  { icon:"🍚", color:"#F8BBD0", label:"Şəkər",        unit:"kg",   per:1000, keywords:["şəkər","saxarid"] },
-  istiot:    { icon:"🌶️", color:"#B71C1C", label:"İstiot/Ədviyyat",unit:"100g",per:100, keywords:["istiot","ədviyyat","zəfəran","darçın","xardal","zirə"] },
+// ── Config ──────────────────────────────────────────────────────────────────
+const STORE_COLORS = {
+  Bravo:"#e63946", OBA:"#3a86ff", Araz:"#8338ec",
+  Neptun:"#06d6a0", Rahat:"#fb5607"
+};
+const CAT_ICONS = {
+  sud:"🥛",yumurta:"🥚",kere_yagi:"🧈",pendir:"🧀",qatiq:"🫙",
+  xama:"🥄",kefir:"🥛",ayran:"🥤",
+  kartof:"🥔",pomidor:"🍅",xiyar:"🥒",soyan:"🧅",kelem:"🥬",
+  yerkoyu:"🥕",cuqundur:"🫚",qabaq:"🥜",badimcan:"🍆",
+  biber:"🌶️",sarimsaq:"🧄",ispanaq:"🌿",
+  alma:"🍎",armud:"🍐",saftal:"🍑",gilas:"🍒",
+  uzum:"🍇",banan:"🍌",kivi:"🥝",limon:"🍋",portaqal:"🍊",nar:"🍎",
+  toyuq:"🍗",dana_ati:"🥩",qoyun_ati:"🍖",hindi:"🦃",
+  kolbasa:"🌭",sosis:"🌭",baliq:"🐟",
+  duyu:"🍚",merci:"🫘",noxud:"🟡",fasulya:"🫘",
+  qarabashaq:"🌾",yulaf:"🌾",un:"🌾",makaron:"🍝",
+  corek:"🍞",pecenye:"🍪",
+  cay:"🍵",qehve:"☕",sire:"🧃",su:"💧",kola:"🥤",
+  energetik:"⚡",sokolad:"🍫",halva:"🍬",bal:"🍯",dondurma:"🍦",
+  zeytun_yagi:"🫒",ay_cicayi:"🌻",mayonez:"🫙",
+  ketcup:"🍅",xardal:"🟡",duz:"🧂",sekerqum:"🍬",istiot:"🌶️",
 };
 
-const STORE_NAMES = ["Bravo","Neptun","Rahat","OBA"];
-let allData = null, catStats = {}, activeCat = null;
+// ── State ───────────────────────────────────────────────────────────────────
+let DATA = null;
+let STORES = [];
+let currentCat = null;
+let sortMode = 'name';
+let allRows = [];
 
-/* ── DATA LOAD ── */
-fetch("/qiymet-muqayise/data/prices.json")
-  .then(r => r.json())
-  .then(data => {
-    allData = data;
-    document.getElementById("lastUpdate").textContent = data.last_updated;
-    computeCatStats();
-    renderCategories();
-  })
-  .catch(() => {
-    document.getElementById("categoriesView").innerHTML = '<div class="empty">❌ Qiymətlər yüklənə bilmədi</div>';
-  });
-
-/* ── UNIT PARSING ── */
-function parseUnit(name) {
-  const m = name.toLowerCase().match(/(\d+[.,]?\d*)\s*(kq|kg|qr|gr|g\b|l\b|lt\b|litr|ml)\b/i);
-  if (!m) return null;
-  let val = parseFloat(m[1].replace(",",".")), u = m[2].toLowerCase();
-  if (u==="kq"||u==="kg") return val*1000;
-  if (u==="qr"||u==="gr"||u==="g") return val;
-  if (u==="l"||u==="lt"||u==="litr") return val*1000;
-  if (u==="ml") return val;
-  return null;
+// ── Init ────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const r = await fetch('data/prices.json');
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    DATA = await r.json();
+    STORES = DATA.stores || ["Bravo","OBA","Araz","Neptun","Rahat"];
+    document.getElementById('last-updated').textContent =
+      DATA.last_updated ? `Yeniləndi: ${DATA.last_updated}` : '';
+    buildGrid();
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      `<div style="color:#e63946">❌ data/prices.json yüklənmədi.<br>
+       <small style="opacity:.6">python -m http.server 8000 işlədiyindən əmin ol</small></div>`;
+  }
 }
 
-function itemMatchesCat(name, cfg) {
-  if (!cfg || !cfg.keywords || !cfg.keywords.length) return true;
-  const n = name.toLowerCase();
+// ── Category grid ────────────────────────────────────────────────────────────
+function buildGrid() {
+  const loading = document.getElementById('loading');
+  const grid = document.getElementById('cat-grid');
+  loading.classList.remove('visible');
+  loading.style.display = 'none';
 
-  // Check keywords
-  if (!cfg.keywords.some(kw => n.includes(kw.toLowerCase()))) return false;
+  const cats = DATA.categories;
+  let html = '';
+  for (const [id, cat] of Object.entries(cats)) {
+    const total = Object.values(cat.stores || {})
+      .reduce((s,arr)=>s+arr.length, 0);
+    if (!total) continue;
 
-  // Check explicit excludes
-  if (cfg.exclude && cfg.exclude.some(ex => n.includes(ex.toLowerCase()))) return false;
+    // Which stores have data?
+    const activeDots = STORES
+      .filter(s => cat.stores && cat.stores[s] && cat.stores[s].length > 0)
+      .map(s => `<div class="dot" style="background:${STORE_COLORS[s]||'#888'}" title="${s}"></div>`)
+      .join('');
 
-  // For produce (fruits/veg): automatically exclude anything with a juice suffix
-  // unless this category is the juice category itself
-  if (cfg.isProduce && hasJuiceSuffix(n)) return false;
-
-  return true;
-}
-
-/* ── CATEGORY STATS ── */
-function formatSizeLabel(grams, catId) {
-  const cfg = CAT_CFG[catId];
-  const isLiq = cfg && (cfg.unit==="l"||cfg.unit==="ml");
-  if (isLiq) return grams>=1000 ? (grams/1000)+"l" : grams+"ml";
-  return grams>=1000 ? (grams/1000)+"kq" : grams+"q";
-}
-
-function computeCatStats() {
-  if (!allData) return;
-  Object.entries(allData.categories).forEach(([catId, cat]) => {
-    const cfg = CAT_CFG[catId]; if (!cfg) return;
-    let bestUnitPrice = Infinity, bestStore = null;
-    const fatMap = {}, sizeMap = {};
-    STORE_NAMES.forEach(store => {
-      (cat.stores[store]||[]).forEach(item => {
-        if (!itemMatchesCat(item.name, cfg)) return;
-        const grams = parseUnit(item.name);
-        if (cfg.per && grams && item.price) {
-          const up = (item.price/grams)*cfg.per;
-          if (up < bestUnitPrice) { bestUnitPrice=up; bestStore=store; }
-        }
-        const mf = item.name.toLowerCase().match(/(\d+[.,]\d+)\s*%/);
-        if (mf && item.price) {
-          const key = mf[1].replace(",",".")+"%";
-          const g = grams||1000;
-          const up = (item.price/g)*1000;
-          if (!fatMap[key]||up<fatMap[key].unitPrice) fatMap[key]={unitPrice:up,price:item.price,store};
-        }
-        if (cfg.per && grams && item.price) {
-          const sl = formatSizeLabel(grams, catId);
-          if (!sizeMap[sl]||item.price<sizeMap[sl].price) sizeMap[sl]={price:item.price,store};
-        }
-      });
-    });
-    const pills = [];
-    const fatKeys = Object.keys(fatMap).sort((a,b)=>parseFloat(a)-parseFloat(b));
-    if (fatKeys.length) {
-      fatKeys.slice(0,4).forEach(k => pills.push({label:k,price:fatMap[k].price,store:fatMap[k].store}));
-    } else {
-      Object.keys(sizeMap).sort((a,b)=>parseFloat(a)-parseFloat(b)).slice(0,4).forEach(k => {
-        pills.push({label:k,price:sizeMap[k].price,store:sizeMap[k].store});
-      });
-    }
-    catStats[catId] = { bestUnitPrice:bestUnitPrice===Infinity?null:bestUnitPrice, bestStore, unitLabel:cfg.unit||"100g", per:cfg.per, pills };
-  });
-}
-
-/* ── RENDER CATEGORIES ── */
-function renderCategories() {
-  if (!allData) return;
-  const search = document.getElementById("search").value.toLowerCase();
-  const el = document.getElementById("categoriesView");
-  const cats = Object.entries(allData.categories).filter(([id, cat]) => {
-    if (search && !CAT_CFG[id]?.label.toLowerCase().includes(search)) return false;
-    return Object.values(cat.stores).some(items => items.length > 0);
-  });
-
-  el.innerHTML = cats.map(([catId, cat]) => {
-    const cfg = CAT_CFG[catId] || { icon:"📦", color:"#999", label:cat.name };
-    const count = Object.values(cat.stores).reduce((s,items)=>s+items.length,0);
-    const stats = catStats[catId];
-    let barHtml = stats && stats.bestUnitPrice !== null
-      ? `<div class="cat-price-bar" style="background:${cfg.color}">
-          <span class="bar-label">Ən ucuz /&nbsp;${stats.unitLabel}</span>
-          <span class="bar-value">₼${stats.bestUnitPrice.toFixed(2)}</span>
-          <span class="bar-store" style="background:${COLORS[stats.bestStore]||cfg.color}">${stats.bestStore}</span>
-        </div>`
-      : `<div class="cat-price-bar loading"></div>`;
-    let pillsHtml = "";
-    if (stats && stats.pills && stats.pills.length) {
-      const minP = Math.min(...stats.pills.map(p=>p.price));
-      pillsHtml = `<div class="cat-unit-pills">${stats.pills.map(p=>`<span class="unit-pill${p.price===minP?' best-pill':''}" style="--cat-color:${cfg.color}">${p.label} ₼${p.price.toFixed(2)}</span>`).join("")}</div>`;
-    }
-    return `<div class="category-card" style="--cat-color:${cfg.color}" onclick="selectCategory('${catId}')">
-      ${barHtml}
-      <div class="cat-body">
-        <div class="cat-icon">${cfg.icon}</div>
-        <div class="cat-name">${cat.name}</div>
-        <div class="cat-count">${count} məhsul</div>
-        ${pillsHtml}
-      </div>
+    const icon = CAT_ICONS[id] || '📦';
+    html += `<div class="cat-card" onclick="openCat('${id}')">
+      <div class="cat-icon">${icon}</div>
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-count">${total} məhsul</div>
+      <div class="cat-stores">${activeDots}</div>
     </div>`;
-  }).join("") || '<div class="empty">Heç nə tapılmadı</div>';
-}
-
-/* ── SEARCH ── */
-function handleSearch() {
-  if (activeCat) renderDetail(activeCat);
-  else renderCategories();
-}
-
-/* ── SELECT CATEGORY → DETAIL ── */
-function selectCategory(catId) {
-  activeCat = catId;
-  document.getElementById("categoriesView").style.display = "none";
-  document.getElementById("detailView").style.display = "block";
-  document.getElementById("search").value = "";
-  renderDetail(catId);
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function goBack() {
-  activeCat = null;
-  document.getElementById("categoriesView").style.display = "grid";
-  document.getElementById("detailView").style.display = "none";
-  document.getElementById("search").value = "";
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-/* ── PRODUCT MATCHING ── */
-function normalize(s){ return s.toLowerCase().replace(/\s+/g," ").replace(/,/g,".").trim(); }
-function similarity(a,b){
-  const wa=normalize(a).split(" "), wb=normalize(b).split(" ");
-  const common=wa.filter(w=>wb.includes(w)&&w.length>1);
-  return common.length/Math.max(wa.length,wb.length);
-}
-function matchProducts(stores, cfg) {
-  let all = [];
-  STORE_NAMES.forEach(s => {
-    (stores[s]||[]).forEach(item => {
-      if (cfg && !itemMatchesCat(item.name, cfg)) return;
-      all.push({...item, store:s});
-    });
-  });
-  const groups=[], used=new Set();
-  all.forEach((item,i) => {
-    if (used.has(i)) return;
-    const group={name:item.name, stores:{}};
-    group.stores[item.store]=item.price;
-    used.add(i);
-    all.forEach((other,j) => {
-      if (used.has(j)||other.store===item.store) return;
-      if (similarity(item.name,other.name)>=0.6) { group.stores[other.store]=other.price; used.add(j); }
-    });
-    groups.push(group);
-  });
-  return groups;
-}
-
-/* ── BEST BOX ── */
-function getAttr(name, type) {
-  const n = name.toLowerCase();
-  if (type==="fat") { const m=n.match(/(\d+[.,]\d+)\s*%/); return m?m[1].replace(",",".")+"%":null; }
-  if (type==="size") {
-    const m=n.match(/(\d+[.,]?\d*)\s*(kq|kg|qr|gr|g|l|lt|litr|ml)\b/i);
-    if (!m) return null;
-    let val=parseFloat(m[1].replace(",",".")), u=m[2].toLowerCase();
-    if (u==="kq"||u==="kg") return val+"kq";
-    if (u==="qr"||u==="gr"||u==="g") return val+"q";
-    if (u==="l"||u==="lt"||u==="litr") return val+"l";
-    if (u==="ml") return val+"ml";
-    return null;
   }
-  return null;
+  grid.innerHTML = html || '<div class="empty">Məlumat tapılmadı</div>';
 }
 
-function renderBestBox(groups) {
-  if (!groups.length) return "";
-  const byFat={}, bySize={};
-  groups.forEach(g => {
-    const fat=getAttr(g.name,"fat");
-    if (fat) Object.entries(g.stores).filter(([,p])=>p).forEach(([store,price]) => {
-      if (!byFat[fat]||price<byFat[fat].price) byFat[fat]={name:g.name,store,price};
-    });
-    const size=getAttr(g.name,"size");
-    if (size) Object.entries(g.stores).filter(([,p])=>p).forEach(([store,price]) => {
-      if (!bySize[size]||price<bySize[size].price) bySize[size]={name:g.name,store,price};
-    });
-  });
-  const fats=Object.keys(byFat).sort((a,b)=>parseFloat(a)-parseFloat(b));
-  const toG=s=>{const m=s.match(/([\d.]+)(.*)/);if(!m)return 0;const v=parseFloat(m[1]),u=m[2];if(u==="kq")return v*1000;if(u==="l")return v*1000;if(u==="ml")return v;return v;};
-  const sizes=Object.keys(bySize).sort((a,b)=>toG(a)-toG(b));
-  let html="";
-  if (fats.length) {
-    html+=`<div class="section-title"><span class="section-icon">⭐</span>HƏR FAİZ ÜZRƏ ƏN UCUZ</div>
-    <div class="table-wrap"><table><thead><tr>
-      <th class="left">FAİZ</th><th class="left">MƏHSUL</th><th class="left">MAĞAZA</th><th>QİYMƏT</th>
-    </tr></thead><tbody>
-    ${fats.map((fat,i)=>{const w=byFat[fat];return`<tr class="${i%2===0?'even':'odd'}">
-      <td class="left"><b>${fat}</b></td><td class="left">${w.name}</td>
-      <td class="left"><span class="store-tag" style="background:${COLORS[w.store]}">${w.store}</span></td>
-      <td class="best">★ ₼${w.price.toFixed(2)}</td></tr>`;}).join("")}
-    </tbody></table></div>`;
-  }
-  if (sizes.length) {
-    html+=`<div class="section-title"><span class="section-icon">📦</span>HƏR ÖLÇÜ ÜZRƏ ƏN UCUZ</div>
-    <div class="table-wrap"><table><thead><tr>
-      <th class="left">ÖLÇÜ</th><th class="left">MƏHSUL</th><th class="left">MAĞAZA</th><th>QİYMƏT</th>
-    </tr></thead><tbody>
-    ${sizes.map((size,i)=>{const w=bySize[size];return`<tr class="${i%2===0?'even':'odd'}">
-      <td class="left"><b>${size}</b></td><td class="left">${w.name}</td>
-      <td class="left"><span class="store-tag" style="background:${COLORS[w.store]}">${w.store}</span></td>
-      <td class="best">★ ₼${w.price.toFixed(2)}</td></tr>`;}).join("")}
-    </tbody></table></div>`;
-  }
-  return html;
+// ── Open category ─────────────────────────────────────────────────────────
+function openCat(catId) {
+  currentCat = catId;
+  sortMode = 'name';
+  document.querySelectorAll('.sort-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.getElementById('search-input').value = '';
+
+  const cat = DATA.categories[catId];
+  const icon = CAT_ICONS[catId] || '📦';
+
+  document.getElementById('cat-icon-big').textContent = icon;
+  document.getElementById('cat-title').textContent = cat.name;
+
+  // Legend
+  const legend = document.getElementById('store-legend');
+  legend.innerHTML = STORES.map(s => {
+    const cnt = cat.stores && cat.stores[s] ? cat.stores[s].length : 0;
+    return `<div class="legend-item">
+      <div style="width:10px;height:10px;border-radius:50%;background:${STORE_COLORS[s]||'#888'}"></div>
+      <span>${s} (${cnt})</span>
+    </div>`;
+  }).join('') + `<div class="legend-item">
+    <div style="width:10px;height:10px;border-radius:50%;background:#009de0"></div>
+    <span>W = Wolt qiyməti</span>
+  </div>`;
+
+  // Build table
+  buildTable(catId);
+
+  // Toggle views
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('cat-view').style.display = 'block';
+  document.getElementById('back-btn').style.display = 'flex';
+  window.scrollTo(0,0);
 }
 
-/* ── RENDER DETAIL ── */
-function renderDetail(catId) {
-  if (!allData) return;
-  const cat = allData.categories[catId];
-  const cfg = CAT_CFG[catId] || null;
-  const c = cfg || { icon:"📦" };
-  const search = document.getElementById("search").value.toLowerCase();
-  let groups = matchProducts(cat.stores, cfg);
-  if (search) groups = groups.filter(g => g.name.toLowerCase().includes(search));
+// ── Build table ──────────────────────────────────────────────────────────────
+function similarity(a, b) {
+  const wa = new Set(a.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
+  const wb = new Set(b.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
+  let inter = 0;
+  wa.forEach(w => { if(wb.has(w)) inter++; });
+  return inter / Math.max(wa.size, wb.size, 1);
+}
 
-  groups.sort((a,b) => {
-    const minA=Math.min(...Object.values(a.stores).filter(Boolean));
-    const minB=Math.min(...Object.values(b.stores).filter(Boolean));
-    return minA-minB;
+function buildTable(catId) {
+  const cat = DATA.categories[catId];
+  const head = document.getElementById('table-head');
+  const body = document.getElementById('table-body');
+
+  // Header
+  let thHtml = '<tr><th>Məhsul</th>';
+  STORES.forEach(s => {
+    const c = STORE_COLORS[s] || '#888';
+    thHtml += `<th><div class="store-header">
+      <div class="store-dot" style="background:${c}"></div>${s}
+    </div></th>`;
+  });
+  thHtml += '</tr>';
+  head.innerHTML = thHtml;
+
+  // Collect all unique products across all stores
+  const storeItems = {};
+  STORES.forEach(s => {
+    storeItems[s] = (cat.stores && cat.stores[s]) ? [...cat.stores[s]] : [];
   });
 
-  let tableHtml = "";
-  if (groups.length) {
-    tableHtml = `<div class="section-title"><span class="section-icon">${c.icon}</span>${cat.name} — ${groups.length} məhsul</div>
-    <div class="table-wrap"><table><thead><tr>
-      <th class="left">MƏHSUL</th>
-      ${STORE_NAMES.map(s=>`<th><span class="dot" style="background:${COLORS[s]}"></span>${s.toUpperCase()}</th>`).join("")}
-      <th>QƏNAƏT</th>
-    </tr></thead><tbody>`;
-    groups.forEach((g,i) => {
-      const prices=STORE_NAMES.map(s=>g.stores[s]||null);
-      const valid=prices.filter(Boolean);
-      const min=valid.length?Math.min(...valid):null;
-      const max=valid.length?Math.max(...valid):null;
-      const saving=min&&max&&max>min
-        ?`<span class="saving g">−₼${(max-min).toFixed(2)}</span>`
-        :`<span class="saving s">—</span>`;
-      tableHtml+=`<tr class="${i%2===0?'even':'odd'}">
-        <td class="left">${g.name}</td>
-        ${STORE_NAMES.map(s=>{
-          const p=g.stores[s];
-          if(!p) return`<td class="none">—</td>`;
-          const best=p===min&&valid.length>1, worst=p===max&&min!==max;
-          return`<td class="${best?'best':worst?'worst':''}">${best?'★ ':worst?'● ':''}₼${p.toFixed(2)}</td>`;
-        }).join("")}
-        <td>${saving}</td>
-      </tr>`;
+  // Build unified product list
+  const unified = [];
+  const usedPerStore = {};
+  STORES.forEach(s => usedPerStore[s] = new Set());
+
+  // Start with the store that has most items
+  const anchor = STORES.slice().sort((a,b)=>
+    storeItems[b].length - storeItems[a].length)[0];
+
+  storeItems[anchor].forEach((item, idx) => {
+    const row = { name: item.name, prices: {} };
+    row.prices[anchor] = { own: item.price, wolt: item.wolt_price };
+    usedPerStore[anchor].add(idx);
+
+    // Match to other stores
+    STORES.filter(s => s !== anchor).forEach(s => {
+      let bestSim = 0, bestIdx = -1;
+      storeItems[s].forEach((si, i) => {
+        if(usedPerStore[s].has(i)) return;
+        const sim = similarity(item.name, si.name);
+        if(sim > bestSim){ bestSim = sim; bestIdx = i; }
+      });
+      if(bestSim >= 0.5 && bestIdx >= 0){
+        const si = storeItems[s][bestIdx];
+        row.prices[s] = { own: si.price, wolt: si.wolt_price };
+        usedPerStore[s].add(bestIdx);
+      }
     });
-    tableHtml+=`</tbody></table></div>`;
+    unified.push(row);
+  });
+
+  // Add unmatched items from other stores
+  STORES.filter(s => s !== anchor).forEach(s => {
+    storeItems[s].forEach((item, idx) => {
+      if(usedPerStore[s].has(idx)) return;
+      const row = { name: item.name, prices: {} };
+      row.prices[s] = { own: item.price, wolt: item.wolt_price };
+      unified.push(row);
+    });
+  });
+
+  allRows = unified;
+  renderRows(sortAndFilter());
+
+  const total = unified.length;
+  document.getElementById('cat-subtitle').textContent =
+    `${total} məhsul • ${STORES.filter(s=>storeItems[s].length>0).join(', ')}`;
+}
+
+function sortAndFilter() {
+  const q = (document.getElementById('search-input').value||'').toLowerCase().trim();
+  let rows = q
+    ? allRows.filter(r => r.name.toLowerCase().includes(q))
+    : [...allRows];
+
+  if(sortMode === 'name') {
+    rows.sort((a,b) => a.name.localeCompare(b.name,'az'));
   } else {
-    tableHtml=`<div class="empty">Heç nə tapılmadı</div>`;
+    rows.sort((a,b) => {
+      const pa = minPrice(a), pb = minPrice(b);
+      if(pa === null && pb === null) return 0;
+      if(pa === null) return 1;
+      if(pb === null) return -1;
+      return sortMode === 'price_asc' ? pa - pb : pb - pa;
+    });
   }
-
-  document.getElementById("detailView").innerHTML =
-    `<button class="back-btn" onclick="goBack()">← Kateqoriyalara qayıt</button>` +
-    renderBestBox(groups) +
-    tableHtml;
+  return rows;
 }
+
+function minPrice(row) {
+  let min = null;
+  STORES.forEach(s => {
+    const p = row.prices[s];
+    if(!p) return;
+    const v = p.own ?? p.wolt;
+    if(v !== undefined && v !== null && (min === null || v < min)) min = v;
+  });
+  return min;
+}
+
+function renderRows(rows) {
+  const body = document.getElementById('table-body');
+  const noRes = document.getElementById('no-results');
+
+  if(!rows.length){
+    body.innerHTML = '';
+    noRes.style.display = 'block';
+    return;
+  }
+  noRes.style.display = 'none';
+
+  // Find cheapest store for each row
+  let html = '';
+  rows.forEach(row => {
+    let cheapestStore = null, cheapestPrice = null;
+    STORES.forEach(s => {
+      const p = row.prices[s];
+      if(!p) return;
+      const v = p.own ?? null;
+      if(v !== null && (cheapestPrice === null || v < cheapestPrice)){
+        cheapestPrice = v; cheapestStore = s;
+      }
+    });
+
+    let cells = `<td class="td-name">${esc(row.name)}</td>`;
+    STORES.forEach(s => {
+      const p = row.prices[s];
+      if(!p){
+        cells += `<td class="price-cell"><span class="dash">—</span></td>`;
+        return;
+      }
+
+      let inner = '';
+      if(p.own !== undefined && p.own !== null){
+        const isCheap = (s === cheapestStore);
+        inner += `<div class="price-own${isCheap?' cheapest':''}">₼${fmt(p.own)}</div>`;
+      }
+      if(p.wolt !== undefined && p.wolt !== null){
+        const diff = p.own !== undefined && p.own !== null ? p.wolt - p.own : 0;
+        const cls = diff < -0.01 ? 'wolt-badge cheaper'
+                  : diff > 0.01  ? 'wolt-badge pricier'
+                  : 'wolt-badge';
+        inner += `<div class="${cls}">W ₼${fmt(p.wolt)}</div>`;
+      }
+      if(!inner){
+        inner = `<span class="dash">—</span>`;
+      }
+      cells += `<td class="price-cell">${inner}</td>`;
+    });
+    html += `<tr>${cells}</tr>`;
+  });
+  body.innerHTML = html;
+}
+
+function filterTable(){
+  renderRows(sortAndFilter());
+}
+
+function setSort(mode){
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(mode));
+  });
+  renderRows(sortAndFilter());
+}
+
+function showHome(){
+  document.getElementById('home-view').style.display = 'block';
+  document.getElementById('cat-view').style.display = 'none';
+  document.getElementById('back-btn').style.display = 'none';
+  window.scrollTo(0,0);
+}
+
+function fmt(n){ return n !== null && n !== undefined ? Number(n).toFixed(2) : '—'; }
+function esc(s){ 
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+init();
 </script>
 </body>
 </html>
