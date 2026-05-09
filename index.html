@@ -9,16 +9,15 @@
 :root{
   --bg:#f7f4ef; --bg2:#fff; --bg3:#f0ece4; --border:#e2dbd0;
   --text:#1a1612; --muted:#9a9088; --accent:#c8410b; --ink:#2d2620;
-  --cheap-c:#16a34a; --cheap-bg:#f0fdf4;
-  --exp-c:#dc2626; --exp-bg:#fff1f1;
-  --wolt:#009de0;
-  --bravo:#d72b3f; --oba:#1a5fe0; --araz:#7c3aed; --neptun:#0d9b6e; --rahat:#e05c14;
+  --cheap-c:#16a34a; --cheap-bg:#f0fdf4; --cheap-border:#bbf7d0;
+  --exp-c:#dc2626; --exp-bg:#fff5f5; --exp-border:#fecaca;
+  --wolt-c:#64b5d4;
   --r:10px; --r2:6px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-/* HEADER */
+/* ── HEADER ── */
 header{
   background:var(--ink);padding:11px 18px;
   position:sticky;top:0;z-index:200;
@@ -35,7 +34,7 @@ header{
 }
 #back-btn svg{width:12px;height:12px;}
 
-/* HOME */
+/* ── HOME ── */
 #home-view{padding:16px;}
 .sec-label{font-size:10px;font-weight:700;letter-spacing:2px;
   color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
@@ -71,37 +70,39 @@ header{
 #cat-sub{font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;
   font-family:'Space Mono',monospace;}
 
-/* ── UNIT PRICE SUMMARY CARDS ── */
+/* ── UNIT CARDS ── */
 .unit-section{
-  padding:12px 18px 4px;
-  background:var(--bg3);
-  border-bottom:1px solid var(--border);
+  padding:11px 18px 13px;
+  background:var(--bg3);border-bottom:1px solid var(--border);
 }
-.unit-label{font-size:9px;font-weight:700;letter-spacing:1.5px;
-  color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
-.unit-cards{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-  margin-bottom:10px;
+.unit-sec-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
 }
+.unit-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
 .unit-card{
   background:var(--bg2);border:1.5px solid var(--border);
   border-radius:var(--r2);padding:9px 10px;
 }
-.unit-card.has-data{border-color:rgba(22,163,74,.25);}
-.unit-heading{font-size:9px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
-.unit-price{
-  font-family:'Space Mono',monospace;font-size:14px;font-weight:700;
+.unit-card.has-data{border-color:var(--cheap-border);}
+.unit-card-heading{
+  font-size:9px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;
+}
+.unit-card-price{
+  font-family:'Space Mono',monospace;font-size:15px;font-weight:700;
   color:var(--cheap-c);line-height:1;
 }
-.unit-empty{font-size:10px;color:var(--border);}
-.unit-brand{font-size:10px;color:var(--text);margin-top:3px;
-  font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.unit-store{display:inline-flex;align-items:center;gap:3px;
-  font-size:9px;color:var(--muted);margin-top:2px;}
-.unit-store-dot{width:5px;height:5px;border-radius:50%;}
+.unit-card-name{
+  font-size:10px;font-weight:600;color:var(--text);
+  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.unit-card-store{
+  display:flex;align-items:center;gap:3px;margin-top:2px;
+}
+.unit-card-dot{width:5px;height:5px;border-radius:50%;}
+.unit-card-store-name{font-size:9px;color:var(--muted);}
+.unit-card-empty{font-size:12px;color:var(--border);padding:4px 0;}
 
 /* ── TOOLBAR ── */
 .toolbar{
@@ -123,72 +124,100 @@ header{
 }
 .srt.on{background:var(--ink);border-color:var(--ink);color:#fff;}
 
-/* ── PRODUCT LIST ── */
-.prod-list{padding:10px 18px 40px;}
-.prod-row{
-  background:var(--bg2);border:1.5px solid var(--border);
-  border-radius:var(--r);padding:11px 14px;
-  margin-bottom:7px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:8px;align-items:start;
+/* ── TABLE (Excel style) ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:14px 18px 40px;}
+table{width:100%;border-collapse:collapse;min-width:520px;font-size:13px;}
+
+thead th{
+  background:var(--bg3);
+  padding:9px 12px;
+  font-size:9px;font-weight:700;letter-spacing:.8px;
+  color:var(--muted);text-transform:uppercase;
+  border-bottom:2px solid var(--border);
+  white-space:nowrap;
 }
-.prod-name{font-size:13px;font-weight:600;line-height:1.3;color:var(--text);}
-.prod-savings{
-  font-family:'Space Mono',monospace;font-size:13px;font-weight:700;
-  color:var(--cheap-c);text-align:right;white-space:nowrap;flex-shrink:0;
-  padding-top:1px;
+thead th.store-th{text-align:center;}
+thead th.right{text-align:right;}
+thead th:first-child{text-align:left;border-radius:var(--r2) 0 0 0;min-width:160px;}
+thead th:last-child{border-radius:0 var(--r2) 0 0;}
+
+/* Store header pill */
+.th-store-pill{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
 }
-.prod-savings.zero{color:var(--border);font-size:11px;}
-/* store price line */
-.store-prices{
-  display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;align-items:center;
-}
-.sp-item{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:12px;white-space:nowrap;
-}
-.sp-store{font-weight:600;color:var(--muted);}
-.sp-price{
-  font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
+.th-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:var(--bg3);}
+tbody tr:last-child{border-bottom:none;}
+
+td{padding:9px 12px;vertical-align:middle;}
+.td-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;max-width:175px;}
+
+/* Price cells — center aligned like Excel */
+.td-price{text-align:center;white-space:nowrap;min-width:80px;}
+
+/* Price value states */
+.pval{
+  display:inline-flex;align-items:center;gap:3px;
+  font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
   color:var(--text);
+  border-radius:5px;padding:3px 7px;
+  background:transparent;
 }
 /* cheapest */
-.sp-item.is-cheap .sp-store{color:var(--cheap-c);}
-.sp-item.is-cheap .sp-price{color:var(--cheap-c);}
-.star{color:var(--cheap-c);font-size:11px;}
+.pval.cheap{
+  color:var(--cheap-c);background:var(--cheap-bg);
+  border:1px solid var(--cheap-border);
+}
+.pval .star{font-size:9px;color:var(--cheap-c);}
 /* most expensive */
-.sp-item.is-exp .sp-store{color:var(--exp-c);}
-.sp-item.is-exp .sp-price{color:var(--exp-c);}
-.reddot{
-  width:7px;height:7px;border-radius:50%;
+.pval.xpen{
+  color:var(--exp-c);background:var(--exp-bg);
+  border:1px solid var(--exp-border);
+}
+.pval .reddot{
+  width:6px;height:6px;border-radius:50%;
   background:var(--exp-c);flex-shrink:0;
 }
-/* wolt only */
-.sp-item.wolt-only .sp-store{color:var(--wolt);opacity:.75;}
-.sp-item.wolt-only .sp-price{color:var(--wolt);opacity:.75;}
-.wbadge{
-  font-family:'Space Mono',monospace;font-size:7px;font-weight:700;
-  background:var(--wolt);color:#fff;border-radius:2px;padding:1px 3px;
-  vertical-align:super;margin-left:1px;
+/* wolt-only */
+.pval.wonly{color:var(--wolt-c);opacity:.8;}
+/* wolt suffix — small, subdued */
+.wsuf{
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--wolt-c);opacity:.7;
+  vertical-align:super;margin-left:1px;font-weight:400;
 }
-.sep{color:var(--border);font-size:14px;margin:0 1px;}
 
-.empty-st{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+.dash{color:var(--border);font-size:16px;}
 
-/* MOBILE */
+/* Savings column */
+.td-saving{text-align:right;white-space:nowrap;min-width:60px;}
+.sav-val{
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+  color:var(--cheap-c);
+}
+.sav-none{color:var(--border);font-size:14px;}
+
+.empty-st{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+
+/* ── MOBILE ── */
 @media(max-width:600px){
   .unit-cards{grid-template-columns:repeat(2,1fr);}
-  .unit-price{font-size:13px;}
   .toolbar{top:40px;padding:8px 12px;}
-  .prod-list{padding:8px 12px 30px;}
+  .tbl-wrap{padding:10px 10px 30px;}
   #home-view{padding:12px;}
-  .cat-cards{gap:7px;}
+  thead th{font-size:8px;padding:7px 8px;}
+  td{padding:7px 8px;}
+  .td-name{font-size:11px;max-width:100px;}
+  .pval{font-size:11px;padding:2px 5px;}
   #cat-title{font-size:15px;}
   .cat-top{padding:12px;}
+  .unit-section{padding:9px 12px 11px;}
 }
 @media(max-width:380px){
   .cat-grid{grid-template-columns:repeat(2,1fr);}
+  .unit-cards{grid-template-columns:repeat(2,1fr);}
 }
 </style>
 </head>
@@ -212,7 +241,7 @@ header{
   <div class="cat-grid" id="cat-grid"></div>
 </div>
 
-<!-- CATEGORY -->
+<!-- CATEGORY VIEW -->
 <div id="cat-view">
   <div class="cat-top">
     <div id="cat-icon"></div>
@@ -222,9 +251,9 @@ header{
     </div>
   </div>
 
-  <!-- Unit price summary -->
+  <!-- Smart unit price cards -->
   <div class="unit-section">
-    <div class="unit-label">Vahid qiyməti üzrə ən ucuz</div>
+    <div class="unit-sec-label">Ən sərfəli qiymət — vahid üzrə (kq / litr)</div>
     <div class="unit-cards" id="unit-cards"></div>
   </div>
 
@@ -236,9 +265,14 @@ header{
     <button class="srt"    onclick="setSort('sav',this)">Qənaət↓</button>
   </div>
 
-  <!-- Product list -->
-  <div class="prod-list" id="prod-list"></div>
-  <div class="empty-st" id="empty" style="display:none">Məhsul tapılmadı</div>
+  <!-- Excel table -->
+  <div class="tbl-wrap">
+    <table id="tbl">
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty-st" id="empty" style="display:none">Məhsul tapılmadı</div>
+  </div>
 </div>
 
 <script>
@@ -260,57 +294,58 @@ const CI={
 
 let DATA=null, STORES=[], sortMode='name', allRows=[];
 
-// ── Weight parser → returns grams or ml ───────────────────────────────────
+// ── Weight parsing ────────────────────────────────────────────────────────
+// Returns {grams: number, isLiquid: bool} or null
 function parseWeight(name){
-  const n=name.toLowerCase();
-  const pats=[
-    [/(\d+[\.,]?\d*)\s*kq\b/i,  1000],
-    [/(\d+[\.,]?\d*)\s*kg\b/i,  1000],
-    [/(\d+[\.,]?\d*)\s*litr/i,  1000],
-    [/(\d+[\.,]?\d*)\s*\bl\b/i, 1000],
-    [/(\d+[\.,]?\d*)\s*lt\b/i,  1000],
-    [/(\d+[\.,]?\d*)\s*ml\b/i,  1],
-    [/(\d+[\.,]?\d*)\s*\bq\b/i, 1],
-    [/(\d+[\.,]?\d*)\s*gr?\b/i, 1],
-    [/(\d+[\.,]?\d*)\s*г\b/i,   1],
-    [/(\d+[\.,]?\d*)\s*кг\b/i,  1000],
+  const n = name.toLowerCase();
+  const pats = [
+    {re:/(\d+[\.,]?\d*)\s*kq\b/i,  mult:1000, liq:false},
+    {re:/(\d+[\.,]?\d*)\s*kg\b/i,  mult:1000, liq:false},
+    {re:/(\d+[\.,]?\d*)\s*litr/i,  mult:1000, liq:true},
+    {re:/(\d+[\.,]?\d*)\s*\bl\b/i, mult:1000, liq:true},
+    {re:/(\d+[\.,]?\d*)\s*lt\b/i,  mult:1000, liq:true},
+    {re:/(\d+[\.,]?\d*)\s*ml\b/i,  mult:1,    liq:true},
+    {re:/(\d+[\.,]?\d*)\s*\bq\b/i, mult:1,    liq:false},
+    {re:/(\d+[\.,]?\d*)\s*gr?\b/i, mult:1,    liq:false},
+    {re:/(\d+[\.,]?\d*)\s*г\b/i,   mult:1,    liq:false},
+    {re:/(\d+[\.,]?\d*)\s*кг\b/i,  mult:1000, liq:false},
   ];
-  for(const[re,mult] of pats){
-    const m=n.match(re);
+  for(const p of pats){
+    const m = n.match(p.re);
     if(m){
-      const v=parseFloat(m[1].replace(',','.'));
-      if(v>0) return {g:v*mult, raw:v, unit:mult===1000?'kq/L':'q/ml'};
+      const v = parseFloat(m[1].replace(',','.'));
+      if(v > 0) return {grams: v*p.mult, isLiquid: p.liq};
     }
   }
   return null;
 }
 
-// price per X grams
-function perUnit(price, wg, target){
-  if(!wg||price==null) return null;
-  return Math.round(price/wg.g*target*100)/100;
+// Price per 1000g (= per kq or per L)
+function perKg(price, wg){
+  if(!wg || price == null || wg.grams <= 0) return null;
+  return price / wg.grams * 1000;
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
 async function init(){
   try{
-    const r=await fetch('data/prices.json');
+    const r = await fetch('data/prices.json');
     if(!r.ok) throw new Error(r.status);
-    DATA=await r.json();
-    STORES=DATA.stores||["Bravo","OBA","Araz","Neptun","Rahat"];
+    DATA = await r.json();
+    STORES = DATA.stores || ["Bravo","OBA","Araz","Neptun","Rahat"];
     if(DATA.last_updated)
-      document.getElementById('last-upd').textContent='↺ '+DATA.last_updated;
+      document.getElementById('last-upd').textContent = '↺ '+DATA.last_updated;
     buildGrid();
   }catch(e){
-    document.getElementById('loading').innerHTML=
+    document.getElementById('loading').innerHTML =
       `<div style="color:#d72b3f;font-size:14px">❌ data/prices.json yüklənmədi<br>
-      <small style="opacity:.6;font-size:11px">python -m http.server 8000 işlətməyi unutma</small></div>`;
+      <small style="opacity:.5;font-size:11px">python -m http.server 8000</small></div>`;
   }
 }
 
 function buildGrid(){
   document.getElementById('loading').style.display='none';
-  const grid=document.getElementById('cat-grid');
+  const grid = document.getElementById('cat-grid');
   let html='';
   for(const[id,cat] of Object.entries(DATA.categories)){
     const total=Object.values(cat.stores||{}).reduce((s,a)=>s+a.length,0);
@@ -326,14 +361,14 @@ function buildGrid(){
         <div class="cat-dots">${dots}</div>
       </div></div>`;
   }
-  grid.innerHTML=html||'<div style="color:var(--muted)">Məlumat yoxdur</div>';
+  grid.innerHTML = html||'<div style="color:var(--muted)">Məlumat yoxdur</div>';
 }
 
 // ── Similarity ────────────────────────────────────────────────────────────
 function sim(a,b){
   const wa=new Set(a.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
   const wb=new Set(b.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
-  let i=0;wa.forEach(w=>{if(wb.has(w))i++;});
+  let i=0; wa.forEach(w=>{if(wb.has(w))i++;});
   return i/Math.max(wa.size,wb.size,1);
 }
 
@@ -343,22 +378,21 @@ function openCat(catId){
   document.querySelectorAll('.srt').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.getElementById('srch').value='';
 
-  const cat=DATA.categories[catId];
-  document.getElementById('cat-icon').textContent=CI[catId]||'📦';
-  document.getElementById('cat-title').textContent=cat.name;
+  const cat = DATA.categories[catId];
+  document.getElementById('cat-icon').textContent = CI[catId]||'📦';
+  document.getElementById('cat-title').textContent = cat.name;
 
-  // Build store items map
   const storeItems={};
   STORES.forEach(s=>{storeItems[s]=(cat.stores&&cat.stores[s])?[...cat.stores[s]]:[];});
 
-  // Build unified rows
+  // Build unified rows (match same products across stores)
   const anchor=STORES.slice().sort((a,b)=>storeItems[b].length-storeItems[a].length)[0];
   const used={};STORES.forEach(s=>used[s]=new Set());
   const unified=[];
 
   storeItems[anchor].forEach((item,idx)=>{
-    const row={name:item.name, prices:{}};
-    row.prices[anchor]={own:item.price, wolt:item.wolt_price};
+    const row={name:item.name,prices:{}};
+    row.prices[anchor]={own:item.price,wolt:item.wolt_price};
     used[anchor].add(idx);
     STORES.filter(s=>s!==anchor).forEach(s=>{
       let bs=0,bi=-1;
@@ -381,25 +415,28 @@ function openCat(catId){
     });
   });
 
-  // Pre-compute stats
+  // Pre-compute per-row stats
   unified.forEach(row=>{
-    const own=STORES
+    row._wg = parseWeight(row.name);
+    const ownEntries = STORES
       .filter(s=>row.prices[s]&&row.prices[s].own!=null)
-      .map(s=>({store:s,price:row.prices[s].own}))
-      .sort((a,b)=>a.price-b.price);
-    row._own=own;
-    row._min=own[0]||null;
-    row._max=own[own.length-1]||null;
-    row._saving=own.length>1?Math.round((row._max.price-row._min.price)*100)/100:0;
-    row._wg=parseWeight(row.name);
+      .map(s=>({s, p:row.prices[s].own}));
+    ownEntries.sort((a,b)=>a.p-b.p);
+    row._cheapStore = ownEntries[0]||null;
+    row._expStore   = ownEntries.length>1 ? ownEntries[ownEntries.length-1] : null;
+    row._saving     = ownEntries.length>1
+      ? Math.round((row._expStore.p - row._cheapStore.p)*100)/100 : 0;
+    // per-kg price at cheapest store
+    row._cheapPerKg = (row._cheapStore && row._wg)
+      ? perKg(row._cheapStore.p, row._wg) : null;
   });
 
-  allRows=unified;
-  const total=unified.length;
+  allRows = unified;
   const act=STORES.filter(s=>storeItems[s].length>0).join(', ');
-  document.getElementById('cat-sub').textContent=`${total} məhsul • ${act}`;
+  document.getElementById('cat-sub').textContent=`${unified.length} məhsul • ${act}`;
 
   buildUnitCards(unified);
+  buildTableHeader();
   rerender();
 
   document.getElementById('home-view').style.display='none';
@@ -408,84 +445,85 @@ function openCat(catId){
   window.scrollTo(0,0);
 }
 
-// ── Unit price summary cards ───────────────────────────────────────────────
+// ── Smart unit price cards ────────────────────────────────────────────────
+// For each product+store, compute ₼/kq or ₼/L. Show the one with lowest ₼/unit.
+// Separate solid vs liquid.
 function buildUnitCards(rows){
-  // targets: label, grams
-  const targets=[
-    {label:'100 q / 100 ml', g:100},
-    {label:'1 kq / 1 L',     g:1000},
-  ];
+  // Find best (min ₼/kq) for solid and liquid separately
+  let bestSolid=null, bestLiquid=null;
 
-  // For each target, find cheapest per-unit across all rows + all stores
-  const cards=document.getElementById('unit-cards');
+  rows.forEach(row=>{
+    if(!row._wg) return;
+    STORES.forEach(s=>{
+      const p=row.prices[s];
+      if(!p||p.own==null) return;
+      const pk = perKg(p.own, row._wg);
+      if(pk==null||pk<=0) return;
 
-  // We'll compute for 100q and 1kq separately
-  // For 100q: show cheapest ₼/100g product
-  // For 1kq: show cheapest ₼/1000g product
-  // Do it per store too — find overall cheapest
-
-  const targets2=[
-    {label:'100 q',  g:100,  desc:'yüz qrama görə'},
-    {label:'100 ml', g:100,  desc:'yüz millilitrə görə'},
-    {label:'1 kq',   g:1000, desc:'bir kiloqrama görə'},
-    {label:'1 L',    g:1000, desc:'bir litrə görə'},
-  ];
-
-  // Separate solid and liquid
-  function isLiquid(name){
-    const n=name.toLowerCase();
-    return /\d\s*ml\b|\d\s*l\b|\d\s*litr/.test(n);
-  }
-  function isSolid(name){
-    const n=name.toLowerCase();
-    return /\d\s*q\b|\d\s*g\b|\d\s*kq\b|\d\s*kg\b|\d\s*gr?\b/.test(n) && !isLiquid(name);
-  }
-
-  const groups=[
-    {label:'100 q',  g:100,  filter:r=>isSolid(r.name)},
-    {label:'100 ml', g:100,  filter:r=>isLiquid(r.name)},
-    {label:'1 kq',   g:1000, filter:r=>isSolid(r.name)},
-    {label:'1 L',    g:1000, filter:r=>isLiquid(r.name)},
-  ];
-
-  let html='';
-  groups.forEach(grp=>{
-    let best=null; // {unitPrice, store, name}
-    rows.filter(grp.filter).forEach(row=>{
-      if(!row._wg) return;
-      // check each store
-      STORES.forEach(s=>{
-        const p=row.prices[s];
-        if(!p||p.own==null) return;
-        const up=perUnit(p.own, row._wg, grp.g);
-        if(up==null||up<=0) return;
-        if(!best||up<best.unitPrice){
-          best={unitPrice:up, store:s, name:row.name};
-        }
-      });
+      if(!row._wg.isLiquid){
+        if(!bestSolid||pk<bestSolid.pk)
+          bestSolid={pk, store:s, name:row.name, price:p.own, wg:row._wg};
+      } else {
+        if(!bestLiquid||pk<bestLiquid.pk)
+          bestLiquid={pk, store:s, name:row.name, price:p.own, wg:row._wg};
+      }
     });
+  });
 
-    if(best){
-      const storeColor=SC[best.store]||'#888';
-      // shorten name
-      let shortName=best.name.length>22?best.name.slice(0,22)+'…':best.name;
-      html+=`<div class="unit-card has-data">
-        <div class="unit-heading">${grp.label}</div>
-        <div class="unit-price">₼${fmt(best.unitPrice)}</div>
-        <div class="unit-brand">${esc(shortName)}</div>
-        <div class="unit-store">
-          <div class="unit-store-dot" style="background:${storeColor}"></div>
-          ${best.store}
-        </div>
-      </div>`;
-    } else {
-      html+=`<div class="unit-card">
-        <div class="unit-heading">${grp.label}</div>
-        <div class="unit-empty">—</div>
+  // Also find best per 100g and per 100ml
+  let best100g=null, best100ml=null;
+  rows.forEach(row=>{
+    if(!row._wg) return;
+    STORES.forEach(s=>{
+      const p=row.prices[s];
+      if(!p||p.own==null) return;
+      const p100 = perKg(p.own, row._wg) / 10; // /10 = per 100g
+      if(p100<=0) return;
+      if(!row._wg.isLiquid){
+        if(!best100g||p100<best100g.p100) best100g={p100,store:s,name:row.name};
+      } else {
+        if(!best100ml||p100<best100ml.p100) best100ml={p100,store:s,name:row.name};
+      }
+    });
+  });
+
+  function cardHTML(label, data, priceVal, priceLabel){
+    if(!data){
+      return `<div class="unit-card">
+        <div class="unit-card-heading">${label}</div>
+        <div class="unit-card-empty">—</div>
       </div>`;
     }
+    const sc=SC[data.store]||'#888';
+    const shortName=data.name.length>24?data.name.slice(0,24)+'…':data.name;
+    return `<div class="unit-card has-data">
+      <div class="unit-card-heading">${label}</div>
+      <div class="unit-card-price">₼${fmt(priceVal)}</div>
+      <div class="unit-card-name">${esc(shortName)}</div>
+      <div class="unit-card-store">
+        <div class="unit-card-dot" style="background:${sc}"></div>
+        <span class="unit-card-store-name">${data.store}</span>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('unit-cards').innerHTML =
+    cardHTML('100 q',  best100g,  best100g  ? best100g.p100  : null, '₼/100q') +
+    cardHTML('100 ml', best100ml, best100ml ? best100ml.p100 : null, '₼/100ml')+
+    cardHTML('1 kq',   bestSolid, bestSolid ? bestSolid.pk   : null, '₼/kq')   +
+    cardHTML('1 L',    bestLiquid,bestLiquid? bestLiquid.pk  : null, '₼/L');
+}
+
+// ── Table header ──────────────────────────────────────────────────────────
+function buildTableHeader(){
+  let h='<tr><th>Məhsul</th>';
+  STORES.forEach(s=>{
+    h+=`<th class="store-th"><div class="th-store-pill">
+      <div class="th-dot" style="background:${SC[s]||'#888'}"></div>${s}
+    </div></th>`;
   });
-  cards.innerHTML=html;
+  h+='<th class="right">Qənaət</th></tr>';
+  document.getElementById('thead').innerHTML=h;
 }
 
 // ── Sort + filter ─────────────────────────────────────────────────────────
@@ -495,7 +533,7 @@ function getSorted(){
   if(sortMode==='name')
     rows.sort((a,b)=>a.name.localeCompare(b.name,'az'));
   else if(sortMode==='asc')
-    rows.sort((a,b)=>(a._min?.price??999)-(b._min?.price??999));
+    rows.sort((a,b)=>(a._cheapStore?.p??999)-(b._cheapStore?.p??999));
   else if(sortMode==='sav')
     rows.sort((a,b)=>b._saving-a._saving);
   return rows;
@@ -503,86 +541,74 @@ function getSorted(){
 
 function rerender(){ renderRows(getSorted()); }
 
-// ── Render rows ───────────────────────────────────────────────────────────
+// ── Render table rows ─────────────────────────────────────────────────────
 function renderRows(rows){
-  const list=document.getElementById('prod-list');
+  const body=document.getElementById('tbody');
   const empty=document.getElementById('empty');
-  if(!rows.length){list.innerHTML='';empty.style.display='block';return;}
+  if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
 
   let html='';
   rows.forEach(row=>{
-    // Store price items
-    let priceParts='';
-    const ownStores=row._own; // [{store,price}] sorted asc
-    const minPrice=row._min?.price;
-    const maxPrice=row._max?.price;
-    const multiOwn=ownStores.length>1;
+    let cells='';
+    STORES.forEach(s=>{
+      const p=row.prices[s];
+      if(!p){
+        cells+=`<td class="td-price"><span class="dash">—</span></td>`;
+        return;
+      }
+      const hasOwn  = p.own!=null;
+      const hasWolt = p.wolt!=null;
+      const isCheap = hasOwn && row._cheapStore && row._cheapStore.s===s;
+      const isExp   = hasOwn && row._expStore   && row._expStore.s===s && row._saving>0;
 
-    // Build list of all stores that have data (own or wolt-only)
-    const storeEntries=STORES
-      .filter(s=>row.prices[s]&&(row.prices[s].own!=null||row.prices[s].wolt!=null))
-      .map(s=>({store:s,...row.prices[s]}));
+      let inner='';
+      if(hasOwn){
+        const woltSuffix = hasWolt&&p.wolt!==p.own
+          ?`<span class="wsuf">w${fmt(p.wolt)}</span>`:'';
+        let cls='pval';
+        if(isCheap) cls+=' cheap';
+        else if(isExp) cls+=' xpen';
 
-    storeEntries.forEach((entry,i)=>{
-      const isCheap = multiOwn && entry.own!=null && entry.own===minPrice;
-      const isExp   = multiOwn && entry.own!=null && entry.own===maxPrice && maxPrice!==minPrice;
-      const woltOnly= entry.own==null && entry.wolt!=null;
-      const displayPrice=entry.own!=null?entry.own:entry.wolt;
-      const woltMark=entry.wolt!=null&&entry.own!=null
-        ?`<sup class="wbadge">W</sup>`:'';
+        let badge='';
+        if(isCheap) badge=`<span class="star">★</span>`;
+        else if(isExp) badge=`<div class="reddot"></div>`;
 
-      let cls='sp-item';
-      if(isCheap) cls+=' is-cheap';
-      if(isExp)   cls+=' is-exp';
-      if(woltOnly) cls+=' wolt-only';
-
-      let indicator='';
-      if(isCheap)  indicator=`<span class="star">★</span>`;
-      if(isExp)    indicator=`<div class="reddot"></div>`;
-
-      if(i>0) priceParts+=`<span class="sep">·</span>`;
-      priceParts+=`<span class="${cls}">
-        <span class="sp-store">${entry.store}</span>
-        <span class="sp-price">₼${fmt(displayPrice)}${woltMark}</span>
-        ${indicator}
-      </span>`;
+        inner=`<span class="${cls}">₼${fmt(p.own)}${woltSuffix}${badge}</span>`;
+      } else if(hasWolt){
+        inner=`<span class="pval wonly">₼${fmt(p.wolt)}<span class="wsuf">w</span></span>`;
+      } else {
+        inner=`<span class="dash">—</span>`;
+      }
+      cells+=`<td class="td-price">${inner}</td>`;
     });
 
     // Savings
-    const saving=row._saving;
-    let savingHtml='';
-    if(saving>0){
-      savingHtml=`<div class="prod-savings">−₼${fmt(saving)}</div>`;
-    } else {
-      savingHtml=`<div class="prod-savings zero">—</div>`;
-    }
+    const savCell = row._saving>0
+      ?`<td class="td-saving"><span class="sav-val">−₼${fmt(row._saving)}</span></td>`
+      :`<td class="td-saving"><span class="sav-none">—</span></td>`;
 
-    html+=`<div class="prod-row">
-      <div>
-        <div class="prod-name">${esc(row.name)}</div>
-        <div class="store-prices">${priceParts}</div>
-      </div>
-      ${savingHtml}
-    </div>`;
+    html+=`<tr>
+      <td class="td-name">${esc(row.name)}</td>
+      ${cells}${savCell}
+    </tr>`;
   });
-  list.innerHTML=html;
+  body.innerHTML=html;
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────
 function setSort(m,btn){
   sortMode=m;
   document.querySelectorAll('.srt').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   rerender();
 }
-
 function showHome(){
   document.getElementById('home-view').style.display='block';
   document.getElementById('cat-view').style.display='none';
   document.getElementById('back-btn').style.display='none';
   window.scrollTo(0,0);
 }
-
 function fmt(n){return n!=null?Number(n).toFixed(2):'—';}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
