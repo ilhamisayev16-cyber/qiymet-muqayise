@@ -7,299 +7,176 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#f7f4ef; --bg2:#fff; --bg3:#f0ece4; --border:#e2dbd0;
-  --text:#1a1612; --muted:#9a9088; --accent:#c8410b; --ink:#2d2620;
-  --cheap-c:#16a34a; --cheap-bg:#f0fdf4; --cheap-border:#bbf7d0;
-  --exp-c:#dc2626; --exp-bg:#fff5f5; --exp-border:#fecaca;
+  --bg:#f7f4ef;--bg2:#fff;--bg3:#f0ece4;--border:#e2dbd0;
+  --text:#1a1612;--muted:#9a9088;--accent:#c8410b;--ink:#2d2620;
+  --cheap-c:#16a34a;--cheap-bg:#f0fdf4;--cheap-border:#bbf7d0;
+  --exp-c:#dc2626;--exp-bg:#fff5f5;--exp-border:#fecaca;
   --wolt-c:#64b5d4;
-  --r:10px; --r2:6px;
-  --filter-h:44px;
+  --r:10px;--r2:6px;--hh:44px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-
-/* ── HEADER ── */
-header{
-  background:var(--ink);padding:11px 18px;
-  position:sticky;top:0;z-index:200;
-  display:flex;align-items:center;gap:10px;
-}
+header{background:var(--ink);padding:11px 18px;position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;gap:10px;}
 .logo{flex:1;font-size:17px;font-weight:800;color:#fff;}
 .logo em{color:var(--accent);font-style:normal;}
 #last-upd{font-size:10px;font-family:'Space Mono',monospace;color:rgba(255,255,255,.28);}
-#back-btn{
-  display:none;align-items:center;gap:5px;
+#back-btn{display:none;align-items:center;gap:5px;
   background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
   color:#fff;padding:6px 12px;border-radius:var(--r2);
-  cursor:pointer;font-size:12px;font-weight:600;font-family:'Outfit',sans-serif;
-}
+  cursor:pointer;font-size:12px;font-weight:600;font-family:'Outfit',sans-serif;}
 #back-btn svg{width:12px;height:12px;}
 
-/* ── HOME ── */
+/* HOME */
 #home-view{padding:16px;}
 .sec-label{font-size:10px;font-weight:700;letter-spacing:2px;
   color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;}
-.cat-card{
-  background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);
+.cat-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);
   padding:13px 12px 11px;cursor:pointer;transition:all .16s;
-  display:flex;flex-direction:column;gap:5px;
-}
+  display:flex;flex-direction:column;gap:5px;}
 .cat-card:hover{border-color:var(--accent);transform:translateY(-1px);
   box-shadow:0 3px 14px rgba(200,65,11,.1);}
-.cat-icon{font-size:22px;line-height:1;}
-.cat-name{font-size:12px;font-weight:700;line-height:1.2;}
+.cat-icon{font-size:22px;}.cat-name{font-size:12px;font-weight:700;line-height:1.2;}
 .cat-meta{display:flex;align-items:center;justify-content:space-between;}
 .cat-cnt{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
 .cat-dots{display:flex;gap:3px;}
 .sdot{width:6px;height:6px;border-radius:50%;}
-
 #loading{text-align:center;padding:50px 20px;color:var(--muted);font-size:13px;}
 .spinner{width:26px;height:26px;border:2px solid var(--border);
   border-top-color:var(--accent);border-radius:50%;
   animation:spin .7s linear infinite;margin:0 auto 10px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── CATEGORY VIEW ── */
+/* CATEGORY */
 #cat-view{display:none;}
-.cat-top{
-  background:var(--ink);padding:14px 18px 12px;
-  display:flex;align-items:center;gap:10px;
-}
+.cat-top{background:var(--ink);padding:14px 18px 12px;display:flex;align-items:center;gap:10px;}
 #cat-icon{font-size:26px;flex-shrink:0;}
 #cat-title{font-size:17px;font-weight:800;color:#fff;}
-#cat-sub{font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;
-  font-family:'Space Mono',monospace;}
+#cat-sub{font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;font-family:'Space Mono',monospace;}
 
-/* ── UNIT CARDS ── */
-.unit-section{
-  padding:11px 18px 13px;
-  background:var(--bg3);border-bottom:1px solid var(--border);
-}
-.unit-sec-label{
-  font-size:9px;font-weight:700;letter-spacing:1.5px;
-  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
-}
+/* UNIT CARDS */
+.unit-section{padding:11px 18px 13px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.unit-sec-label{font-size:9px;font-weight:700;letter-spacing:1.5px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
 .unit-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
-.unit-card{
-  background:var(--bg2);border:1.5px solid var(--border);
-  border-radius:var(--r2);padding:9px 10px;
-}
+.unit-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);padding:9px 10px;}
 .unit-card.has-data{border-color:var(--cheap-border);}
-.unit-card-heading{
-  font-size:9px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;
-}
-.unit-card-price{
-  font-family:'Space Mono',monospace;font-size:15px;font-weight:700;
-  color:var(--cheap-c);line-height:1;
-}
-.unit-card-name{
-  font-size:10px;font-weight:600;color:var(--text);
-  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.unit-card-store{
-  display:flex;align-items:center;gap:3px;margin-top:2px;
-}
+.unit-card-heading{font-size:9px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.unit-card-price{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;
+  color:var(--cheap-c);line-height:1;}
+.unit-card-name{font-size:10px;font-weight:600;color:var(--text);
+  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.unit-card-store{display:flex;align-items:center;gap:3px;margin-top:2px;}
 .unit-card-dot{width:5px;height:5px;border-radius:50%;}
 .unit-card-store-name{font-size:9px;color:var(--muted);}
 .unit-card-empty{font-size:12px;color:var(--border);padding:4px 0;}
 
-/* ── TOOLBAR ── */
-.toolbar{
-  background:var(--bg2);border-bottom:1px solid var(--border);
+/* TOOLBAR */
+.toolbar{background:var(--bg2);border-bottom:1px solid var(--border);
   padding:9px 18px;display:flex;align-items:center;gap:7px;
-  position:sticky;top:44px;z-index:100;
-}
-#srch{
-  flex:1;background:var(--bg3);border:1.5px solid var(--border);
+  position:sticky;top:var(--hh);z-index:120;}
+#srch{flex:1;background:var(--bg3);border:1.5px solid var(--border);
   color:var(--text);padding:6px 10px;border-radius:var(--r2);
-  font-size:12px;font-family:'Outfit',sans-serif;outline:none;
-}
+  font-size:12px;font-family:'Outfit',sans-serif;outline:none;}
 #srch:focus{border-color:var(--accent);}
 #srch::placeholder{color:var(--muted);}
-.srt{
-  background:var(--bg3);border:1.5px solid var(--border);color:var(--muted);
+.srt{background:var(--bg3);border:1.5px solid var(--border);color:var(--muted);
   padding:5px 9px;border-radius:var(--r2);cursor:pointer;
-  font-size:11px;font-weight:600;font-family:'Outfit',sans-serif;white-space:nowrap;
-}
+  font-size:11px;font-weight:600;font-family:'Outfit',sans-serif;white-space:nowrap;}
 .srt.on{background:var(--ink);border-color:var(--ink);color:#fff;}
 
-/* ── WEIGHT/VOLUME FILTER BAR ── */
-.filter-bar{
+/* FILTER ROWS — scrollable sticky strips */
+.frow{
   background:var(--bg2);border-bottom:1px solid var(--border);
-  padding:8px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  position:sticky;top:calc(44px + var(--filter-h));z-index:99;
+  padding:7px 18px;display:flex;align-items:center;gap:6px;
+  position:sticky;z-index:110;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
 }
+.frow::-webkit-scrollbar{display:none;}
+#frow-type{top:calc(var(--hh) + 44px);}
+#frow-weight{top:calc(var(--hh) + 44px + 37px);}
+.frow-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;flex-shrink:0;padding-right:4px;}
 
-/* Type toggle group */
-.ftype-group{
-  display:flex;border:1.5px solid var(--border);border-radius:var(--r2);overflow:hidden;
-  flex-shrink:0;
-}
-.ftype-btn{
-  padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;
-  font-family:'Outfit',sans-serif;border:none;background:transparent;
-  color:var(--muted);transition:all .13s;white-space:nowrap;
-}
-.ftype-btn.on{background:var(--ink);color:#fff;}
-.ftype-btn:not(:last-child){border-right:1px solid var(--border);}
-
-/* Range chips */
-.frange-wrap{
-  display:flex;gap:5px;flex-wrap:wrap;align-items:center;flex:1;
-}
-.fchip{
-  padding:3px 9px;font-size:10px;font-weight:700;
+/* CHIPS */
+.chip{padding:3px 10px;font-size:11px;font-weight:700;
   border:1.5px solid var(--border);border-radius:20px;
   cursor:pointer;font-family:'Outfit',sans-serif;
   color:var(--muted);background:var(--bg3);
-  transition:all .13s;white-space:nowrap;user-select:none;
-}
-.fchip:hover{border-color:var(--accent);color:var(--accent);}
-.fchip.on{
-  background:var(--accent);border-color:var(--accent);
-  color:#fff;
-}
-.fchip.on:hover{opacity:.88;}
+  transition:all .12s;white-space:nowrap;user-select:none;flex-shrink:0;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.chip.on:hover{opacity:.88;}
+.chip.sm{font-size:10px;padding:2px 8px;}
+.chsep{width:3px;height:3px;border-radius:50%;background:var(--border);flex-shrink:0;align-self:center;}
 
-/* Active filter badge on cat-view show */
-.filter-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  background:rgba(200,65,11,.1);border:1px solid rgba(200,65,11,.2);
-  color:var(--accent);padding:2px 7px;border-radius:12px;
-  font-size:9px;font-weight:700;font-family:'Space Mono',monospace;
-  margin-left:auto;flex-shrink:0;cursor:pointer;
-}
-.filter-badge:hover{background:rgba(200,65,11,.18);}
-.filter-badge svg{width:9px;height:9px;stroke-width:2.5;}
-.filter-badge.hidden{display:none;}
-
-/* Custom range inputs */
-.custom-range-wrap{
-  display:none;align-items:center;gap:6px;margin-top:6px;
-  width:100%;padding-top:2px;
-}
-.custom-range-wrap.show{display:flex;}
-.cr-input{
-  width:72px;background:var(--bg3);border:1.5px solid var(--border);
-  color:var(--text);padding:4px 7px;border-radius:var(--r2);
-  font-size:11px;font-family:'Space Mono',monospace;outline:none;
-}
-.cr-input:focus{border-color:var(--accent);}
-.cr-label{font-size:10px;color:var(--muted);font-weight:600;}
-.cr-unit{font-size:10px;color:var(--muted);}
-.cr-apply{
-  padding:4px 10px;font-size:10px;font-weight:700;
+/* custom range */
+.cr-wrap{display:none;align-items:center;gap:5px;flex-shrink:0;}
+.cr-wrap.show{display:flex;}
+.cr-in{width:60px;background:var(--bg3);border:1.5px solid var(--border);
+  color:var(--text);padding:3px 6px;border-radius:var(--r2);
+  font-size:10px;font-family:'Space Mono',monospace;outline:none;}
+.cr-in:focus{border-color:var(--accent);}
+.cr-lbl{font-size:10px;color:var(--muted);white-space:nowrap;}
+.cr-ok{padding:3px 9px;font-size:10px;font-weight:700;
   background:var(--accent);border:none;border-radius:var(--r2);
-  color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;
-}
+  color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;}
 
-/* ── TABLE (Excel style) ── */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:14px 18px 40px;}
+/* TABLE */
+.tbl-meta{padding:5px 18px 0;font-size:10px;color:var(--muted);
+  font-family:'Space Mono',monospace;min-height:20px;}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 18px 40px;}
 table{width:100%;border-collapse:collapse;min-width:520px;font-size:13px;}
-
-thead th{
-  background:var(--bg3);
-  padding:9px 12px;
-  font-size:9px;font-weight:700;letter-spacing:.8px;
-  color:var(--muted);text-transform:uppercase;
-  border-bottom:2px solid var(--border);
-  white-space:nowrap;
-}
-thead th.store-th{text-align:center;}
-thead th.right{text-align:right;}
-thead th:first-child{text-align:left;border-radius:var(--r2) 0 0 0;min-width:160px;}
+thead th{background:var(--bg3);padding:9px 12px;font-size:9px;font-weight:700;
+  letter-spacing:.8px;color:var(--muted);text-transform:uppercase;
+  border-bottom:2px solid var(--border);white-space:nowrap;}
+thead th.sc{text-align:center;}thead th.sr{text-align:right;}
+thead th:first-child{text-align:left;border-radius:var(--r2) 0 0 0;min-width:170px;}
 thead th:last-child{border-radius:0 var(--r2) 0 0;}
-
-.th-store-pill{
-  display:inline-flex;align-items:center;justify-content:center;gap:4px;
-}
+.th-pill{display:inline-flex;align-items:center;justify-content:center;gap:4px;}
 .th-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
 tbody tr:hover{background:var(--bg3);}
 tbody tr:last-child{border-bottom:none;}
-
 td{padding:9px 12px;vertical-align:middle;}
-.td-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;max-width:175px;}
-
-/* Per-kg badge inside product name */
-.pkg-badge{
-  display:inline-block;
-  font-family:'Space Mono',monospace;font-size:8px;
-  background:var(--bg3);border:1px solid var(--border);
-  color:var(--muted);border-radius:4px;padding:1px 4px;
-  margin-left:4px;vertical-align:middle;white-space:nowrap;
-}
-
+.td-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.35;max-width:180px;}
+.pkg-badge{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;
+  background:var(--cheap-bg);border:1px solid var(--cheap-border);
+  color:var(--cheap-c);border-radius:4px;padding:1px 4px;
+  margin-left:3px;vertical-align:middle;white-space:nowrap;}
 .td-price{text-align:center;white-space:nowrap;min-width:80px;}
-
-.pval{
-  display:inline-flex;align-items:center;gap:3px;
+.pval{display:inline-flex;align-items:center;gap:3px;
   font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
-  color:var(--text);
-  border-radius:5px;padding:3px 7px;
-  background:transparent;
-}
-.pval.cheap{
-  color:var(--cheap-c);background:var(--cheap-bg);
-  border:1px solid var(--cheap-border);
-}
+  color:var(--text);border-radius:5px;padding:3px 7px;}
+.pval.cheap{color:var(--cheap-c);background:var(--cheap-bg);border:1px solid var(--cheap-border);}
 .pval .star{font-size:9px;color:var(--cheap-c);}
-.pval.xpen{
-  color:var(--exp-c);background:var(--exp-bg);
-  border:1px solid var(--exp-border);
-}
-.pval .reddot{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--exp-c);flex-shrink:0;
-}
+.pval.xpen{color:var(--exp-c);background:var(--exp-bg);border:1px solid var(--exp-border);}
+.pval .reddot{width:6px;height:6px;border-radius:50%;background:var(--exp-c);flex-shrink:0;}
 .pval.wonly{color:var(--wolt-c);opacity:.8;}
-.wsuf{
-  font-family:'Space Mono',monospace;font-size:7px;
-  color:var(--wolt-c);opacity:.7;
-  vertical-align:super;margin-left:1px;font-weight:400;
-}
-
+.wsuf{font-family:'Space Mono',monospace;font-size:7px;color:var(--wolt-c);
+  opacity:.7;vertical-align:super;margin-left:1px;font-weight:400;}
 .dash{color:var(--border);font-size:16px;}
-
-.td-saving{text-align:right;white-space:nowrap;min-width:60px;}
-.sav-val{
-  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
-  color:var(--cheap-c);
-}
+.td-sav{text-align:right;white-space:nowrap;min-width:60px;}
+.sav-val{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--cheap-c);}
 .sav-none{color:var(--border);font-size:14px;}
-
-/* result counter */
-.result-count{
-  padding:6px 18px 0;
-  font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;
-}
-
 .empty-st{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
 
-/* ── MOBILE ── */
 @media(max-width:600px){
-  :root{--filter-h:88px;}
   .unit-cards{grid-template-columns:repeat(2,1fr);}
-  .toolbar{top:40px;padding:8px 12px;}
-  .filter-bar{top:calc(40px + 43px);padding:7px 12px;gap:6px;}
-  .tbl-wrap{padding:10px 10px 30px;}
+  .toolbar,.frow{padding:7px 12px;}
+  .tbl-wrap{padding:8px 10px 30px;}
   #home-view{padding:12px;}
   thead th{font-size:8px;padding:7px 8px;}
   td{padding:7px 8px;}
-  .td-name{font-size:11px;max-width:100px;}
+  .td-name{font-size:11px;max-width:110px;}
   .pval{font-size:11px;padding:2px 5px;}
   #cat-title{font-size:15px;}
-  .cat-top{padding:12px;}
   .unit-section{padding:9px 12px 11px;}
-  .ftype-btn{padding:3px 7px;font-size:10px;}
-  .fchip{font-size:9px;padding:2px 7px;}
 }
 @media(max-width:380px){
-  .cat-grid{grid-template-columns:repeat(2,1fr);}
-  .unit-cards{grid-template-columns:repeat(2,1fr);}
+  .cat-grid,.unit-cards{grid-template-columns:repeat(2,1fr);}
 }
 </style>
 </head>
@@ -307,39 +184,30 @@ td{padding:9px 12px;vertical-align:middle;}
 
 <header>
   <button id="back-btn" onclick="showHome()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <path d="M19 12H5M12 5l-7 7 7 7"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
     Geri
   </button>
   <div class="logo">Qiymət<em>Müqayisə</em></div>
   <div id="last-upd"></div>
 </header>
 
-<!-- HOME -->
 <div id="home-view">
   <div class="sec-label">Kateqoriyalar</div>
   <div id="loading"><div class="spinner"></div>Yüklənir…</div>
   <div class="cat-grid" id="cat-grid"></div>
 </div>
 
-<!-- CATEGORY VIEW -->
 <div id="cat-view">
   <div class="cat-top">
     <div id="cat-icon"></div>
-    <div>
-      <div id="cat-title"></div>
-      <div id="cat-sub"></div>
-    </div>
+    <div><div id="cat-title"></div><div id="cat-sub"></div></div>
   </div>
 
-  <!-- Smart unit price cards -->
   <div class="unit-section">
-    <div class="unit-sec-label">Ən sərfəli qiymət — vahid üzrə (kq / litr)</div>
+    <div class="unit-sec-label">Ən sərfəli qiymət — vahid üzrə</div>
     <div class="unit-cards" id="unit-cards"></div>
   </div>
 
-  <!-- Toolbar -->
   <div class="toolbar">
     <input type="search" id="srch" placeholder="Məhsul axtar…" oninput="rerender()"/>
     <button class="srt on" onclick="setSort('name',this)">A→Z</button>
@@ -347,49 +215,30 @@ td{padding:9px 12px;vertical-align:middle;}
     <button class="srt"    onclick="setSort('sav',this)">Qənaət↓</button>
   </div>
 
-  <!-- ── WEIGHT / VOLUME FILTER BAR ── -->
-  <div class="filter-bar" id="filter-bar">
+  <!-- Row A: Product-type chips auto-extracted from names -->
+  <div class="frow" id="frow-type">
+    <span class="frow-lbl">Növ</span>
+    <div id="fchips-type" style="display:flex;gap:5px;align-items:center;"></div>
+  </div>
 
-    <!-- Type toggle: All / Solid / Liquid / No-weight -->
-    <div class="ftype-group">
-      <button class="ftype-btn on" data-type="all"   onclick="setFType('all',this)">Hamısı</button>
-      <button class="ftype-btn"    data-type="solid"  onclick="setFType('solid',this)">⚖ Çəki</button>
-      <button class="ftype-btn"    data-type="liquid" onclick="setFType('liquid',this)">💧 Həcm</button>
-      <button class="ftype-btn"    data-type="none"   onclick="setFType('none',this)">📦 Digər</button>
-    </div>
-
-    <!-- Range chips (shown for solid/liquid) -->
-    <div class="frange-wrap" id="frange-wrap">
-      <!-- chips injected by JS -->
-    </div>
-
-    <!-- Active filter clear badge -->
-    <div class="filter-badge hidden" id="filter-badge" onclick="clearFilter()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      Filtri sil
+  <!-- Row B: Weight / volume range -->
+  <div class="frow" id="frow-weight">
+    <span class="frow-lbl">Çəki</span>
+    <div id="fchips-weight" style="display:flex;gap:5px;align-items:center;flex-wrap:nowrap;"></div>
+    <div class="cr-wrap" id="cr-wrap">
+      <input class="cr-in" id="cr-min" type="number" min="0" placeholder="min"/>
+      <span class="cr-lbl" id="cr-u1">q</span>
+      <span class="cr-lbl" style="opacity:.35">—</span>
+      <input class="cr-in" id="cr-max" type="number" min="0" placeholder="max"/>
+      <span class="cr-lbl" id="cr-u2">q</span>
+      <button class="cr-ok" onclick="applyCustom()">✓</button>
     </div>
   </div>
 
-  <!-- Custom range row (shown on "öz aralığı" chip) -->
-  <div class="custom-range-wrap" id="custom-range-wrap">
-    <span class="cr-label">Aralıq:</span>
-    <input class="cr-input" id="cr-min" type="number" min="0" placeholder="min"/>
-    <span class="cr-unit" id="cr-unit-label">q</span>
-    <span class="cr-label" style="opacity:.5">—</span>
-    <input class="cr-input" id="cr-max" type="number" min="0" placeholder="max"/>
-    <span class="cr-unit" id="cr-unit-label2">q</span>
-    <button class="cr-apply" onclick="applyCustomRange()">Tətbiq et</button>
-  </div>
+  <div class="tbl-meta" id="tbl-meta"></div>
 
-  <!-- Result count -->
-  <div class="result-count" id="result-count"></div>
-
-  <!-- Excel table -->
   <div class="tbl-wrap">
-    <table id="tbl">
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
+    <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
     <div class="empty-st" id="empty" style="display:none">Məhsul tapılmadı</div>
   </div>
 </div>
@@ -411,77 +260,111 @@ const CI={
   duz:"🧂",sekerqum:"🍬",istiot:"🌶️",
 };
 
-/* ── Filter state ── */
-const FILTER = {
-  type: 'all',    // 'all' | 'solid' | 'liquid' | 'none'
-  range: null,    // null | {min, max}  (in grams/ml)
-  customActive: false,
-};
+/* ══════════════════════════════════════════════════════════════
+   PRODUCT TYPE EXTRACTION
+   "Azərsüd Kərə Yağı 1kq"          → "Yağı"
+   "AzerSüd Homogenize Qatiq 3.6%"  → "Qatiq"
+   "Bravo Süd 3.2% 1L"              → "Süd"
+   "Azərsüd Xama 15% 400q"          → "Xama"
 
-/* Preset ranges per type (in grams / ml) */
-const RANGES = {
-  solid:  [
-    {label:'< 250 q',   min:0,    max:250},
-    {label:'250–500 q', min:250,  max:500},
-    {label:'500q–1 kq', min:500,  max:1000},
-    {label:'1–2 kq',    min:1000, max:2000},
-    {label:'2 kq +',    min:2000, max:Infinity},
-    {label:'Öz aralığı',custom:true},
-  ],
-  liquid: [
-    {label:'< 250 ml',   min:0,    max:250},
-    {label:'250–500 ml', min:250,  max:500},
-    {label:'500ml–1 L',  min:500,  max:1000},
-    {label:'1–2 L',      min:1000, max:2000},
-    {label:'2 L +',      min:2000, max:Infinity},
-    {label:'Öz aralığı', custom:true},
-  ],
-};
+   Algorithm: find position of the FIRST numeric qualifier
+   (digit(s) followed by % or a weight/volume unit).
+   Take the last purely-alphabetic token before that position.
+══════════════════════════════════════════════════════════════ */
+function extractProductType(name){
+  // Regex: digits, optional decimal, optional space, then unit OR %
+  // Units checked in length-descending order to avoid partial matches
+  const qualRe=/\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?!\w)|ml|[lL](?=\b)|[qQgG](?=\b))/;
+  const m=name.match(qualRe);
+  const cutIdx = m ? m.index : name.length;
+  const before = name.slice(0, cutIdx).trim();
+  if(!before) return null;
+  // Split on whitespace; keep only tokens that are fully alphabetic (incl. Azerbaijani chars)
+  const words = before.split(/\s+/).filter(w=>/^\p{L}+$/u.test(w));
+  if(!words.length) return null;
+  const last = words[words.length-1];
+  return last.charAt(0).toUpperCase()+last.slice(1);
+}
 
-let DATA=null, STORES=[], sortMode='name', allRows=[];
-
-/* ── Weight parsing ── */
+/* ══════════════════════════════════════════════════════════════
+   WEIGHT PARSING
+══════════════════════════════════════════════════════════════ */
 function parseWeight(name){
-  const n = name.toLowerCase();
-  const pats = [
-    {re:/(\d+[\.,]?\d*)\s*kq\b/i,  mult:1000, liq:false},
-    {re:/(\d+[\.,]?\d*)\s*kg\b/i,  mult:1000, liq:false},
-    {re:/(\d+[\.,]?\d*)\s*litr/i,  mult:1000, liq:true},
-    {re:/(\d+[\.,]?\d*)\s*\bl\b/i, mult:1000, liq:true},
-    {re:/(\d+[\.,]?\d*)\s*lt\b/i,  mult:1000, liq:true},
-    {re:/(\d+[\.,]?\d*)\s*ml\b/i,  mult:1,    liq:true},
-    {re:/(\d+[\.,]?\d*)\s*\bq\b/i, mult:1,    liq:false},
-    {re:/(\d+[\.,]?\d*)\s*gr?\b/i, mult:1,    liq:false},
-    {re:/(\d+[\.,]?\d*)\s*г\b/i,   mult:1,    liq:false},
-    {re:/(\d+[\.,]?\d*)\s*кг\b/i,  mult:1000, liq:false},
+  const pats=[
+    {re:/(\d+[\.,]?\d*)\s*kq\b/i, mult:1000,liq:false},
+    {re:/(\d+[\.,]?\d*)\s*kg\b/i, mult:1000,liq:false},
+    {re:/(\d+[\.,]?\d*)\s*litr/i, mult:1000,liq:true},
+    {re:/(\d+[\.,]?\d*)\s*lt\b/i, mult:1000,liq:true},
+    {re:/(\d+[\.,]?\d*)\s*\bl\b/i,mult:1000,liq:true},
+    {re:/(\d+[\.,]?\d*)\s*ml\b/i, mult:1,   liq:true},
+    {re:/(\d+[\.,]?\d*)\s*\bq\b/i,mult:1,   liq:false},
+    {re:/(\d+[\.,]?\d*)\s*gr?\b/i,mult:1,   liq:false},
   ];
   for(const p of pats){
-    const m = n.match(p.re);
-    if(m){
-      const v = parseFloat(m[1].replace(',','.'));
-      if(v > 0) return {grams: v*p.mult, isLiquid: p.liq};
-    }
+    const m=name.match(p.re);
+    if(m){const v=parseFloat(m[1].replace(',','.')); if(v>0)return{grams:v*p.mult,isLiquid:p.liq};}
   }
   return null;
 }
-
-function perKg(price, wg){
-  if(!wg || price == null || wg.grams <= 0) return null;
-  return price / wg.grams * 1000;
+function perKg(price,wg){
+  if(!wg||price==null||wg.grams<=0)return null;
+  return price/wg.grams*1000;
 }
 
-/* ── Init ── */
+/* ══════════════════════════════════════════════════════════════
+   WEIGHT RANGE PRESETS
+══════════════════════════════════════════════════════════════ */
+const WRANGES={
+  solid:[
+    {l:'Hamısı'},
+    {l:'sep'},
+    {l:'< 250 q',   min:0,   max:250},
+    {l:'250–500 q', min:250, max:500},
+    {l:'500q–1 kq', min:500, max:1000},
+    {l:'1–2 kq',    min:1000,max:2000},
+    {l:'2 kq +',    min:2000,max:Infinity},
+    {l:'sep'},
+    {l:'Öz aralığı',custom:true},
+  ],
+  liquid:[
+    {l:'Hamısı'},
+    {l:'sep'},
+    {l:'< 250 ml',   min:0,   max:250},
+    {l:'250–500 ml', min:250, max:500},
+    {l:'500ml–1 L',  min:500, max:1000},
+    {l:'1–2 L',      min:1000,max:2000},
+    {l:'2 L +',      min:2000,max:Infinity},
+    {l:'sep'},
+    {l:'Öz aralığı', custom:true},
+  ],
+};
+
+/* ══════════════════════════════════════════════════════════════
+   FILTER STATE
+══════════════════════════════════════════════════════════════ */
+const F={
+  type:null,        // null = all  |  string e.g. "Süd"
+  wmode:'all',      // 'all' | 'solid' | 'liquid' | 'none'
+  range:null,       // null | {min,max}
+  customOpen:false,
+};
+
+let DATA=null, STORES=[], sortMode='name', allRows=[], catTypes=[];
+
+/* ══════════════════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════════════════ */
 async function init(){
   try{
-    const r = await fetch('data/prices.json');
-    if(!r.ok) throw new Error(r.status);
-    DATA = await r.json();
-    STORES = DATA.stores || ["Bravo","OBA","Araz","Neptun","Rahat"];
+    const r=await fetch('data/prices.json');
+    if(!r.ok)throw new Error(r.status);
+    DATA=await r.json();
+    STORES=DATA.stores||["Bravo","OBA","Araz","Neptun","Rahat"];
     if(DATA.last_updated)
-      document.getElementById('last-upd').textContent = '↺ '+DATA.last_updated;
+      document.getElementById('last-upd').textContent='↺ '+DATA.last_updated;
     buildGrid();
   }catch(e){
-    document.getElementById('loading').innerHTML =
+    document.getElementById('loading').innerHTML=
       `<div style="color:#d72b3f;font-size:14px">❌ data/prices.json yüklənmədi<br>
       <small style="opacity:.5;font-size:11px">python -m http.server 8000</small></div>`;
   }
@@ -489,381 +372,373 @@ async function init(){
 
 function buildGrid(){
   document.getElementById('loading').style.display='none';
-  const grid = document.getElementById('cat-grid');
-  let html='';
+  const g=document.getElementById('cat-grid');
+  let h='';
   for(const[id,cat] of Object.entries(DATA.categories)){
     const total=Object.values(cat.stores||{}).reduce((s,a)=>s+a.length,0);
-    if(!total) continue;
-    const dots=STORES
-      .filter(s=>cat.stores&&cat.stores[s]&&cat.stores[s].length>0)
+    if(!total)continue;
+    const dots=STORES.filter(s=>cat.stores&&cat.stores[s]&&cat.stores[s].length>0)
       .map(s=>`<div class="sdot" style="background:${SC[s]||'#888'}"></div>`).join('');
-    html+=`<div class="cat-card" onclick="openCat('${id}')">
+    h+=`<div class="cat-card" onclick="openCat('${id}')">
       <div class="cat-icon">${CI[id]||'📦'}</div>
       <div class="cat-name">${cat.name}</div>
-      <div class="cat-meta">
-        <div class="cat-cnt">${total}</div>
-        <div class="cat-dots">${dots}</div>
-      </div></div>`;
+      <div class="cat-meta"><div class="cat-cnt">${total}</div>
+      <div class="cat-dots">${dots}</div></div></div>`;
   }
-  grid.innerHTML = html||'<div style="color:var(--muted)">Məlumat yoxdur</div>';
+  g.innerHTML=h||'<div style="color:var(--muted)">Məlumat yoxdur</div>';
 }
 
-/* ── Similarity ── */
+/* ══════════════════════════════════════════════════════════════
+   OPEN CATEGORY
+══════════════════════════════════════════════════════════════ */
 function sim(a,b){
   const wa=new Set(a.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
   const wb=new Set(b.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
-  let i=0; wa.forEach(w=>{if(wb.has(w))i++;});
+  let i=0;wa.forEach(w=>{if(wb.has(w))i++;});
   return i/Math.max(wa.size,wb.size,1);
 }
 
-/* ── Open category ── */
 function openCat(catId){
   sortMode='name';
   document.querySelectorAll('.srt').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.getElementById('srch').value='';
+  F.type=null;F.wmode='all';F.range=null;F.customOpen=false;
 
-  // Reset filter
-  FILTER.type='all';
-  FILTER.range=null;
-  FILTER.customActive=false;
-  updateFilterUI();
+  const cat=DATA.categories[catId];
+  document.getElementById('cat-icon').textContent=CI[catId]||'📦';
+  document.getElementById('cat-title').textContent=cat.name;
 
-  const cat = DATA.categories[catId];
-  document.getElementById('cat-icon').textContent = CI[catId]||'📦';
-  document.getElementById('cat-title').textContent = cat.name;
-
-  const storeItems={};
-  STORES.forEach(s=>{storeItems[s]=(cat.stores&&cat.stores[s])?[...cat.stores[s]]:[];});
-
-  const anchor=STORES.slice().sort((a,b)=>storeItems[b].length-storeItems[a].length)[0];
+  const si={};
+  STORES.forEach(s=>{si[s]=(cat.stores&&cat.stores[s])?[...cat.stores[s]]:[];});
+  const anchor=STORES.slice().sort((a,b)=>si[b].length-si[a].length)[0];
   const used={};STORES.forEach(s=>used[s]=new Set());
   const unified=[];
 
-  storeItems[anchor].forEach((item,idx)=>{
+  si[anchor].forEach((item,idx)=>{
     const row={name:item.name,prices:{}};
     row.prices[anchor]={own:item.price,wolt:item.wolt_price};
     used[anchor].add(idx);
     STORES.filter(s=>s!==anchor).forEach(s=>{
       let bs=0,bi=-1;
-      storeItems[s].forEach((si,i)=>{
+      si[s].forEach((x,i)=>{
         if(used[s].has(i))return;
-        const v=sim(item.name,si.name);
+        const v=sim(item.name,x.name);
         if(v>bs){bs=v;bi=i;}
       });
       if(bs>=0.5&&bi>=0){
-        row.prices[s]={own:storeItems[s][bi].price,wolt:storeItems[s][bi].wolt_price};
+        row.prices[s]={own:si[s][bi].price,wolt:si[s][bi].wolt_price};
         used[s].add(bi);
       }
     });
     unified.push(row);
   });
   STORES.filter(s=>s!==anchor).forEach(s=>{
-    storeItems[s].forEach((item,idx)=>{
+    si[s].forEach((item,idx)=>{
       if(used[s].has(idx))return;
       unified.push({name:item.name,prices:{[s]:{own:item.price,wolt:item.wolt_price}}});
     });
   });
 
   unified.forEach(row=>{
-    row._wg = parseWeight(row.name);
-    const ownEntries = STORES
-      .filter(s=>row.prices[s]&&row.prices[s].own!=null)
-      .map(s=>({s, p:row.prices[s].own}));
-    ownEntries.sort((a,b)=>a.p-b.p);
-    row._cheapStore = ownEntries[0]||null;
-    row._expStore   = ownEntries.length>1 ? ownEntries[ownEntries.length-1] : null;
-    row._saving     = ownEntries.length>1
-      ? Math.round((row._expStore.p - row._cheapStore.p)*100)/100 : 0;
-    row._cheapPerKg = (row._cheapStore && row._wg)
-      ? perKg(row._cheapStore.p, row._wg) : null;
+    row._wg=parseWeight(row.name);
+    /* ── Key extraction: last alphabetic word before first numeric qualifier ── */
+    row._pt=extractProductType(row.name);
+    const oe=STORES.filter(s=>row.prices[s]&&row.prices[s].own!=null)
+      .map(s=>({s,p:row.prices[s].own}));
+    oe.sort((a,b)=>a.p-b.p);
+    row._cs=oe[0]||null;
+    row._xs=oe.length>1?oe[oe.length-1]:null;
+    row._sav=oe.length>1?Math.round((row._xs.p-row._cs.p)*100)/100:0;
+    row._cpk=(row._cs&&row._wg)?perKg(row._cs.p,row._wg):null;
   });
 
-  allRows = unified;
-  const act=STORES.filter(s=>storeItems[s].length>0).join(', ');
+  allRows=unified;
+
+  // Unique product types by frequency
+  const freq={};
+  unified.forEach(r=>{if(r._pt)freq[r._pt]=(freq[r._pt]||0)+1;});
+  catTypes=Object.entries(freq).sort((a,b)=>b[1]-a[1]).map(([t])=>t);
+
+  const act=STORES.filter(s=>si[s].length>0).join(', ');
   document.getElementById('cat-sub').textContent=`${unified.length} məhsul • ${act}`;
 
   buildUnitCards(unified);
   buildTableHeader();
-  rerender();
+  buildTypeChips();
+  buildWeightChips();
 
   document.getElementById('home-view').style.display='none';
   document.getElementById('cat-view').style.display='block';
   document.getElementById('back-btn').style.display='flex';
   window.scrollTo(0,0);
-}
-
-/* ── Filter UI helpers ── */
-function setFType(type, btn){
-  FILTER.type = type;
-  FILTER.range = null;
-  FILTER.customActive = false;
-  document.getElementById('custom-range-wrap').classList.remove('show');
-  document.querySelectorAll('.ftype-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  updateRangeChips();
-  updateFilterBadge();
   rerender();
 }
 
-function updateRangeChips(){
-  const wrap = document.getElementById('frange-wrap');
-  const list = RANGES[FILTER.type];
-  if(!list){wrap.innerHTML='';return;}
-
-  let html='';
-  list.forEach((r,i)=>{
-    const label = esc(r.label);
-    if(r.custom){
-      html+=`<div class="fchip" id="fchip-custom" onclick="toggleCustomRange(this)">${label}</div>`;
-    } else {
-      html+=`<div class="fchip" onclick="setFRange(${r.min},${r.max==='Infinity'?'Infinity':r.max},this)">${label}</div>`;
-    }
+/* ══════════════════════════════════════════════════════════════
+   TYPE CHIPS  (Row A)
+   Shows one chip per unique extracted product type.
+   "Süd" category that also contains "Kərə Yağı", "Qatiq",
+   "Xama" etc. will show each as its own selectable chip.
+══════════════════════════════════════════════════════════════ */
+function buildTypeChips(){
+  const wrap=document.getElementById('fchips-type');
+  if(catTypes.length<=1){
+    wrap.innerHTML='<span style="font-size:10px;color:var(--muted);white-space:nowrap;">Bütün məhsullar eyni növdür</span>';
+    return;
+  }
+  let h=`<div class="chip on" onclick="setType(null,this)">Hamısı <span style="font-size:9px;opacity:.6;margin-left:2px;">${allRows.length}</span></div>`;
+  h+=`<div class="chsep"></div>`;
+  catTypes.forEach(t=>{
+    const cnt=allRows.filter(r=>r._pt===t).length;
+    h+=`<div class="chip" onclick="setType(${JSON.stringify(t)},this)">${esc(t)} <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
   });
-  wrap.innerHTML=html;
+  // rows where type could not be extracted
+  const noCnt=allRows.filter(r=>!r._pt).length;
+  if(noCnt>0){
+    h+=`<div class="chsep"></div>`;
+    h+=`<div class="chip" onclick="setType('__none__',this)">Digər <span style="font-size:9px;opacity:.55;margin-left:2px;">${noCnt}</span></div>`;
+  }
+  wrap.innerHTML=h;
 }
 
-function setFRange(min, max, chip){
-  FILTER.range = {min, max: max===Infinity||max==='Infinity'?Infinity:Number(max)};
-  FILTER.customActive = false;
-  document.getElementById('custom-range-wrap').classList.remove('show');
-  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+function setType(pt, chip){
+  F.type=pt;
+  // auto-detect weight mode for selected type
+  if(pt&&pt!=='__none__'){
+    const rows=allRows.filter(r=>r._pt===pt);
+    const hasL=rows.some(r=>r._wg&&r._wg.isLiquid);
+    const hasS=rows.some(r=>r._wg&&!r._wg.isLiquid);
+    F.wmode=(hasL&&!hasS)?'liquid':(hasS&&!hasL)?'solid':'all';
+  } else {
+    F.wmode='all';
+  }
+  F.range=null; F.customOpen=false;
+  document.getElementById('cr-wrap').classList.remove('show');
+  document.querySelectorAll('#fchips-type .chip').forEach(c=>c.classList.remove('on'));
   chip.classList.add('on');
-  updateFilterBadge();
+  buildWeightChips();
   rerender();
 }
 
-function toggleCustomRange(chip){
-  const wrap = document.getElementById('custom-range-wrap');
-  const showing = wrap.classList.contains('show');
-  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
-  if(showing){
-    wrap.classList.remove('show');
-    FILTER.customActive=false;
-    FILTER.range=null;
-  } else {
-    wrap.classList.add('show');
-    chip.classList.add('on');
-    const unitLabel = FILTER.type==='liquid'?'ml':'q';
-    document.getElementById('cr-unit-label').textContent=unitLabel;
-    document.getElementById('cr-unit-label2').textContent=unitLabel;
+/* ══════════════════════════════════════════════════════════════
+   WEIGHT CHIPS  (Row B)
+══════════════════════════════════════════════════════════════ */
+function buildWeightChips(){
+  const wrap=document.getElementById('fchips-weight');
+  const cr=document.getElementById('cr-wrap');
+  cr.classList.remove('show');
+
+  // Rows in scope (after type filter)
+  const inScope=F.type
+    ?(F.type==='__none__'?allRows.filter(r=>!r._pt):allRows.filter(r=>r._pt===F.type))
+    :allRows;
+  const hasL=inScope.some(r=>r._wg&&r._wg.isLiquid);
+  const hasS=inScope.some(r=>r._wg&&!r._wg.isLiquid);
+  const hasN=inScope.some(r=>!r._wg);
+
+  let h='';
+  // Mode buttons
+  const modes=[];
+  if(hasS||hasL) modes.push({v:'all',l:'Hamısı'});
+  if(hasS)       modes.push({v:'solid', l:'⚖ Çəki'});
+  if(hasL)       modes.push({v:'liquid',l:'💧 Həcm'});
+  if(hasN)       modes.push({v:'none',  l:'📦 Digər'});
+
+  modes.forEach(m=>{
+    h+=`<div class="chip sm${F.wmode===m.v?' on':''}" onclick="setWMode('${m.v}',this)">${m.l}</div>`;
+  });
+
+  // Range presets
+  const presets=WRANGES[F.wmode]||[];
+  if(presets.length){
+    h+=`<div class="chsep"></div>`;
+    presets.forEach(p=>{
+      if(p.l==='sep'){h+=`<div class="chsep"></div>`;return;}
+      if(p.l==='Hamısı'){
+        h+=`<div class="chip sm${!F.range&&!F.customOpen?' on':''}" onclick="clearWRange(this)">Hamısı</div>`;
+        return;
+      }
+      if(p.custom){
+        h+=`<div class="chip sm${F.customOpen?' on':''}" onclick="toggleCustom(this)">Öz aralığı</div>`;
+        return;
+      }
+      const isOn=F.range&&F.range.min===p.min&&F.range.max===p.max;
+      const maxArg=p.max===Infinity?'Infinity':p.max;
+      h+=`<div class="chip sm${isOn?' on':''}" onclick="setWRange(${p.min},${maxArg},this)">${esc(p.l)}</div>`;
+    });
+  }
+
+  wrap.innerHTML=h;
+  if(F.customOpen) cr.classList.add('show');
+}
+
+function setWMode(mode,chip){
+  F.wmode=mode;F.range=null;F.customOpen=false;
+  document.getElementById('cr-wrap').classList.remove('show');
+  buildWeightChips();rerender();
+}
+function setWRange(min,max,chip){
+  F.range={min,max:max==='Infinity'||max===Infinity?Infinity:Number(max)};
+  F.customOpen=false;
+  document.getElementById('cr-wrap').classList.remove('show');
+  buildWeightChips();rerender();
+}
+function clearWRange(chip){F.range=null;F.customOpen=false;
+  document.getElementById('cr-wrap').classList.remove('show');
+  buildWeightChips();rerender();}
+function toggleCustom(chip){
+  F.customOpen=!F.customOpen;F.range=null;
+  const cr=document.getElementById('cr-wrap');
+  cr.classList.toggle('show',F.customOpen);
+  if(F.customOpen){
+    const u=F.wmode==='liquid'?'ml':'q';
+    document.getElementById('cr-u1').textContent=u;
+    document.getElementById('cr-u2').textContent=u;
     document.getElementById('cr-min').value='';
     document.getElementById('cr-max').value='';
   }
-  updateFilterBadge();
-  rerender();
+  buildWeightChips();rerender();
+}
+function applyCustom(){
+  const mn=parseFloat(document.getElementById('cr-min').value)||0;
+  const mx=parseFloat(document.getElementById('cr-max').value)||Infinity;
+  F.range={min:mn,max:mx||Infinity};rerender();
 }
 
-function applyCustomRange(){
-  const mn = parseFloat(document.getElementById('cr-min').value)||0;
-  const mx = parseFloat(document.getElementById('cr-max').value)||Infinity;
-  FILTER.range = {min:mn, max:mx===0?Infinity:mx};
-  FILTER.customActive = true;
-  updateFilterBadge();
-  rerender();
-}
-
-function clearFilter(){
-  FILTER.type='all';
-  FILTER.range=null;
-  FILTER.customActive=false;
-  document.querySelectorAll('.ftype-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
-  document.getElementById('custom-range-wrap').classList.remove('show');
-  updateFilterUI();
-  rerender();
-}
-
-function updateFilterUI(){
-  updateRangeChips();
-  updateFilterBadge();
-}
-
-function updateFilterBadge(){
-  const badge = document.getElementById('filter-badge');
-  const hasFilter = FILTER.type!=='all' || FILTER.range!=null;
-  badge.classList.toggle('hidden', !hasFilter);
-}
-
-/* ── Apply weight/volume filter to a row ── */
-function rowPassesFilter(row){
-  if(FILTER.type==='all' && !FILTER.range) return true;
-
-  const wg = row._wg;
-
-  if(FILTER.type==='solid')  { if(!wg || wg.isLiquid)  return false; }
-  if(FILTER.type==='liquid') { if(!wg || !wg.isLiquid) return false; }
-  if(FILTER.type==='none')   { return !wg; }
-
-  if(FILTER.range && wg){
-    const g = wg.grams;
-    if(g < FILTER.range.min || g > FILTER.range.max) return false;
+/* ══════════════════════════════════════════════════════════════
+   FILTER LOGIC
+══════════════════════════════════════════════════════════════ */
+function rowPasses(row){
+  // 1. Product type
+  if(F.type==='__none__' && row._pt) return false;
+  if(F.type && F.type!=='__none__' && row._pt!==F.type) return false;
+  // 2. Weight mode
+  if(F.wmode==='solid')  return !!(row._wg&&!row._wg.isLiquid);
+  if(F.wmode==='liquid') return !!(row._wg&&row._wg.isLiquid);
+  if(F.wmode==='none')   return !row._wg;
+  // 3. Range
+  if(F.range&&row._wg){
+    const g=row._wg.grams;
+    if(g<F.range.min||g>F.range.max) return false;
   }
   return true;
 }
 
-/* ── Smart unit price cards ── */
-function buildUnitCards(rows){
-  let bestSolid=null, bestLiquid=null, best100g=null, best100ml=null;
-
-  rows.forEach(row=>{
-    if(!row._wg) return;
-    STORES.forEach(s=>{
-      const p=row.prices[s];
-      if(!p||p.own==null) return;
-      const pk = perKg(p.own, row._wg);
-      if(pk==null||pk<=0) return;
-      const p100 = pk / 10;
-
-      if(!row._wg.isLiquid){
-        if(!bestSolid||pk<bestSolid.pk)
-          bestSolid={pk, store:s, name:row.name, price:p.own, wg:row._wg};
-        if(!best100g||p100<best100g.p100) best100g={p100,store:s,name:row.name};
-      } else {
-        if(!bestLiquid||pk<bestLiquid.pk)
-          bestLiquid={pk, store:s, name:row.name, price:p.own, wg:row._wg};
-        if(!best100ml||p100<best100ml.p100) best100ml={p100,store:s,name:row.name};
-      }
-    });
-  });
-
-  function cardHTML(label, data, priceVal){
-    if(!data){
-      return `<div class="unit-card">
-        <div class="unit-card-heading">${label}</div>
-        <div class="unit-card-empty">—</div>
-      </div>`;
-    }
-    const sc=SC[data.store]||'#888';
-    const shortName=data.name.length>24?data.name.slice(0,24)+'…':data.name;
-    return `<div class="unit-card has-data">
-      <div class="unit-card-heading">${label}</div>
-      <div class="unit-card-price">₼${fmt(priceVal)}</div>
-      <div class="unit-card-name">${esc(shortName)}</div>
-      <div class="unit-card-store">
-        <div class="unit-card-dot" style="background:${sc}"></div>
-        <span class="unit-card-store-name">${data.store}</span>
-      </div>
-    </div>`;
-  }
-
-  document.getElementById('unit-cards').innerHTML =
-    cardHTML('100 q',  best100g,  best100g  ? best100g.p100  : null) +
-    cardHTML('100 ml', best100ml, best100ml ? best100ml.p100 : null) +
-    cardHTML('1 kq',   bestSolid, bestSolid ? bestSolid.pk   : null) +
-    cardHTML('1 L',    bestLiquid,bestLiquid? bestLiquid.pk  : null);
-}
-
-/* ── Table header ── */
-function buildTableHeader(){
-  let h='<tr><th>Məhsul</th>';
-  STORES.forEach(s=>{
-    h+=`<th class="store-th"><div class="th-store-pill">
-      <div class="th-dot" style="background:${SC[s]||'#888'}"></div>${s}
-    </div></th>`;
-  });
-  h+='<th class="right">Qənaət</th></tr>';
-  document.getElementById('thead').innerHTML=h;
-}
-
-/* ── Sort + filter ── */
+/* ══════════════════════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════════════════════ */
 function getSorted(){
   const q=(document.getElementById('srch').value||'').toLowerCase().trim();
   let rows=q?allRows.filter(r=>r.name.toLowerCase().includes(q)):[...allRows];
-  // Apply weight/volume filter
-  rows=rows.filter(rowPassesFilter);
-
-  if(sortMode==='name')
-    rows.sort((a,b)=>a.name.localeCompare(b.name,'az'));
-  else if(sortMode==='asc')
-    rows.sort((a,b)=>(a._cheapStore?.p??999)-(b._cheapStore?.p??999));
-  else if(sortMode==='sav')
-    rows.sort((a,b)=>b._saving-a._saving);
+  rows=rows.filter(rowPasses);
+  if(sortMode==='name')     rows.sort((a,b)=>a.name.localeCompare(b.name,'az'));
+  else if(sortMode==='asc') rows.sort((a,b)=>(a._cs?.p??999)-(b._cs?.p??999));
+  else if(sortMode==='sav') rows.sort((a,b)=>b._sav-a._sav);
   return rows;
 }
+function rerender(){renderRows(getSorted());}
 
-function rerender(){ renderRows(getSorted()); }
-
-/* ── Render table rows ── */
 function renderRows(rows){
   const body=document.getElementById('tbody');
   const empty=document.getElementById('empty');
-  const cnt=document.getElementById('result-count');
-
-  if(!rows.length){
-    body.innerHTML='';
-    empty.style.display='block';
-    cnt.textContent='';
-    return;
-  }
+  const meta=document.getElementById('tbl-meta');
+  if(!rows.length){body.innerHTML='';empty.style.display='block';meta.textContent='';return;}
   empty.style.display='none';
-
-  const hasFilter = FILTER.type!=='all' || FILTER.range!=null;
-  cnt.textContent = hasFilter ? `${rows.length} nəticə göstərilir` : '';
+  const isF=F.type||F.wmode!=='all'||F.range;
+  meta.textContent=isF?`${rows.length} / ${allRows.length} məhsul`:`${rows.length} məhsul`;
 
   let html='';
   rows.forEach(row=>{
-    // per-kg badge for name column
-    let pkgBadge='';
-    if(row._wg && row._cheapPerKg){
-      const unit = row._wg.isLiquid ? 'L' : 'kq';
-      pkgBadge=`<span class="pkg-badge">₼${fmt(row._cheapPerKg)}/${unit}</span>`;
+    let pkgB='';
+    if(row._wg&&row._cpk){
+      const u=row._wg.isLiquid?'L':'kq';
+      pkgB=`<span class="pkg-badge">₼${fmt(row._cpk)}/${u}</span>`;
     }
-
     let cells='';
     STORES.forEach(s=>{
       const p=row.prices[s];
-      if(!p){
-        cells+=`<td class="td-price"><span class="dash">—</span></td>`;
-        return;
-      }
-      const hasOwn  = p.own!=null;
-      const hasWolt = p.wolt!=null;
-      const isCheap = hasOwn && row._cheapStore && row._cheapStore.s===s;
-      const isExp   = hasOwn && row._expStore   && row._expStore.s===s && row._saving>0;
-
+      if(!p){cells+=`<td class="td-price"><span class="dash">—</span></td>`;return;}
+      const ho=p.own!=null,hw=p.wolt!=null;
+      const ic=ho&&row._cs&&row._cs.s===s;
+      const ix=ho&&row._xs&&row._xs.s===s&&row._sav>0;
       let inner='';
-      if(hasOwn){
-        const woltSuffix = hasWolt&&p.wolt!==p.own
-          ?`<span class="wsuf">w${fmt(p.wolt)}</span>`:'';
-        let cls='pval';
-        if(isCheap) cls+=' cheap';
-        else if(isExp) cls+=' xpen';
-        let badge='';
-        if(isCheap) badge=`<span class="star">★</span>`;
-        else if(isExp) badge=`<div class="reddot"></div>`;
-        inner=`<span class="${cls}">₼${fmt(p.own)}${woltSuffix}${badge}</span>`;
-      } else if(hasWolt){
+      if(ho){
+        const ws=hw&&p.wolt!==p.own?`<span class="wsuf">w${fmt(p.wolt)}</span>`:'';
+        let cls='pval';if(ic)cls+=' cheap';else if(ix)cls+=' xpen';
+        const bd=ic?`<span class="star">★</span>`:ix?`<div class="reddot"></div>`:'';
+        inner=`<span class="${cls}">₼${fmt(p.own)}${ws}${bd}</span>`;
+      }else if(hw){
         inner=`<span class="pval wonly">₼${fmt(p.wolt)}<span class="wsuf">w</span></span>`;
-      } else {
-        inner=`<span class="dash">—</span>`;
-      }
+      }else inner=`<span class="dash">—</span>`;
       cells+=`<td class="td-price">${inner}</td>`;
     });
-
-    const savCell = row._saving>0
-      ?`<td class="td-saving"><span class="sav-val">−₼${fmt(row._saving)}</span></td>`
-      :`<td class="td-saving"><span class="sav-none">—</span></td>`;
-
-    html+=`<tr>
-      <td class="td-name">${esc(row.name)}${pkgBadge}</td>
-      ${cells}${savCell}
-    </tr>`;
+    const sc=row._sav>0
+      ?`<td class="td-sav"><span class="sav-val">−₼${fmt(row._sav)}</span></td>`
+      :`<td class="td-sav"><span class="sav-none">—</span></td>`;
+    html+=`<tr><td class="td-name">${esc(row.name)}${pkgB}</td>${cells}${sc}</tr>`;
   });
   body.innerHTML=html;
 }
 
-/* ── Helpers ── */
-function setSort(m,btn){
-  sortMode=m;
-  document.querySelectorAll('.srt').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  rerender();
+/* ══════════════════════════════════════════════════════════════
+   UNIT CARDS
+══════════════════════════════════════════════════════════════ */
+function buildUnitCards(rows){
+  let bS=null,bL=null,b100g=null,b100ml=null;
+  rows.forEach(row=>{
+    if(!row._wg)return;
+    STORES.forEach(s=>{
+      const p=row.prices[s];
+      if(!p||p.own==null)return;
+      const pk=perKg(p.own,row._wg);
+      if(!pk||pk<=0)return;
+      const p100=pk/10;
+      if(!row._wg.isLiquid){
+        if(!bS||pk<bS.pk)     bS  ={pk, store:s,name:row.name};
+        if(!b100g||p100<b100g.v) b100g={v:p100,store:s,name:row.name};
+      }else{
+        if(!bL||pk<bL.pk)       bL   ={pk, store:s,name:row.name};
+        if(!b100ml||p100<b100ml.v) b100ml={v:p100,store:s,name:row.name};
+      }
+    });
+  });
+  function card(lbl,data,val){
+    if(!data)return`<div class="unit-card"><div class="unit-card-heading">${lbl}</div><div class="unit-card-empty">—</div></div>`;
+    const sc=SC[data.store]||'#888';
+    const n=data.name.length>24?data.name.slice(0,24)+'…':data.name;
+    return`<div class="unit-card has-data">
+      <div class="unit-card-heading">${lbl}</div>
+      <div class="unit-card-price">₼${fmt(val)}</div>
+      <div class="unit-card-name">${esc(n)}</div>
+      <div class="unit-card-store">
+        <div class="unit-card-dot" style="background:${sc}"></div>
+        <span class="unit-card-store-name">${data.store}</span>
+      </div></div>`;
+  }
+  document.getElementById('unit-cards').innerHTML=
+    card('100 q', b100g,  b100g  ?b100g.v :null)+
+    card('100 ml',b100ml, b100ml ?b100ml.v:null)+
+    card('1 kq',  bS,     bS     ?bS.pk   :null)+
+    card('1 L',   bL,     bL     ?bL.pk   :null);
 }
-function showHome(){
-  document.getElementById('home-view').style.display='block';
-  document.getElementById('cat-view').style.display='none';
-  document.getElementById('back-btn').style.display='none';
-  window.scrollTo(0,0);
+
+/* ══════════════════════════════════════════════════════════════
+   TABLE HEADER
+══════════════════════════════════════════════════════════════ */
+function buildTableHeader(){
+  let h='<tr><th>Məhsul</th>';
+  STORES.forEach(s=>{
+    h+=`<th class="sc"><div class="th-pill">
+      <div class="th-dot" style="background:${SC[s]||'#888'}"></div>${s}
+    </div></th>`;
+  });
+  h+='<th class="sr">Qənaət</th></tr>';
+  document.getElementById('thead').innerHTML=h;
 }
+
+/* MISC */
+function setSort(m,btn){sortMode=m;document.querySelectorAll('.srt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rerender();}
+function showHome(){document.getElementById('home-view').style.display='block';document.getElementById('cat-view').style.display='none';document.getElementById('back-btn').style.display='none';window.scrollTo(0,0);}
 function fmt(n){return n!=null?Number(n).toFixed(2):'—';}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
