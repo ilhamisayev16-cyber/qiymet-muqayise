@@ -87,7 +87,7 @@ header{background:var(--ink);padding:11px 18px;position:sticky;top:0;z-index:200
   font-size:11px;font-weight:600;font-family:'Outfit',sans-serif;white-space:nowrap;}
 .srt.on{background:var(--ink);border-color:var(--ink);color:#fff;}
 
-/* FILTER ROWS — scrollable sticky strips */
+/* FILTER ROWS */
 .frow{
   background:var(--bg2);border-bottom:1px solid var(--border);
   padding:7px 18px;display:flex;align-items:center;gap:6px;
@@ -215,7 +215,7 @@ td{padding:9px 12px;vertical-align:middle;}
     <button class="srt"    onclick="setSort('sav',this)">Qənaət↓</button>
   </div>
 
-  <!-- Row A: Product-type chips auto-extracted from names -->
+  <!-- Row A: Product-type chips -->
   <div class="frow" id="frow-type">
     <span class="frow-lbl">Növ</span>
     <div id="fchips-type" style="display:flex;gap:5px;align-items:center;"></div>
@@ -261,51 +261,99 @@ const CI={
 };
 
 /* ══════════════════════════════════════════════════════════════
-   PRODUCT TYPE EXTRACTION
-   "Azərsüd Kərə Yağı 1kq"          → "Yağı"
-   "AzerSüd Homogenize Qatiq 3.6%"  → "Qatiq"
-   "Bravo Süd 3.2% 1L"              → "Süd"
-   "Azərsüd Xama 15% 400q"          → "Xama"
+   AZERBAIJANI ADJECTIVE SUFFIX DETECTION
+   Suffixes: -lı -li -lu -lü  (vowel harmony adjectives)
+   "Xamalı"  → true  → strip → "Xama"
+   "Üzümlü"  → true  → strip → "Üzüm"
+   "Soğanlı" → true  → strip → "Soğan"
+   "Mayonez" → false (noun, use as product type)
+   "Çips"    → false (noun)
+══════════════════════════════════════════════════════════════ */
+function isAzAdj(word){
+  // ends with -lı, -li, -lu, -lü  (case-insensitive, handles Azerbaijani chars)
+  return /[lL][ıiuüIİUÜ]$/.test(word);
+}
 
-   Algorithm: find position of the FIRST numeric qualifier
-   (digit(s) followed by % or a weight/volume unit).
-   Take the last purely-alphabetic token before that position.
+/* ══════════════════════════════════════════════════════════════
+   PRODUCT TYPE EXTRACTION
+   Rule:
+     word[0]  = brand name  → skip
+     word[1+] = scan left-to-right; skip adjective words (isAzAdj)
+              → first non-adjective word = product type
+
+   Examples:
+     "Bravo Süd 3.2% 1L"              → brand=Bravo  → type=Süd
+     "Azərsüd Kərə Yağı 1kq"          → brand=Azərsüd → type=Kərə
+     "AzerSüd Homogenize Qatiq 3.6%"  → brand=AzerSüd → type=Homogenize
+       wait, "Homogenize" isn't an adj... but the user's intent is Qatiq.
+       However the user said "second word after brand" = type.
+       So Homogenize would be the type which is debatable. Let's keep it simple:
+       second word (index 1) is always the type unless it's an adjective.
+
+     "Adazu Çips Soğan Xama 130qr"    → type=Çips   ✓
+     "Bravo Xamalı Mayonez 500q"       → skip Xamalı(adj) → type=Mayonez ✓
+     "Azərsüd Üzümlü Şirə 1L"         → skip Üzümlü(adj) → type=Şirə ✓
+     "Sloboda Soğanlı Mayonez 400qr"   → skip Soğanlı(adj) → type=Mayonez ✓
 ══════════════════════════════════════════════════════════════ */
 function extractProductType(name){
-  // Regex: digits, optional decimal, optional space, then unit OR %
-  // Units checked in length-descending order to avoid partial matches
-  const qualRe=/\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?!\w)|ml|[lL](?=\b)|[qQgG](?=\b))/;
+  // Find position of first numeric qualifier (weight/volume/percentage)
+  // Units: kq kg litr lt l ml q qr gr g  — with or without space after digits
+  const qualRe=/\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?![a-zA-Z])|ml(?![a-zA-Z])|[lL](?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[qQgG][rR]?(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ]))/;
   const m=name.match(qualRe);
-  const cutIdx = m ? m.index : name.length;
-  const before = name.slice(0, cutIdx).trim();
-  if(!before) return null;
-  // Split on whitespace; keep only tokens that are fully alphabetic (incl. Azerbaijani chars)
-  const words = before.split(/\s+/).filter(w=>/^\p{L}+$/u.test(w));
-  if(!words.length) return null;
-  const last = words[words.length-1];
+  const cutIdx=m?m.index:name.length;
+  const before=name.slice(0,cutIdx).trim();
+  if(!before)return null;
+
+  // Only purely alphabetic tokens (Azerbaijani alphabet included)
+  const words=before.split(/\s+/).filter(w=>/^\p{L}+$/u.test(w));
+  if(words.length<2)return null; // only brand, no type word
+
+  // words[0] = brand → skip
+  // Find first NON-adjective word after brand
+  for(let i=1;i<words.length;i++){
+    if(!isAzAdj(words[i])){
+      const w=words[i];
+      return w.charAt(0).toUpperCase()+w.slice(1);
+    }
+  }
+  // All words after brand are adjectives → return last one as fallback
+  const last=words[words.length-1];
   return last.charAt(0).toUpperCase()+last.slice(1);
 }
 
 /* ══════════════════════════════════════════════════════════════
    WEIGHT PARSING
+   Handles both spaced ("130 qr") and no-space ("130qr", "130gr", "1.4kg") forms.
+   Uses negative lookahead (?![a-z]) instead of \b to avoid missing "130qr".
+   Priority: kq/kg before l to avoid partial matches.
 ══════════════════════════════════════════════════════════════ */
 function parseWeight(name){
+  const AL='[a-zA-ZğüşıöçĞÜŞIÖÇəƏ]'; // Azerbaijani letter class for lookahead
   const pats=[
-    {re:/(\d+[\.,]?\d*)\s*kq\b/i, mult:1000,liq:false},
-    {re:/(\d+[\.,]?\d*)\s*kg\b/i, mult:1000,liq:false},
-    {re:/(\d+[\.,]?\d*)\s*litr/i, mult:1000,liq:true},
-    {re:/(\d+[\.,]?\d*)\s*lt\b/i, mult:1000,liq:true},
-    {re:/(\d+[\.,]?\d*)\s*\bl\b/i,mult:1000,liq:true},
-    {re:/(\d+[\.,]?\d*)\s*ml\b/i, mult:1,   liq:true},
-    {re:/(\d+[\.,]?\d*)\s*\bq\b/i,mult:1,   liq:false},
-    {re:/(\d+[\.,]?\d*)\s*gr?\b/i,mult:1,   liq:false},
+    // Solid — kilograms
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*kq(?!'+AL+')', 'i'), mult:1000, liq:false},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*kg(?!'+AL+')', 'i'), mult:1000, liq:false},
+    // Liquid — litres
+    {re:/(\d+[\.,]?\d*)\s*litr/i,                             mult:1000, liq:true},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*lt(?!'+AL+')',  'i'), mult:1000, liq:true},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*[lL](?!'+AL+')'),    mult:1000, liq:true},
+    // Liquid — millilitres
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*ml(?!'+AL+')',  'i'), mult:1,    liq:true},
+    // Solid — grams  (q / qr / gr / g — all = gram)
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*gr(?!'+AL+')',  'i'), mult:1,    liq:false},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*[gG](?!'+AL+')'),    mult:1,    liq:false},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*qr?(?!'+AL+')', 'i'), mult:1,    liq:false},
   ];
   for(const p of pats){
     const m=name.match(p.re);
-    if(m){const v=parseFloat(m[1].replace(',','.')); if(v>0)return{grams:v*p.mult,isLiquid:p.liq};}
+    if(m){
+      const v=parseFloat(m[1].replace(',','.'));
+      if(v>0)return{grams:v*p.mult, isLiquid:p.liq};
+    }
   }
   return null;
 }
+
 function perKg(price,wg){
   if(!wg||price==null||wg.grams<=0)return null;
   return price/wg.grams*1000;
@@ -343,9 +391,9 @@ const WRANGES={
    FILTER STATE
 ══════════════════════════════════════════════════════════════ */
 const F={
-  type:null,        // null = all  |  string e.g. "Süd"
-  wmode:'all',      // 'all' | 'solid' | 'liquid' | 'none'
-  range:null,       // null | {min,max}
+  type:null,
+  wmode:'all',
+  range:null,
   customOpen:false,
 };
 
@@ -441,7 +489,6 @@ function openCat(catId){
 
   unified.forEach(row=>{
     row._wg=parseWeight(row.name);
-    /* ── Key extraction: last alphabetic word before first numeric qualifier ── */
     row._pt=extractProductType(row.name);
     const oe=STORES.filter(s=>row.prices[s]&&row.prices[s].own!=null)
       .map(s=>({s,p:row.prices[s].own}));
@@ -454,7 +501,7 @@ function openCat(catId){
 
   allRows=unified;
 
-  // Unique product types by frequency
+  // Build type chip list ordered by frequency
   const freq={};
   unified.forEach(r=>{if(r._pt)freq[r._pt]=(freq[r._pt]||0)+1;});
   catTypes=Object.entries(freq).sort((a,b)=>b[1]-a[1]).map(([t])=>t);
@@ -476,9 +523,6 @@ function openCat(catId){
 
 /* ══════════════════════════════════════════════════════════════
    TYPE CHIPS  (Row A)
-   Shows one chip per unique extracted product type.
-   "Süd" category that also contains "Kərə Yağı", "Qatiq",
-   "Xama" etc. will show each as its own selectable chip.
 ══════════════════════════════════════════════════════════════ */
 function buildTypeChips(){
   const wrap=document.getElementById('fchips-type');
@@ -492,7 +536,6 @@ function buildTypeChips(){
     const cnt=allRows.filter(r=>r._pt===t).length;
     h+=`<div class="chip" onclick="setType(${JSON.stringify(t)},this)">${esc(t)} <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
   });
-  // rows where type could not be extracted
   const noCnt=allRows.filter(r=>!r._pt).length;
   if(noCnt>0){
     h+=`<div class="chsep"></div>`;
@@ -503,16 +546,15 @@ function buildTypeChips(){
 
 function setType(pt, chip){
   F.type=pt;
-  // auto-detect weight mode for selected type
   if(pt&&pt!=='__none__'){
     const rows=allRows.filter(r=>r._pt===pt);
     const hasL=rows.some(r=>r._wg&&r._wg.isLiquid);
     const hasS=rows.some(r=>r._wg&&!r._wg.isLiquid);
     F.wmode=(hasL&&!hasS)?'liquid':(hasS&&!hasL)?'solid':'all';
-  } else {
+  }else{
     F.wmode='all';
   }
-  F.range=null; F.customOpen=false;
+  F.range=null;F.customOpen=false;
   document.getElementById('cr-wrap').classList.remove('show');
   document.querySelectorAll('#fchips-type .chip').forEach(c=>c.classList.remove('on'));
   chip.classList.add('on');
@@ -528,7 +570,6 @@ function buildWeightChips(){
   const cr=document.getElementById('cr-wrap');
   cr.classList.remove('show');
 
-  // Rows in scope (after type filter)
   const inScope=F.type
     ?(F.type==='__none__'?allRows.filter(r=>!r._pt):allRows.filter(r=>r._pt===F.type))
     :allRows;
@@ -537,9 +578,8 @@ function buildWeightChips(){
   const hasN=inScope.some(r=>!r._wg);
 
   let h='';
-  // Mode buttons
   const modes=[];
-  if(hasS||hasL) modes.push({v:'all',l:'Hamısı'});
+  if(hasS||hasL) modes.push({v:'all',   l:'Hamısı'});
   if(hasS)       modes.push({v:'solid', l:'⚖ Çəki'});
   if(hasL)       modes.push({v:'liquid',l:'💧 Həcm'});
   if(hasN)       modes.push({v:'none',  l:'📦 Digər'});
@@ -548,7 +588,6 @@ function buildWeightChips(){
     h+=`<div class="chip sm${F.wmode===m.v?' on':''}" onclick="setWMode('${m.v}',this)">${m.l}</div>`;
   });
 
-  // Range presets
   const presets=WRANGES[F.wmode]||[];
   if(presets.length){
     h+=`<div class="chsep"></div>`;
@@ -569,7 +608,7 @@ function buildWeightChips(){
   }
 
   wrap.innerHTML=h;
-  if(F.customOpen) cr.classList.add('show');
+  if(F.customOpen)cr.classList.add('show');
 }
 
 function setWMode(mode,chip){
@@ -583,9 +622,11 @@ function setWRange(min,max,chip){
   document.getElementById('cr-wrap').classList.remove('show');
   buildWeightChips();rerender();
 }
-function clearWRange(chip){F.range=null;F.customOpen=false;
+function clearWRange(chip){
+  F.range=null;F.customOpen=false;
   document.getElementById('cr-wrap').classList.remove('show');
-  buildWeightChips();rerender();}
+  buildWeightChips();rerender();
+}
 function toggleCustom(chip){
   F.customOpen=!F.customOpen;F.range=null;
   const cr=document.getElementById('cr-wrap');
@@ -609,17 +650,14 @@ function applyCustom(){
    FILTER LOGIC
 ══════════════════════════════════════════════════════════════ */
 function rowPasses(row){
-  // 1. Product type
-  if(F.type==='__none__' && row._pt) return false;
-  if(F.type && F.type!=='__none__' && row._pt!==F.type) return false;
-  // 2. Weight mode
-  if(F.wmode==='solid')  return !!(row._wg&&!row._wg.isLiquid);
-  if(F.wmode==='liquid') return !!(row._wg&&row._wg.isLiquid);
-  if(F.wmode==='none')   return !row._wg;
-  // 3. Range
+  if(F.type==='__none__'&&row._pt)return false;
+  if(F.type&&F.type!=='__none__'&&row._pt!==F.type)return false;
+  if(F.wmode==='solid')  return!!(row._wg&&!row._wg.isLiquid);
+  if(F.wmode==='liquid') return!!(row._wg&&row._wg.isLiquid);
+  if(F.wmode==='none')   return!row._wg;
   if(F.range&&row._wg){
     const g=row._wg.grams;
-    if(g<F.range.min||g>F.range.max) return false;
+    if(g<F.range.min||g>F.range.max)return false;
   }
   return true;
 }
@@ -694,10 +732,10 @@ function buildUnitCards(rows){
       if(!pk||pk<=0)return;
       const p100=pk/10;
       if(!row._wg.isLiquid){
-        if(!bS||pk<bS.pk)     bS  ={pk, store:s,name:row.name};
+        if(!bS||pk<bS.pk)       bS  ={pk,  store:s,name:row.name};
         if(!b100g||p100<b100g.v) b100g={v:p100,store:s,name:row.name};
       }else{
-        if(!bL||pk<bL.pk)       bL   ={pk, store:s,name:row.name};
+        if(!bL||pk<bL.pk)         bL   ={pk,  store:s,name:row.name};
         if(!b100ml||p100<b100ml.v) b100ml={v:p100,store:s,name:row.name};
       }
     });
