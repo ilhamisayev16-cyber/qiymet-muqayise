@@ -397,7 +397,9 @@ const F={
   customOpen:false,
 };
 
-let DATA=null, STORES=[], sortMode='name', allRows=[], catTypes=[];
+let DATA=null, STORES=[], sortMode='name', allRows=[];
+let catTopTypes=[];   // up to 4 most-frequent types shown as chips
+let catOtherTypes=new Set(); // types beyond top-4 (grouped into "Digər")
 
 /* ══════════════════════════════════════════════════════════════
    BOOT
@@ -490,21 +492,26 @@ function openCat(catId){
   unified.forEach(row=>{
     row._wg=parseWeight(row.name);
     row._pt=extractProductType(row.name);
-    const oe=STORES.filter(s=>row.prices[s]&&row.prices[s].own!=null)
-      .map(s=>({s,p:row.prices[s].own}));
+    // Use effective price: own-price preferred, wolt as fallback
+    // This ensures wolt-only products also get ★ and savings calculated
+    const oe=STORES
+      .map(s=>{const p=row.prices[s];if(!p)return null;const v=p.own??p.wolt;return v!=null?{s,p:v}:null;})
+      .filter(Boolean);
     oe.sort((a,b)=>a.p-b.p);
-    row._cs=oe[0]||null;
-    row._xs=oe.length>1?oe[oe.length-1]:null;
+    row._cs=oe[0]||null;                             // cheapest
+    row._xs=oe.length>1?oe[oe.length-1]:null;        // most expensive
     row._sav=oe.length>1?Math.round((row._xs.p-row._cs.p)*100)/100:0;
     row._cpk=(row._cs&&row._wg)?perKg(row._cs.p,row._wg):null;
   });
 
   allRows=unified;
 
-  // Build type chip list ordered by frequency
+  // Top 4 types → chips; rest → "Digər"
   const freq={};
   unified.forEach(r=>{if(r._pt)freq[r._pt]=(freq[r._pt]||0)+1;});
-  catTypes=Object.entries(freq).sort((a,b)=>b[1]-a[1]).map(([t])=>t);
+  const allTypes=Object.entries(freq).sort((a,b)=>b[1]-a[1]).map(([t])=>t);
+  catTopTypes=allTypes.slice(0,4);
+  catOtherTypes=new Set(allTypes.slice(4));
 
   const act=STORES.filter(s=>si[s].length>0).join(', ');
   document.getElementById('cat-sub').textContent=`${unified.length} məhsul • ${act}`;
@@ -526,20 +533,21 @@ function openCat(catId){
 ══════════════════════════════════════════════════════════════ */
 function buildTypeChips(){
   const wrap=document.getElementById('fchips-type');
-  if(catTypes.length<=1){
+  if(catTopTypes.length===0){
     wrap.innerHTML='<span style="font-size:10px;color:var(--muted);white-space:nowrap;">Bütün məhsullar eyni növdür</span>';
     return;
   }
   let h=`<div class="chip on" onclick="setType(null,this)">Hamısı <span style="font-size:9px;opacity:.6;margin-left:2px;">${allRows.length}</span></div>`;
   h+=`<div class="chsep"></div>`;
-  catTypes.forEach(t=>{
+  catTopTypes.forEach(t=>{
     const cnt=allRows.filter(r=>r._pt===t).length;
     h+=`<div class="chip" onclick="setType(${JSON.stringify(t)},this)">${esc(t)} <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
   });
-  const noCnt=allRows.filter(r=>!r._pt).length;
-  if(noCnt>0){
+  // "Digər" = untyped + types beyond top-4
+  const otherCnt=allRows.filter(r=>!r._pt||catOtherTypes.has(r._pt)).length;
+  if(otherCnt>0){
     h+=`<div class="chsep"></div>`;
-    h+=`<div class="chip" onclick="setType('__none__',this)">Digər <span style="font-size:9px;opacity:.55;margin-left:2px;">${noCnt}</span></div>`;
+    h+=`<div class="chip" onclick="setType('__none__',this)">Digər <span style="font-size:9px;opacity:.55;margin-left:2px;">${otherCnt}</span></div>`;
   }
   wrap.innerHTML=h;
 }
@@ -571,7 +579,7 @@ function buildWeightChips(){
   cr.classList.remove('show');
 
   const inScope=F.type
-    ?(F.type==='__none__'?allRows.filter(r=>!r._pt):allRows.filter(r=>r._pt===F.type))
+    ?(F.type==='__none__'?allRows.filter(r=>!r._pt||catOtherTypes.has(r._pt)):allRows.filter(r=>r._pt===F.type))
     :allRows;
   const hasL=inScope.some(r=>r._wg&&r._wg.isLiquid);
   const hasS=inScope.some(r=>r._wg&&!r._wg.isLiquid);
@@ -650,7 +658,7 @@ function applyCustom(){
    FILTER LOGIC
 ══════════════════════════════════════════════════════════════ */
 function rowPasses(row){
-  if(F.type==='__none__'&&row._pt)return false;
+  if(F.type==='__none__'&&row._pt&&!catOtherTypes.has(row._pt))return false;
   if(F.type&&F.type!=='__none__'&&row._pt!==F.type)return false;
   if(F.wmode==='solid')  return!!(row._wg&&!row._wg.isLiquid);
   if(F.wmode==='liquid') return!!(row._wg&&row._wg.isLiquid);
@@ -697,8 +705,10 @@ function renderRows(rows){
       const p=row.prices[s];
       if(!p){cells+=`<td class="td-price"><span class="dash">—</span></td>`;return;}
       const ho=p.own!=null,hw=p.wolt!=null;
-      const ic=ho&&row._cs&&row._cs.s===s;
-      const ix=ho&&row._xs&&row._xs.s===s&&row._sav>0;
+      // effective = own preferred, wolt fallback
+      const ep=ho?p.own:(hw?p.wolt:null);
+      const ic=ep!=null&&row._cs&&row._cs.s===s;
+      const ix=ep!=null&&row._xs&&row._xs.s===s&&row._sav>0;
       let inner='';
       if(ho){
         const ws=hw&&p.wolt!==p.own?`<span class="wsuf">w${fmt(p.wolt)}</span>`:'';
@@ -706,7 +716,10 @@ function renderRows(rows){
         const bd=ic?`<span class="star">★</span>`:ix?`<div class="reddot"></div>`:'';
         inner=`<span class="${cls}">₼${fmt(p.own)}${ws}${bd}</span>`;
       }else if(hw){
-        inner=`<span class="pval wonly">₼${fmt(p.wolt)}<span class="wsuf">w</span></span>`;
+        // wolt-only — still highlight if cheapest/most expensive
+        let cls='pval wonly';if(ic)cls+=' cheap';else if(ix)cls+=' xpen';
+        const bd=ic?`<span class="star">★</span>`:ix?`<div class="reddot"></div>`:'';
+        inner=`<span class="${cls}">₼${fmt(p.wolt)}<span class="wsuf">w</span>${bd}</span>`;
       }else inner=`<span class="dash">—</span>`;
       cells+=`<td class="td-price">${inner}</td>`;
     });
