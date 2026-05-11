@@ -4,322 +4,279 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>QiymətMüqayisə</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-/* ══════════════════════════════════════════════
-   TOKENS
-══════════════════════════════════════════════ */
 :root{
-  --bg:#f3ede3;
-  --surface:#ffffff;
-  --surface2:#f0ebe1;
-  --border:#e0d6c8;
-  --text:#19140e;
-  --muted:#8c8274;
-  --accent:#c8410b;
-  --ink:#1b1510;
-  --cheap-c:#15803d;
-  --cheap-bg:#f0fdf4;
-  --cheap-br:#bbf7d0;
-  --exp-c:#dc2626;
-  --exp-bg:#fef2f2;
-  --exp-br:#fecaca;
-  --wolt-c:#3b9eca;
-  --hh:52px;
-  --bar-h:42px;
-  --fr-h:40px;
-  --r:14px;--r2:8px;
-  --sh:0 1px 4px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);
-  --sh2:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.05);
-  --sh-accent:0 4px 20px rgba(200,65,11,.15),0 0 0 1px rgba(200,65,11,.2);
+  --bg:#f5f3ef;--bg2:#ffffff;--bg3:#f0ede8;--border:#e5e0d8;
+  --text:#18140f;--muted:#8a837a;--accent:#c8400a;--accent2:#e8521a;
+  --ink:#1e1810;--ink2:#2d2620;
+  --cheap-c:#15803d;--cheap-bg:#f0fdf4;--cheap-bd:#bbf7d0;
+  --exp-c:#dc2626;--exp-bg:#fef2f2;--exp-bd:#fecaca;
+  --wolt-c:#4da8c8;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.05);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.06);
+  --r:12px;--r2:7px;--r3:5px;
+  /* sticky heights — computed by JS but seeded here */
+  --hdr-h:48px;
+  --tb-h:50px;
+  --ft-h:40px;
+  --fw-h:40px;
+  --fp-h:0px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html{-webkit-text-size-adjust:100%;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 5% 40%,rgba(200,65,11,.04) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 70% at 95% 10%,rgba(59,158,202,.04) 0%,transparent 55%);}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-/* ══════════════════════════════════════════════
-   GLOBAL HEADER  z:200
-══════════════════════════════════════════════ */
+/* ── HEADER ── */
 header{
-  height:var(--hh);background:var(--ink);padding:0 18px;
-  position:sticky;top:0;z-index:200;
+  background:var(--ink);
+  padding:10px 20px;
+  position:sticky;top:0;z-index:300;
   display:flex;align-items:center;gap:10px;
-  box-shadow:0 1px 0 rgba(255,255,255,.06),0 2px 12px rgba(0,0,0,.25);
+  box-shadow:0 1px 0 rgba(255,255,255,.05),0 2px 8px rgba(0,0,0,.25);
 }
-.logo{flex:1;font-size:17px;font-weight:900;color:#fff;letter-spacing:-.3px;}
-.logo em{font-style:normal;color:#f07840;}
-#last-upd{font-size:10px;font-family:'Space Mono',monospace;color:rgba(255,255,255,.2);white-space:nowrap;}
+.logo{flex:1;font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.logo em{color:var(--accent2);font-style:normal;}
+#last-upd{font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.25);}
 #back-btn{
   display:none;align-items:center;gap:5px;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
-  color:rgba(255,255,255,.88);padding:5px 13px;border-radius:20px;
-  cursor:pointer;font-size:12px;font-weight:700;font-family:'Outfit',sans-serif;
-  transition:background .15s;white-space:nowrap;
+  color:#fff;padding:5px 11px;border-radius:var(--r3);
+  cursor:pointer;font-size:11px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:background .15s;
 }
 #back-btn:hover{background:rgba(255,255,255,.18);}
-#back-btn svg{width:12px;height:12px;}
+#back-btn svg{width:11px;height:11px;}
 
-/* ══════════════════════════════════════════════
-   HOME
-══════════════════════════════════════════════ */
-#home-view{max-width:1100px;margin:0 auto;padding:20px 16px;}
-.sec-label{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--muted);
-  text-transform:uppercase;margin-bottom:12px;}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:9px;}
+/* ── HOME ── */
+#home-view{padding:16px 20px;}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
 .cat-card{
-  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
-  padding:15px 13px 12px;cursor:pointer;
-  transition:transform .18s cubic-bezier(.2,.8,.4,1),box-shadow .18s,border-color .18s;
-  display:flex;flex-direction:column;gap:5px;box-shadow:var(--sh);
-  animation:fadeUp .4s both;
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:14px 12px 12px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s;
+  display:flex;flex-direction:column;gap:5px;
+  box-shadow:var(--shadow-sm);
 }
-.cat-card:nth-child(1){animation-delay:.03s}.cat-card:nth-child(2){animation-delay:.06s}
-.cat-card:nth-child(3){animation-delay:.09s}.cat-card:nth-child(4){animation-delay:.12s}
-.cat-card:nth-child(5){animation-delay:.15s}.cat-card:nth-child(6){animation-delay:.18s}
-.cat-card:nth-child(7){animation-delay:.21s}.cat-card:nth-child(8){animation-delay:.24s}
-.cat-card:nth-child(9){animation-delay:.27s}.cat-card:nth-child(10){animation-delay:.30s}
-.cat-card:nth-child(n+11){animation-delay:.33s}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.cat-card:hover{transform:translateY(-3px);box-shadow:var(--sh-accent);border-color:rgba(200,65,11,.3);}
-.cat-icon{font-size:26px;line-height:1;}
-.cat-name{font-size:12px;font-weight:700;line-height:1.25;}
-.cat-meta{display:flex;align-items:center;justify-content:space-between;margin-top:1px;}
-.cat-cnt{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
+.cat-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(200,64,10,.12);}
+.cat-icon{font-size:22px;line-height:1;}
+.cat-name{font-size:12px;font-weight:700;line-height:1.25;color:var(--text);}
+.cat-meta{display:flex;align-items:center;justify-content:space-between;margin-top:2px;}
+.cat-cnt{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 .cat-dots{display:flex;gap:3px;}
 .sdot{width:6px;height:6px;border-radius:50%;}
-#loading{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;}
-.spinner{width:26px;height:26px;border:2.5px solid var(--border);border-top-color:var(--accent);
-  border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
-@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ══════════════════════════════════════════════
-   CATEGORY VIEW
-══════════════════════════════════════════════ */
+#loading{text-align:center;padding:50px;color:var(--muted);font-size:13px;}
+.spinner{width:24px;height:24px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── CAT HEADER ── */
 #cat-view{display:none;}
-.cat-top{background:var(--ink);padding:13px 18px 11px;display:flex;align-items:center;gap:10px;}
-#cat-icon{font-size:28px;flex-shrink:0;line-height:1;}
+.cat-top{background:var(--ink2);padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.07);}
+#cat-icon{font-size:28px;flex-shrink:0;}
 #cat-title{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.3px;}
-#cat-sub{font-size:9px;color:rgba(255,255,255,.28);margin-top:2px;font-family:'Space Mono',monospace;}
+#cat-sub{font-size:9px;color:rgba(255,255,255,.32);margin-top:2px;font-family:'JetBrains Mono',monospace;}
 
-/* UNIT CARDS */
-.unit-section{padding:12px 18px 14px;background:var(--surface2);border-bottom:1px solid var(--border);}
-.unit-sec-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);
-  text-transform:uppercase;margin-bottom:8px;}
+/* ── UNIT CARDS ── */
+.unit-section{padding:12px 20px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.unit-sec-label{font-size:9px;font-weight:700;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
 .unit-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
-.unit-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);
-  padding:9px 10px;box-shadow:var(--sh);}
-.unit-card.has-data{border-color:var(--cheap-br);background:var(--cheap-bg);}
-.unit-card-heading{font-size:9px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
-.unit-card-price{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;
-  color:var(--cheap-c);line-height:1;}
-.unit-card-name{font-size:10px;font-weight:600;color:var(--text);
-  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.unit-card{
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);
+  padding:9px 10px;box-shadow:var(--shadow-sm);
+}
+.unit-card.has-data{border-color:var(--cheap-bd);}
+.unit-card-heading{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.unit-card-price{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--cheap-c);}
+.unit-card-name{font-size:10px;font-weight:600;color:var(--text);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .unit-card-store{display:flex;align-items:center;gap:3px;margin-top:2px;}
 .unit-card-dot{width:5px;height:5px;border-radius:50%;}
 .unit-card-store-name{font-size:9px;color:var(--muted);}
-.unit-card-empty{font-size:16px;color:var(--border);}
+.unit-card-empty{font-size:12px;color:var(--border);padding:4px 0;}
 
-/* ══════════════════════════════════════════════
-   STICKY BARS — z-index ladder
-   toolbar z:120 → frow-type z:110 → frow-weight z:100 → frow-pct z:90
-   top values set by updateStickyOffsets()
-══════════════════════════════════════════════ */
-.toolbar{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:6px 18px;display:flex;align-items:center;gap:6px;
-  position:sticky;z-index:120;min-height:var(--bar-h);
-  box-shadow:0 2px 8px rgba(0,0,0,.04);
-}
-.frow{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 18px;display:flex;align-items:center;
+/* ── STICKY FILTER STACK ── */
+.sticky-band{
   position:sticky;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  z-index:200; /* all filters same z, they stack via top */
+}
+/* toolbar */
+.toolbar{
+  padding:8px 20px;
+  display:flex;align-items:center;gap:7px;
+  top:var(--hdr-h);
+  z-index:220;
+}
+/* filter rows */
+.frow{
+  padding:6px 20px;
+  display:flex;align-items:center;gap:6px;
   overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-  min-height:var(--fr-h);
 }
 .frow::-webkit-scrollbar{display:none;}
-/* Label pinned inside the scroll container */
-.frow-lbl{
-  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--muted);white-space:nowrap;flex-shrink:0;
-  position:sticky;left:0;background:var(--surface);
-  padding-right:10px;z-index:1;
-}
-.fchips-inner{display:flex;gap:5px;align-items:center;padding:7px 0;flex-wrap:nowrap;}
+#frow-type  {z-index:215;}
+#frow-weight{z-index:210;}
+#frow-pct   {z-index:205;display:none;}
 
-/* ══════════════════════════════════════════════
-   CHIPS
-══════════════════════════════════════════════ */
-.chip{
-  display:inline-flex;align-items:center;gap:3px;
-  padding:4px 11px;font-size:11px;font-weight:700;
-  border:1.5px solid var(--border);border-radius:20px;
-  cursor:pointer;font-family:'Outfit',sans-serif;
-  color:var(--muted);background:var(--surface2);
-  transition:all .14s;white-space:nowrap;user-select:none;flex-shrink:0;
-}
-.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--surface);}
-.chip.on{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);}
-.chip.on:hover{opacity:.88;}
-.chip.sm{font-size:10px;padding:3px 9px;}
-.chip-cnt{font-size:9px;opacity:.55;}
-.chsep{width:3px;height:3px;border-radius:50%;background:var(--border);flex-shrink:0;align-self:center;}
+.frow-lbl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-right:2px;}
 
-/* Toolbar controls */
+/* ── SEARCH INPUT ── */
 #srch{
-  flex:1;background:var(--surface2);border:1.5px solid var(--border);
-  color:var(--text);padding:6px 12px;border-radius:20px;
-  font-size:12px;font-family:'Outfit',sans-serif;outline:none;
-  transition:border-color .15s,box-shadow .15s;
+  flex:1;background:var(--bg3);border:1.5px solid var(--border);
+  color:var(--text);padding:6px 10px;border-radius:var(--r2);
+  font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;
+  transition:border-color .15s;
 }
-#srch:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,65,11,.1);}
+#srch:focus{border-color:var(--accent);}
 #srch::placeholder{color:var(--muted);}
+
+/* ── SORT BUTTONS ── */
 .srt{
-  background:var(--surface2);border:1.5px solid var(--border);color:var(--muted);
-  padding:5px 11px;border-radius:20px;cursor:pointer;
-  font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;white-space:nowrap;
-  transition:all .14s;
+  background:var(--bg3);border:1.5px solid var(--border);color:var(--muted);
+  padding:5px 10px;border-radius:var(--r2);cursor:pointer;
+  font-size:11px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;
+  white-space:nowrap;transition:all .15s;
 }
 .srt:hover{border-color:var(--accent);color:var(--accent);}
-.srt.on{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+.srt.on{background:var(--ink);border-color:var(--ink);color:#fff;}
 
-/* Custom range */
-.cr-wrap{display:none;align-items:center;gap:5px;flex-shrink:0;padding:4px 0;}
+/* ── CHIPS ── */
+.chip{
+  padding:3px 10px;font-size:11px;font-weight:700;
+  border:1.5px solid var(--border);border-radius:20px;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  color:var(--muted);background:var(--bg3);
+  transition:all .13s;white-space:nowrap;user-select:none;flex-shrink:0;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.chip.on:hover{opacity:.88;}
+.chip.sm{font-size:10px;padding:2px 8px;}
+.chsep{width:3px;height:3px;border-radius:50%;background:var(--border);flex-shrink:0;align-self:center;}
+
+/* custom range */
+.cr-wrap{display:none;align-items:center;gap:5px;flex-shrink:0;}
 .cr-wrap.show{display:flex;}
-.cr-in{width:60px;background:var(--surface);border:1.5px solid var(--border);
-  color:var(--text);padding:3px 7px;border-radius:var(--r2);
-  font-size:10px;font-family:'Space Mono',monospace;outline:none;}
+.cr-in{
+  width:58px;background:var(--bg3);border:1.5px solid var(--border);
+  color:var(--text);padding:3px 6px;border-radius:var(--r3);
+  font-size:10px;font-family:'JetBrains Mono',monospace;outline:none;
+}
 .cr-in:focus{border-color:var(--accent);}
 .cr-lbl{font-size:10px;color:var(--muted);white-space:nowrap;}
-.cr-ok{padding:3px 9px;font-size:10px;font-weight:700;
-  background:var(--accent);border:none;border-radius:var(--r2);
-  color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity .14s;}
-.cr-ok:hover{opacity:.84;}
-
-/* ══════════════════════════════════════════════
-   TABLE — FIX #1: overflow-y:clip lets thead position:sticky
-   work relative to the page viewport, not the scroll container
-══════════════════════════════════════════════ */
-.tbl-meta{padding:6px 18px 0;font-size:10px;color:var(--muted);
-  font-family:'Space Mono',monospace;min-height:22px;}
-.tbl-wrap{
-  overflow-x:auto;
-  overflow-y:clip;     /* KEY — clip ≠ scroll container; enables viewport-sticky thead */
-  -webkit-overflow-scrolling:touch;
-  padding:10px 18px 60px;
+.cr-ok{
+  padding:3px 9px;font-size:10px;font-weight:700;
+  background:var(--accent);border:none;border-radius:var(--r3);
+  color:#fff;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
 }
-table{width:100%;border-collapse:separate;border-spacing:0;min-width:520px;font-size:13px;}
 
-/* THEAD — solid bg, NO backdrop-filter (backdrop-filter creates stacking context that
-   breaks position:sticky in some browsers)                                         */
+/* ── TABLE META ── */
+.tbl-meta{
+  padding:6px 20px 2px;
+  font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;min-height:22px;
+}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 20px 60px;}
+table{
+  width:100%;border-collapse:separate;border-spacing:0;
+  min-width:520px;font-size:13px;
+  border:1.5px solid var(--border);border-radius:var(--r2);
+  overflow:hidden;
+}
+/* sticky thead */
 thead th{
-  background:var(--surface2);
-  border-bottom:2px solid var(--border);
-  padding:9px 12px;font-size:9px;font-weight:700;
-  letter-spacing:.9px;color:var(--muted);text-transform:uppercase;
+  position:sticky;z-index:50;
+  background:var(--ink);
+  padding:10px 14px;
+  font-size:8px;font-weight:700;letter-spacing:.9px;
+  color:rgba(255,255,255,.55);text-transform:uppercase;
   white-space:nowrap;
-  position:sticky;   /* top value injected by updateStickyOffsets() */
-  z-index:50;        /* below all filter rows (90+) */
+  border-bottom:2px solid rgba(255,255,255,.08);
 }
-thead th.sc{text-align:center;}thead th.sr{text-align:right;}
-thead th:first-child{text-align:left;min-width:160px;}
+thead th.sc{text-align:center;}
+thead th.sr{text-align:right;}
+thead th:first-child{text-align:left;min-width:170px;}
 .th-pill{display:inline-flex;align-items:center;justify-content:center;gap:4px;}
 .th-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 
+/* body rows */
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
-tbody tr:hover{background:#faf6f0;}
-td{padding:9px 12px;vertical-align:middle;}
-.td-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.35;max-width:180px;}
-.pkg-badge{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;
-  background:var(--cheap-bg);border:1px solid var(--cheap-br);color:var(--cheap-c);
-  border-radius:4px;padding:1px 5px;margin-left:3px;vertical-align:middle;white-space:nowrap;}
-.td-price{text-align:center;white-space:nowrap;min-width:80px;}
-.pval{display:inline-flex;align-items:center;gap:3px;
-  font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
-  color:var(--text);border-radius:6px;padding:3px 8px;}
-.pval.cheap{color:var(--cheap-c);background:var(--cheap-bg);border:1px solid var(--cheap-br);}
-.pval .star{font-size:9px;}
-.pval.xpen{color:var(--exp-c);background:var(--exp-bg);border:1px solid var(--exp-br);}
+tbody tr:nth-child(even){background:rgba(0,0,0,.015);}
+tbody tr:hover{background:var(--bg3);}
+tbody tr:last-child td{border-bottom:none;}
+td{padding:9px 14px;vertical-align:middle;}
+.td-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;max-width:190px;}
+.pkg-badge{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:8px;
+  background:var(--cheap-bg);border:1px solid var(--cheap-bd);
+  color:var(--cheap-c);border-radius:3px;padding:1px 4px;
+  margin-left:4px;vertical-align:middle;white-space:nowrap;
+}
+.td-price{text-align:center;white-space:nowrap;min-width:84px;}
+.pval{
+  display:inline-flex;align-items:center;gap:3px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+  color:var(--text);border-radius:5px;padding:3px 8px;
+}
+.pval.cheap{color:var(--cheap-c);background:var(--cheap-bg);border:1px solid var(--cheap-bd);}
+.pval .star{font-size:9px;color:var(--cheap-c);}
+.pval.xpen{color:var(--exp-c);background:var(--exp-bg);border:1px solid var(--exp-bd);}
 .pval .reddot{width:5px;height:5px;border-radius:50%;background:var(--exp-c);flex-shrink:0;}
-.pval.wonly{color:var(--wolt-c);}
-.wsuf{font-family:'Space Mono',monospace;font-size:7px;color:var(--wolt-c);
-  opacity:.7;vertical-align:super;margin-left:1px;}
-.dash{color:var(--border);font-size:16px;}
-.td-sav{text-align:right;white-space:nowrap;min-width:58px;}
-.sav-val{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--cheap-c);}
-.sav-none{color:var(--border);font-size:14px;}
+.pval.wonly{color:var(--wolt-c);opacity:.8;}
+.wsuf{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--wolt-c);opacity:.7;vertical-align:super;margin-left:1px;font-weight:400;}
+.dash{color:var(--border);font-size:14px;}
+.td-sav{text-align:right;white-space:nowrap;min-width:64px;}
+.sav-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--cheap-c);}
+.sav-none{color:var(--border);font-size:13px;}
 .empty-st{text-align:center;padding:48px;color:var(--muted);font-size:13px;}
 
-/* ══════════════════════════════════════════════
-   HOME SEARCH
-══════════════════════════════════════════════ */
-.home-srch-wrap{padding:0 0 14px;}
+/* ── HOME SEARCH ── */
+.home-srch-wrap{padding:0 0 12px;}
 .home-srch{
-  width:100%;background:var(--surface);border:1.5px solid var(--border);
-  color:var(--text);padding:10px 15px 10px 40px;border-radius:20px;
-  font-size:14px;font-family:'Outfit',sans-serif;outline:none;
-  transition:border-color .15s,box-shadow .15s;box-shadow:var(--sh);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238c8274' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:13px center;
+  width:100%;background:var(--bg2);border:1.5px solid var(--border);
+  color:var(--text);padding:10px 14px 10px 40px;border-radius:var(--r);
+  font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;
+  box-shadow:var(--shadow-sm);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a837a' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:14px center;
+  transition:border-color .15s;
 }
-.home-srch:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,65,11,.1),var(--sh);}
+.home-srch:focus{border-color:var(--accent);}
 .home-srch::placeholder{color:var(--muted);}
-.srch-empty{text-align:center;padding:28px;color:var(--muted);font-size:13px;}
-.srch-count{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:8px;}
-.srch-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);
-  padding:10px 13px;margin-bottom:6px;cursor:pointer;
-  transition:border-color .13s,transform .13s;display:flex;align-items:center;gap:10px;}
-.srch-item:hover{border-color:rgba(200,65,11,.35);transform:translateX(2px);}
+.srch-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px;}
+.srch-count{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:7px;}
+.srch-item{
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:10px 14px;margin-bottom:5px;cursor:pointer;
+  transition:border-color .13s;display:flex;align-items:center;gap:10px;
+  box-shadow:var(--shadow-sm);
+}
+.srch-item:hover{border-color:var(--accent);}
 .srch-item-left{flex:1;min-width:0;}
 .srch-item-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .srch-item-cat{font-size:10px;color:var(--muted);margin-top:2px;}
 .srch-item-right{text-align:right;flex-shrink:0;}
-.srch-item-price{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--cheap-c);}
+.srch-item-price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--cheap-c);}
 .srch-item-store{font-size:9px;color:var(--muted);}
 
-/* ══════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════ */
+/* ── RESPONSIVE ── */
 @media(max-width:600px){
-  :root{--hh:46px;--bar-h:40px;--fr-h:38px;}
-  header{padding:0 13px;}
-  .logo{font-size:15px;}
-  #home-view{padding:13px;}
-  .cat-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px;}
-  .cat-card{padding:12px 11px 10px;}
-  .cat-icon{font-size:22px;}
   .unit-cards{grid-template-columns:repeat(2,1fr);}
-  .unit-section,.cat-top{padding-left:13px;padding-right:13px;}
-  .toolbar,.frow{padding-left:13px;padding-right:13px;}
-  .tbl-wrap{padding:8px 10px 40px;}
-  .tbl-meta{padding:5px 13px 0;}
-  thead th{font-size:8px;padding:8px 9px;}
-  td{padding:8px 9px;}
-  .td-name{font-size:11px;max-width:105px;}
-  .pval{font-size:11px;padding:2px 6px;}
+  .toolbar,.frow{padding:6px 12px;}
+  .tbl-wrap{padding:6px 10px 40px;}
+  #home-view{padding:12px 14px;}
+  thead th{font-size:7px;padding:8px 9px;}
+  td{padding:7px 9px;}
+  .td-name{font-size:11px;max-width:110px;}
+  .pval{font-size:11px;padding:2px 5px;}
   #cat-title{font-size:15px;}
+  .unit-section{padding:10px 12px;}
+  .cat-top{padding:12px 14px;}
+  .tbl-meta{padding:5px 12px 2px;}
 }
-@media(max-width:380px){.cat-grid,.unit-cards{grid-template-columns:repeat(2,1fr);}}
-@media(min-width:860px){
-  :root{--hh:58px;--bar-h:46px;--fr-h:42px;}
-  #home-view{padding:26px 28px;}
-  .cat-grid{grid-template-columns:repeat(auto-fill,minmax(162px,1fr));gap:11px;}
-  .cat-card{padding:18px 15px 14px;}.cat-icon{font-size:30px;}.cat-name{font-size:13px;}
-  .cat-top,.unit-section,.toolbar,.frow,.tbl-meta,.tbl-wrap{padding-left:28px;padding-right:28px;}
-  thead th{padding:11px 15px;font-size:10px;}
-  td{padding:11px 15px;}
-  .td-name{font-size:13px;max-width:220px;}
-  .pval{font-size:13px;}
-}
-@media(min-width:1200px){
-  .cat-top,.unit-section,.toolbar,.frow,.tbl-meta,.tbl-wrap{
-    padding-left:max(28px,calc((100vw - 1100px)/2 + 28px));
-    padding-right:max(28px,calc((100vw - 1100px)/2 + 28px));}
-  #home-view{max-width:1100px;margin:0 auto;}
+@media(max-width:380px){
+  .cat-grid,.unit-cards{grid-template-columns:repeat(2,1fr);}
 }
 </style>
 </head>
@@ -327,19 +284,17 @@ td{padding:9px 12px;vertical-align:middle;}
 
 <header>
   <button id="back-btn" onclick="showHome()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <path d="M19 12H5M12 5l-7 7 7 7"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
     Geri
   </button>
   <div class="logo">Qiymət<em>Müqayisə</em></div>
   <div id="last-upd"></div>
 </header>
 
+<!-- HOME -->
 <div id="home-view">
   <div class="home-srch-wrap">
-    <input class="home-srch" id="home-srch" type="search"
-           placeholder="Bütün məhsullarda axtar…" oninput="homeSearch()"/>
+    <input class="home-srch" id="home-srch" type="search" placeholder="Bütün məhsullarda axtar…" oninput="homeSearch()"/>
   </div>
   <div id="home-srch-results" style="display:none;"></div>
   <div id="home-cats">
@@ -349,6 +304,7 @@ td{padding:9px 12px;vertical-align:middle;}
   </div>
 </div>
 
+<!-- CATEGORY -->
 <div id="cat-view">
   <div class="cat-top">
     <div id="cat-icon"></div>
@@ -360,24 +316,24 @@ td{padding:9px 12px;vertical-align:middle;}
     <div class="unit-cards" id="unit-cards"></div>
   </div>
 
-  <!-- STICKY TOOLBAR  z:120 — top set by JS -->
-  <div class="toolbar" id="toolbar">
+  <!-- TOOLBAR (sticky band) -->
+  <div class="sticky-band toolbar" id="toolbar">
     <input type="search" id="srch" placeholder="Məhsul axtar…" oninput="rerender()"/>
     <button class="srt on" onclick="setSort('name',this)">A→Z</button>
     <button class="srt"    onclick="setSort('asc',this)">Ucuz↑</button>
     <button class="srt"    onclick="setSort('sav',this)">Qənaət↓</button>
   </div>
 
-  <!-- STICKY FILTER ROW A — type  z:110 -->
-  <div class="frow" id="frow-type">
+  <!-- Row A: type -->
+  <div class="sticky-band frow" id="frow-type">
     <span class="frow-lbl">Növ</span>
-    <div class="fchips-inner" id="fchips-type"></div>
+    <div id="fchips-type" style="display:flex;gap:5px;align-items:center;"></div>
   </div>
 
-  <!-- STICKY FILTER ROW B — weight  z:100 -->
-  <div class="frow" id="frow-weight">
+  <!-- Row B: weight -->
+  <div class="sticky-band frow" id="frow-weight">
     <span class="frow-lbl">Çəki</span>
-    <div class="fchips-inner" id="fchips-weight"></div>
+    <div id="fchips-weight" style="display:flex;gap:5px;align-items:center;flex-wrap:nowrap;"></div>
     <div class="cr-wrap" id="cr-wrap">
       <input class="cr-in" id="cr-min" type="number" min="0" placeholder="min"/>
       <span class="cr-lbl" id="cr-u1">q</span>
@@ -388,21 +344,17 @@ td{padding:9px 12px;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- STICKY FILTER ROW C — percent  z:90 (conditional) -->
-  <div class="frow" id="frow-pct" style="display:none;">
+  <!-- Row C: pct -->
+  <div class="sticky-band frow" id="frow-pct">
     <span class="frow-lbl">Faiz</span>
-    <div class="fchips-inner" id="fchips-pct"></div>
+    <div id="fchips-pct" style="display:flex;gap:5px;align-items:center;flex-wrap:nowrap;"></div>
   </div>
 
   <div class="tbl-meta" id="tbl-meta"></div>
 
-  <!-- TABLE: overflow-y:clip → thead sticks to viewport -->
   <div class="tbl-wrap">
-    <table>
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="empty-st" id="empty" style="display:none;">Məhsul tapılmadı</div>
+    <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+    <div class="empty-st" id="empty" style="display:none">Məhsul tapılmadı</div>
   </div>
 </div>
 
@@ -423,13 +375,19 @@ const CI={
   duz:"🧂",sekerqum:"🍬",istiot:"🌶️",
 };
 
-function isAzAdj(w){return /[lL][ıiuüIİUÜ]$/.test(w);}
-const STOP=new Set([
+/* ── HELPERS ── */
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function fmt(n){return n!=null?Number(n).toFixed(2):'—';}
+
+/* ── AZ ADJECTIVE DETECTION ── */
+const STOP_WORDS=new Set([
   'sabun','şampun','yuyucu','dezodorant','krem','losyon','jel','maye',
   'plastik','şüşə','qabda','qalib','mini','maxi','vita','nano','bio','eco',
   'premium','classic','original','special','super','ultra','mega','extra',
   've','ilə','üçün','olan','həm','da','də','ki','bu','bir','bütün',
 ]);
+function isAzAdj(w){return /[lL][ıiuüIİUÜ]$/.test(w);}
+
 function extractProductType(name){
   const qualRe=/\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|ml(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[lL](?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[qQgG][rR]?(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ]))/;
   const m=name.match(qualRe);
@@ -439,26 +397,28 @@ function extractProductType(name){
   const words=before.split(/\s+/).filter(w=>/^\p{L}+$/u.test(w));
   if(words.length<2)return null;
   for(let i=1;i<words.length;i++){
-    const w=words[i];
-    if(isAzAdj(w)||STOP.has(w.toLowerCase()))continue;
-    return w[0].toUpperCase()+w.slice(1);
+    const w=words[i],wl=w.toLowerCase();
+    if(isAzAdj(w))continue;
+    if(STOP_WORDS.has(wl))continue;
+    return w.charAt(0).toUpperCase()+w.slice(1);
   }
   const last=words[words.length-1];
-  return last[0].toUpperCase()+last.slice(1);
+  return last.charAt(0).toUpperCase()+last.slice(1);
 }
 
-const AL='[a-zA-ZğüşıöçĞÜŞIÖÇəƏ]';
+/* ── WEIGHT PARSING ── */
 function parseWeight(name){
+  const AL='[a-zA-ZğüşıöçĞÜŞIÖÇəƏ]';
   const pats=[
     {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*kq(?!'+AL+')','i'),mult:1000,liq:false},
     {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*kg(?!'+AL+')','i'),mult:1000,liq:false},
-    {re:/(\d+[\.,]?\d*)\s*litr/i,mult:1000,liq:true},
+    {re:/(\d+[\.,]?\d*)\s*litr/i,                           mult:1000,liq:true},
     {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*lt(?!'+AL+')','i'),mult:1000,liq:true},
-    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*[lL](?!'+AL+')'),mult:1000,liq:true},
-    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*ml(?!'+AL+')','i'),mult:1,liq:true},
-    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*gr(?!'+AL+')','i'),mult:1,liq:false},
-    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*[gG](?!'+AL+')'),mult:1,liq:false},
-    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*qr?(?!'+AL+')','i'),mult:1,liq:false},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*[lL](?!'+AL+')'),  mult:1000,liq:true},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*ml(?!'+AL+')','i'),mult:1,   liq:true},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*gr(?!'+AL+')','i'),mult:1,   liq:false},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*[gG](?!'+AL+')'),  mult:1,   liq:false},
+    {re:new RegExp('(\\d+[\\.,]?\\d*)\\s*qr?(?!'+AL+')','i'),mult:1,  liq:false},
   ];
   for(const p of pats){
     const m=name.match(p.re);
@@ -474,36 +434,54 @@ function parsePercent(name){
   return isNaN(v)?null:v;
 }
 
+/* ── SIMILARITY (Azerbaijani-safe) ── */
+function sim(a,b){
+  // Keep all Unicode letters — just lowercase and split on whitespace/punctuation
+  const clean=s=>s.toLowerCase().split(/[\s\-\/,]+/).filter(w=>w.length>1);
+  const wa=new Set(clean(a)),wb=new Set(clean(b));
+  let i=0;wa.forEach(w=>{if(wb.has(w))i++;});
+  return i/Math.max(wa.size,wb.size,1);
+}
+
+/* ── WEIGHT RANGE PRESETS ── */
 const WRANGES={
   solid:[
-    {l:'Hamısı'},{l:'sep'},
-    {l:'< 250 q',min:0,max:250},{l:'250–500 q',min:250,max:500},
-    {l:'500q–1 kq',min:500,max:1000},{l:'1–2 kq',min:1000,max:2000},
-    {l:'2 kq +',min:2000,max:Infinity},{l:'sep'},{l:'Öz aralığı',custom:true},
+    {l:'Hamısı'},
+    {l:'sep'},
+    {l:'< 250 q',   min:0,   max:250},
+    {l:'250–500 q', min:250, max:500},
+    {l:'500q–1 kq', min:500, max:1000},
+    {l:'1–2 kq',    min:1000,max:2000},
+    {l:'2 kq +',    min:2000,max:Infinity},
+    {l:'sep'},
+    {l:'Öz aralığı',custom:true},
   ],
   liquid:[
-    {l:'Hamısı'},{l:'sep'},
-    {l:'< 250 ml',min:0,max:250},{l:'250–500 ml',min:250,max:500},
-    {l:'500ml–1 L',min:500,max:1000},{l:'1–2 L',min:1000,max:2000},
-    {l:'2 L +',min:2000,max:Infinity},{l:'sep'},{l:'Öz aralığı',custom:true},
+    {l:'Hamısı'},
+    {l:'sep'},
+    {l:'< 250 ml',   min:0,   max:250},
+    {l:'250–500 ml', min:250, max:500},
+    {l:'500ml–1 L',  min:500, max:1000},
+    {l:'1–2 L',      min:1000,max:2000},
+    {l:'2 L +',      min:2000,max:Infinity},
+    {l:'sep'},
+    {l:'Öz aralığı', custom:true},
   ],
 };
 
-/* ══════════════════════════════════════════════
-   STATE — wmode always starts 'all' (FIX #3)
-══════════════════════════════════════════════ */
+/* ── FILTER STATE ── */
 const F={type:null,wmode:'all',range:null,customOpen:false,pct:null};
 let DATA=null,STORES=[],sortMode='name',allRows=[];
 let catTopTypes=[],catOtherTypes=new Set();
 
+/* ── BOOT ── */
 async function init(){
   try{
     const r=await fetch('data/prices.json');
     if(!r.ok)throw new Error(r.status);
     DATA=await r.json();
     STORES=DATA.stores||["Bravo","OBA","Araz","Neptun","Rahat"];
-    if(DATA.last_updated)
-      document.getElementById('last-upd').textContent='↺ '+DATA.last_updated;
+    if(DATA.last_updated)document.getElementById('last-upd').textContent='↺ '+DATA.last_updated;
     buildGrid();
   }catch(e){
     document.getElementById('loading').innerHTML=
@@ -514,8 +492,7 @@ async function init(){
 
 function buildGrid(){
   document.getElementById('loading').style.display='none';
-  const g=document.getElementById('cat-grid');
-  let h='';
+  const g=document.getElementById('cat-grid');let h='';
   for(const[id,cat] of Object.entries(DATA.categories)){
     const total=Object.values(cat.stores||{}).reduce((s,a)=>s+a.length,0);
     if(!total)continue;
@@ -530,13 +507,7 @@ function buildGrid(){
   g.innerHTML=h||'<div style="color:var(--muted)">Məlumat yoxdur</div>';
 }
 
-function sim(a,b){
-  const wa=new Set(a.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
-  const wb=new Set(b.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean));
-  let i=0;wa.forEach(w=>{if(wb.has(w))i++;});
-  return i/Math.max(wa.size,wb.size,1);
-}
-
+/* ── OPEN CATEGORY ── */
 function openCat(catId){
   sortMode='name';
   document.querySelectorAll('.srt').forEach((b,i)=>b.classList.toggle('on',i===0));
@@ -547,6 +518,7 @@ function openCat(catId){
   document.getElementById('cat-icon').textContent=CI[catId]||'📦';
   document.getElementById('cat-title').textContent=cat.name;
 
+  // Build per-store arrays
   const si={};
   STORES.forEach(s=>{si[s]=(cat.stores&&cat.stores[s])?[...cat.stores[s]]:[];});
   const anchor=STORES.slice().sort((a,b)=>si[b].length-si[a].length)[0];
@@ -584,7 +556,8 @@ function openCat(catId){
     row._pct=parsePercent(row.name);
     const oe=STORES
       .map(s=>{const p=row.prices[s];if(!p)return null;const v=p.own??p.wolt;return v!=null?{s,p:v}:null;})
-      .filter(Boolean).sort((a,b)=>a.p-b.p);
+      .filter(Boolean);
+    oe.sort((a,b)=>a.p-b.p);
     row._cs=oe[0]||null;
     row._xs=oe.length>1?oe[oe.length-1]:null;
     row._sav=oe.length>1?Math.round((row._xs.p-row._cs.p)*100)/100:0;
@@ -622,36 +595,36 @@ function buildTypeChips(){
     wrap.innerHTML='<span style="font-size:10px;color:var(--muted);white-space:nowrap;">Bütün məhsullar eyni növdür</span>';
     return;
   }
-  let h=`<div class="chip on" data-type="" onclick="handleTypeChip(this)">Hamısı <span class="chip-cnt">${allRows.length}</span></div>`;
+  let h=`<div class="chip on" data-type="" onclick="handleTypeChip(this)">Hamısı <span style="font-size:9px;opacity:.6;margin-left:2px;">${allRows.length}</span></div>`;
   h+=`<div class="chsep"></div>`;
   catTopTypes.forEach(t=>{
     const cnt=allRows.filter(r=>r._pt===t).length;
-    h+=`<div class="chip" data-type="${esc(t)}" onclick="handleTypeChip(this)">${esc(t)} <span class="chip-cnt">${cnt}</span></div>`;
+    const safe=esc(t);
+    h+=`<div class="chip" data-type="${safe}" onclick="handleTypeChip(this)">${safe} <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
   });
   const otherCnt=allRows.filter(r=>!r._pt||catOtherTypes.has(r._pt)).length;
   if(otherCnt>0){
     h+=`<div class="chsep"></div>`;
-    h+=`<div class="chip" data-type="__none__" onclick="handleTypeChip(this)">Digər <span class="chip-cnt">${otherCnt}</span></div>`;
+    h+=`<div class="chip" data-type="__none__" onclick="handleTypeChip(this)">Digər <span style="font-size:9px;opacity:.55;margin-left:2px;">${otherCnt}</span></div>`;
   }
   wrap.innerHTML=h;
 }
 function handleTypeChip(chip){
+  const raw=chip.dataset.type;
+  const pt=raw===''?null:raw;
   document.querySelectorAll('#fchips-type .chip').forEach(c=>c.classList.remove('on'));
   chip.classList.add('on');
-  setType(chip.dataset.type===''?null:chip.dataset.type);
+  setType(pt);
 }
-
-/* FIX #3 — No longer auto-sets wmode to solid/liquid.
-   Old code: F.wmode=(hasL&&!hasS)?'liquid':(hasS&&!hasL)?'solid':'all'
-   This silently hid products that lacked weight metadata when only one
-   weight-type existed in the selected product type.
-   Fix: always reset wmode to 'all' so every matching product is shown. */
 function setType(pt){
-  F.type=pt;
-  F.pct=null;
-  F.wmode='all';   // ← THE FIX
-  F.range=null;
-  F.customOpen=false;
+  F.type=pt;F.pct=null;
+  if(pt&&pt!=='__none__'){
+    const rows=allRows.filter(r=>r._pt===pt);
+    const hasL=rows.some(r=>r._wg&&r._wg.isLiquid);
+    const hasS=rows.some(r=>r._wg&&!r._wg.isLiquid);
+    F.wmode=(hasL&&!hasS)?'liquid':(hasS&&!hasL)?'solid':'all';
+  }else{F.wmode='all';}
+  F.range=null;F.customOpen=false;
   document.getElementById('cr-wrap').classList.remove('show');
   buildWeightChips();
   buildPctChips();
@@ -659,14 +632,10 @@ function setType(pt){
 }
 
 /* ── WEIGHT CHIPS ── */
-function scopedRows(){
-  if(!F.type)return allRows;
-  if(F.type==='__none__')return allRows.filter(r=>!r._pt||catOtherTypes.has(r._pt));
-  return allRows.filter(r=>r._pt===F.type);
-}
 function buildWeightChips(){
   const wrap=document.getElementById('fchips-weight');
-  document.getElementById('cr-wrap').classList.remove('show');
+  const cr=document.getElementById('cr-wrap');
+  cr.classList.remove('show');
   const inScope=scopedRows();
   const hasL=inScope.some(r=>r._wg&&r._wg.isLiquid);
   const hasS=inScope.some(r=>r._wg&&!r._wg.isLiquid);
@@ -674,11 +643,11 @@ function buildWeightChips(){
   let h='';
   const modes=[];
   if(hasS||hasL)modes.push({v:'all',l:'Hamısı'});
-  if(hasS)modes.push({v:'solid',l:'⚖ Çəki'});
-  if(hasL)modes.push({v:'liquid',l:'💧 Həcm'});
-  if(hasN)modes.push({v:'none',l:'📦 Digər'});
+  if(hasS)      modes.push({v:'solid',l:'⚖ Çəki'});
+  if(hasL)      modes.push({v:'liquid',l:'💧 Həcm'});
+  if(hasN)      modes.push({v:'none',l:'📦 Digər'});
   modes.forEach(m=>{
-    h+=`<div class="chip sm${F.wmode===m.v?' on':''}" onclick="setWMode('${m.v}')">${m.l}</div>`;
+    h+=`<div class="chip sm${F.wmode===m.v?' on':''}" onclick="setWMode('${m.v}',this)">${m.l}</div>`;
   });
   const presets=WRANGES[F.wmode]||[];
   if(presets.length){
@@ -686,25 +655,39 @@ function buildWeightChips(){
     presets.forEach(p=>{
       if(p.l==='sep'){h+=`<div class="chsep"></div>`;return;}
       if(p.l==='Hamısı'){
-        h+=`<div class="chip sm${!F.range&&!F.customOpen?' on':''}" onclick="clearWRange()">Hamısı</div>`;return;
+        h+=`<div class="chip sm${!F.range&&!F.customOpen?' on':''}" onclick="clearWRange(this)">Hamısı</div>`;
+        return;
       }
       if(p.custom){
-        h+=`<div class="chip sm${F.customOpen?' on':''}" onclick="toggleCustom()">Öz aralığı</div>`;return;
+        h+=`<div class="chip sm${F.customOpen?' on':''}" onclick="toggleCustom(this)">Öz aralığı</div>`;
+        return;
       }
       const isOn=F.range&&F.range.min===p.min&&F.range.max===p.max;
-      const maxA=p.max===Infinity?'Infinity':p.max;
-      h+=`<div class="chip sm${isOn?' on':''}" onclick="setWRange(${p.min},${maxA})">${esc(p.l)}</div>`;
+      const maxArg=p.max===Infinity?'Infinity':p.max;
+      h+=`<div class="chip sm${isOn?' on':''}" onclick="setWRange(${p.min},${maxArg},this)">${esc(p.l)}</div>`;
     });
   }
   wrap.innerHTML=h;
-  if(F.customOpen)document.getElementById('cr-wrap').classList.add('show');
+  if(F.customOpen)cr.classList.add('show');
 }
+
+function scopedRows(){
+  if(F.type==='__none__')return allRows.filter(r=>!r._pt||catOtherTypes.has(r._pt));
+  if(F.type)return allRows.filter(r=>r._pt===F.type);
+  return allRows;
+}
+
 function setWMode(mode){F.wmode=mode;F.range=null;F.customOpen=false;document.getElementById('cr-wrap').classList.remove('show');buildWeightChips();rerender();}
-function setWRange(min,max){F.range={min,max:max==='Infinity'||max===Infinity?Infinity:Number(max)};F.customOpen=false;document.getElementById('cr-wrap').classList.remove('show');buildWeightChips();rerender();}
+function setWRange(min,max){
+  F.range={min,max:max==='Infinity'||max===Infinity?Infinity:Number(max)};
+  F.customOpen=false;document.getElementById('cr-wrap').classList.remove('show');
+  buildWeightChips();rerender();
+}
 function clearWRange(){F.range=null;F.customOpen=false;document.getElementById('cr-wrap').classList.remove('show');buildWeightChips();rerender();}
 function toggleCustom(){
   F.customOpen=!F.customOpen;F.range=null;
-  document.getElementById('cr-wrap').classList.toggle('show',F.customOpen);
+  const cr=document.getElementById('cr-wrap');
+  cr.classList.toggle('show',F.customOpen);
   if(F.customOpen){
     const u=F.wmode==='liquid'?'ml':'q';
     document.getElementById('cr-u1').textContent=u;
@@ -722,18 +705,19 @@ function applyCustom(){
 
 /* ── PCT CHIPS ── */
 function buildPctChips(){
-  const rowEl=document.getElementById('frow-pct');
+  const row_el=document.getElementById('frow-pct');
   const wrap=document.getElementById('fchips-pct');
   const inScope=scopedRows();
   const pctSet=new Set();
   inScope.forEach(r=>{if(r._pct!=null)pctSet.add(r._pct);});
-  if(pctSet.size<2){rowEl.style.display='none';updateStickyOffsets();return;}
-  rowEl.style.display='flex';
+  if(pctSet.size<2){row_el.style.display='none';updateStickyOffsets();return;}
+  row_el.style.display='flex';
   const vals=[...pctSet].sort((a,b)=>a-b);
-  let h=`<div class="chip sm on" data-pct="" onclick="handlePctChip(this)">Hamısı</div><div class="chsep"></div>`;
+  let h=`<div class="chip sm on" data-pct="" onclick="handlePctChip(this)">Hamısı</div>`;
+  h+=`<div class="chsep"></div>`;
   vals.forEach(v=>{
     const cnt=inScope.filter(r=>r._pct===v).length;
-    h+=`<div class="chip sm" data-pct="${v}" onclick="handlePctChip(this)">${v}% <span class="chip-cnt">${cnt}</span></div>`;
+    h+=`<div class="chip sm" data-pct="${v}" onclick="handlePctChip(this)">${v}% <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
   });
   wrap.innerHTML=h;
   updateStickyOffsets();
@@ -746,70 +730,61 @@ function handlePctChip(chip){
   rerender();
 }
 
-/* ══════════════════════════════════════════════
-   FIX #1 & #2 — STICKY OFFSETS
-   Measures actual DOM heights and assigns top + z-index so each bar
-   stacks cleanly on the previous one without overlap.
-══════════════════════════════════════════════ */
+/* ── STICKY OFFSET CALCULATOR ── */
 function updateStickyOffsets(){
-  requestAnimationFrame(()=>{
-    const hdr=document.querySelector('header');
-    const tb =document.getElementById('toolbar');
-    const ft =document.getElementById('frow-type');
-    const fw =document.getElementById('frow-weight');
-    const fp =document.getElementById('frow-pct');
+  // Double-RAF: first frame lets DOM update, second measures stable heights
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const hdr   = document.querySelector('header');
+    const tb    = document.getElementById('toolbar');
+    const ft    = document.getElementById('frow-type');
+    const fw    = document.getElementById('frow-weight');
+    const fp    = document.getElementById('frow-pct');
     if(!hdr||!tb||!ft||!fw||!fp)return;
 
-    const hh =hdr.offsetHeight;
-    const tbH=tb.offsetHeight;
-    const ftH=ft.offsetHeight;
-    const fwH=fw.offsetHeight;
+    const hh  = hdr.offsetHeight;
+    const tbH = tb.offsetHeight;
+    const ftH = ft.offsetHeight;
+    const fwH = fw.offsetHeight;
+    const fpH = fp.offsetHeight;
+    const fpV = fp.style.display!=='none';
 
-    tb.style.top=hh+'px';            tb.style.zIndex='120';
-    ft.style.top=(hh+tbH)+'px';      ft.style.zIndex='110';
-    fw.style.top=(hh+tbH+ftH)+'px';  fw.style.zIndex='100';
-    fp.style.top=(hh+tbH+ftH+fwH)+'px'; fp.style.zIndex='90';
+    tb.style.top = hh+'px';
+    ft.style.top = (hh+tbH)+'px';
+    fw.style.top = (hh+tbH+ftH)+'px';
+    fp.style.top = (hh+tbH+ftH+fwH)+'px';
 
-    const fpH=fp.style.display!=='none'?fp.offsetHeight:0;
-    const theadTop=hh+tbH+ftH+fwH+fpH;
-    document.querySelectorAll('thead th').forEach(th=>{th.style.top=theadTop+'px';});
-  });
+    const theadTop = hh+tbH+ftH+fwH+(fpV?fpH:0);
+    document.querySelectorAll('thead th').forEach(th=>th.style.top=theadTop+'px');
+  }));
 }
 
-/* ══════════════════════════════════════════════
-   FIX #3 (continued) — FILTER LOGIC
-   wmode 'solid'/'liquid' no longer filters out products missing weight data.
-   Products without weight always pass the wmode check unless mode is 'none'.
-══════════════════════════════════════════════ */
+/* ── FIXED rowPasses ── */
 function rowPasses(row){
-  // Type filter
-  if(F.type==='__none__'&&row._pt&&!catOtherTypes.has(row._pt))return false;
-  if(F.type&&F.type!=='__none__'&&row._pt!==F.type)return false;
-
-  // Weight-mode filter — products with no weight info always pass solid/liquid mode
-  if(row._wg){
-    if(F.wmode==='solid'  &&  row._wg.isLiquid)return false;
-    if(F.wmode==='liquid' && !row._wg.isLiquid)return false;
-    if(F.wmode==='none')return false;
-  }else{
-    // no weight → only exclude when mode is explicitly 'none' (means "show no-weight items")
-    // for 'solid','liquid','all' → these items pass through
-    // (wmode='none' is "show only items without weight" so no-weight items PASS)
+  // 1. Type filter
+  if(F.type==='__none__'){
+    if(row._pt&&!catOtherTypes.has(row._pt))return false;
+  } else if(F.type){
+    if(row._pt!==F.type)return false;
   }
 
-  // Range filter (only when product has weight)
+  // 2. Weight mode filter
+  if(F.wmode==='solid'  && !(row._wg&&!row._wg.isLiquid)) return false;
+  if(F.wmode==='liquid' && !(row._wg&& row._wg.isLiquid)) return false;
+  if(F.wmode==='none'   &&   row._wg)                     return false;
+
+  // 3. Range filter — applies regardless of wmode (solid/liquid/all)
   if(F.range&&row._wg){
     const g=row._wg.grams;
     if(g<F.range.min||g>F.range.max)return false;
   }
 
-  // Pct filter
+  // 4. Pct filter
   if(F.pct!=null&&row._pct!==F.pct)return false;
 
   return true;
 }
 
-/* ── SORT & RENDER ── */
+/* ── RENDER ── */
 function getSorted(){
   const q=(document.getElementById('srch').value||'').toLowerCase().trim();
   let rows=q?allRows.filter(r=>r.name.toLowerCase().includes(q)):[...allRows];
@@ -819,7 +794,11 @@ function getSorted(){
   else if(sortMode==='sav') rows.sort((a,b)=>b._sav-a._sav);
   return rows;
 }
-function rerender(){renderRows(getSorted());}
+
+function rerender(){
+  renderRows(getSorted());
+  updateStickyOffsets();
+}
 
 function renderRows(rows){
   const body=document.getElementById('tbody');
@@ -864,7 +843,6 @@ function renderRows(rows){
     html+=`<tr><td class="td-name">${esc(row.name)}${pkgB}</td>${cells}${sc}</tr>`;
   });
   body.innerHTML=html;
-  updateStickyOffsets();
 }
 
 /* ── UNIT CARDS ── */
@@ -879,10 +857,10 @@ function buildUnitCards(rows){
       if(!pk||pk<=0)return;
       const p100=pk/10;
       if(!row._wg.isLiquid){
-        if(!bS||pk<bS.pk)        bS   ={pk,store:s,name:row.name};
+        if(!bS||pk<bS.pk)       bS  ={pk,  store:s,name:row.name};
         if(!b100g||p100<b100g.v) b100g={v:p100,store:s,name:row.name};
       }else{
-        if(!bL||pk<bL.pk)          bL   ={pk,store:s,name:row.name};
+        if(!bL||pk<bL.pk)         bL   ={pk,  store:s,name:row.name};
         if(!b100ml||p100<b100ml.v) b100ml={v:p100,store:s,name:row.name};
       }
     });
@@ -901,10 +879,10 @@ function buildUnitCards(rows){
       </div></div>`;
   }
   document.getElementById('unit-cards').innerHTML=
-    card('100 q',b100g,b100g?b100g.v:null)+
-    card('100 ml',b100ml,b100ml?b100ml.v:null)+
-    card('1 kq',bS,bS?bS.pk:null)+
-    card('1 L',bL,bL?bL.pk:null);
+    card('100 q', b100g,  b100g  ?b100g.v :null)+
+    card('100 ml',b100ml, b100ml ?b100ml.v:null)+
+    card('1 kq',  bS,     bS     ?bS.pk   :null)+
+    card('1 L',   bL,     bL     ?bL.pk   :null);
 }
 
 /* ── TABLE HEADER ── */
@@ -934,7 +912,8 @@ function homeSearch(){
     STORES.forEach(s=>{
       (cat.stores&&cat.stores[s]||[]).forEach(item=>{
         if(item.name.toLowerCase().includes(q)){
-          hits.push({name:item.name,cat:cat.name,catId,store:s,price:item.price??item.wolt_price});
+          const price=item.price??item.wolt_price;
+          hits.push({name:item.name,cat:cat.name,catId,store:s,price});
         }
       });
     });
@@ -952,7 +931,8 @@ function homeSearch(){
         <div class="srch-item-name">${esc(item.name)}</div>
         <div class="srch-item-cat">${esc(item.cat)}</div>
       </div>
-      <div class="srch-item-right">${pr}</div></div>`;
+      <div class="srch-item-right">${pr}</div>
+    </div>`;
   });
   res.innerHTML=h;
 }
@@ -967,6 +947,7 @@ function srchItemClick(el){
   rerender();
 }
 
+/* ── MISC ── */
 function setSort(m,btn){sortMode=m;document.querySelectorAll('.srt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rerender();}
 function showHome(){
   document.getElementById('home-view').style.display='block';
@@ -974,8 +955,6 @@ function showHome(){
   document.getElementById('back-btn').style.display='none';
   window.scrollTo(0,0);
 }
-function fmt(n){return n!=null?Number(n).toFixed(2):'—';}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
 init();
 window.addEventListener('resize',updateStickyOffsets);
