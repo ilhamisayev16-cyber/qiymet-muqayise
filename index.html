@@ -221,9 +221,15 @@ thead th{position:sticky;z-index:50;box-shadow:0 1px 0 var(--border);}
 </header>
 
 <div id="home-view">
-  <div class="sec-label">Kateqoriyalar</div>
-  <div id="loading"><div class="spinner"></div>Yüklənir…</div>
-  <div class="cat-grid" id="cat-grid"></div>
+  <div class="home-srch-wrap">
+    <input class="home-srch" id="home-srch" type="search" placeholder="Bütün məhsullarda axtar…" oninput="homeSearch()"/>
+  </div>
+  <div id="home-srch-results" style="display:none;"></div>
+  <div id="home-cats">
+    <div class="sec-label">Kateqoriyalar</div>
+    <div id="loading"><div class="spinner"></div>Yüklənir…</div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
 </div>
 
 <div id="cat-view">
@@ -303,49 +309,41 @@ function isAzAdj(word){
   return /[lL][ıiuüIİUÜ]$/.test(word);
 }
 
+// Words that should never be a product type (noise/packaging/stop words)
+const STOP_WORDS=new Set([
+  'sabun','şampun','yuyucu','dezodorant','krem','losyon','jel','maye',
+  'plastik','şüşə','qabda','qalib','mini','maxi','vita','nano','bio','eco',
+  'premium','classic','original','special','super','ultra','mega','extra',
+  've','ilə','üçün','olan','həm','da','də','ki','bu','bir','bütün',
+]);
+
 /* ══════════════════════════════════════════════════════════════
    PRODUCT TYPE EXTRACTION
-   Rule:
-     word[0]  = brand name  → skip
-     word[1+] = scan left-to-right; skip adjective words (isAzAdj)
-              → first non-adjective word = product type
-
-   Examples:
-     "Bravo Süd 3.2% 1L"              → brand=Bravo  → type=Süd
-     "Azərsüd Kərə Yağı 1kq"          → brand=Azərsüd → type=Kərə
-     "AzerSüd Homogenize Qatiq 3.6%"  → brand=AzerSüd → type=Homogenize
-       wait, "Homogenize" isn't an adj... but the user's intent is Qatiq.
-       However the user said "second word after brand" = type.
-       So Homogenize would be the type which is debatable. Let's keep it simple:
-       second word (index 1) is always the type unless it's an adjective.
-
-     "Adazu Çips Soğan Xama 130qr"    → type=Çips   ✓
-     "Bravo Xamalı Mayonez 500q"       → skip Xamalı(adj) → type=Mayonez ✓
-     "Azərsüd Üzümlü Şirə 1L"         → skip Üzümlü(adj) → type=Şirə ✓
-     "Sloboda Soğanlı Mayonez 400qr"   → skip Soğanlı(adj) → type=Mayonez ✓
+   word[0] = brand (skip — may be numeric like "3046")
+   word[1+] = skip adjective suffixes (-lı/-li/-lu/-lü)
+            = skip STOP_WORDS
+            = first clean noun = product type
 ══════════════════════════════════════════════════════════════ */
 function extractProductType(name){
-  // Find position of first numeric qualifier (weight/volume/percentage)
-  // Units: kq kg litr lt l ml q qr gr g  — with or without space after digits
-  const qualRe=/\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?![a-zA-Z])|ml(?![a-zA-Z])|[lL](?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[qQgG][rR]?(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ]))/;
+  const qualRe=/\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|ml(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[lL](?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[qQgG][rR]?(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ]))/;
   const m=name.match(qualRe);
   const cutIdx=m?m.index:name.length;
   const before=name.slice(0,cutIdx).trim();
   if(!before)return null;
 
-  // Only purely alphabetic tokens (Azerbaijani alphabet included)
+  // Only purely alphabetic tokens
   const words=before.split(/\s+/).filter(w=>/^\p{L}+$/u.test(w));
   if(words.length<2)return null; // only brand, no type word
 
   // words[0] = brand → skip
-  // Find first NON-adjective word after brand
   for(let i=1;i<words.length;i++){
-    if(!isAzAdj(words[i])){
-      const w=words[i];
-      return w.charAt(0).toUpperCase()+w.slice(1);
-    }
+    const w=words[i];
+    const wl=w.toLowerCase();
+    if(isAzAdj(w))continue;       // skip adjective suffix words
+    if(STOP_WORDS.has(wl))continue; // skip noise words
+    return w.charAt(0).toUpperCase()+w.slice(1);
   }
-  // All words after brand are adjectives → return last one as fallback
+  // fallback: last alphabetic word
   const last=words[words.length-1];
   return last.charAt(0).toUpperCase()+last.slice(1);
 }
@@ -566,22 +564,30 @@ function buildTypeChips(){
     wrap.innerHTML='<span style="font-size:10px;color:var(--muted);white-space:nowrap;">Bütün məhsullar eyni növdür</span>';
     return;
   }
-  let h=`<div class="chip on" onclick="setType(null,this)">Hamısı <span style="font-size:9px;opacity:.6;margin-left:2px;">${allRows.length}</span></div>`;
+  let h=`<div class="chip on" data-type="" onclick="handleTypeChip(this)">Hamısı <span style="font-size:9px;opacity:.6;margin-left:2px;">${allRows.length}</span></div>`;
   h+=`<div class="chsep"></div>`;
   catTopTypes.forEach(t=>{
     const cnt=allRows.filter(r=>r._pt===t).length;
-    h+=`<div class="chip" onclick="setType(${JSON.stringify(t)},this)">${esc(t)} <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
+    const safe=esc(t);
+    h+=`<div class="chip" data-type="${safe}" onclick="handleTypeChip(this)">${safe} <span style="font-size:9px;opacity:.55;margin-left:2px;">${cnt}</span></div>`;
   });
-  // "Digər" = untyped + types beyond top-4
   const otherCnt=allRows.filter(r=>!r._pt||catOtherTypes.has(r._pt)).length;
   if(otherCnt>0){
     h+=`<div class="chsep"></div>`;
-    h+=`<div class="chip" onclick="setType('__none__',this)">Digər <span style="font-size:9px;opacity:.55;margin-left:2px;">${otherCnt}</span></div>`;
+    h+=`<div class="chip" data-type="__none__" onclick="handleTypeChip(this)">Digər <span style="font-size:9px;opacity:.55;margin-left:2px;">${otherCnt}</span></div>`;
   }
   wrap.innerHTML=h;
 }
 
-function setType(pt, chip){
+function handleTypeChip(chip){
+  const raw=chip.dataset.type;
+  const pt=raw===''?null:raw;
+  document.querySelectorAll('#fchips-type .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on');
+  setType(pt);
+}
+
+function setType(pt){
   F.type=pt;
   if(pt&&pt!=='__none__'){
     const rows=allRows.filter(r=>r._pt===pt);
@@ -593,8 +599,6 @@ function setType(pt, chip){
   }
   F.range=null;F.customOpen=false;
   document.getElementById('cr-wrap').classList.remove('show');
-  document.querySelectorAll('#fchips-type .chip').forEach(c=>c.classList.remove('on'));
-  chip.classList.add('on');
   buildWeightChips();
   rerender();
 }
@@ -814,11 +818,69 @@ function buildTableHeader(){
   });
   h+='<th class="sr">Qənaət</th></tr>';
   document.getElementById('thead').innerHTML=h;
+  // Sticky header offset: header(44) + toolbar(45) + frow-type(37) + frow-weight(37)
+  const top = 44+45+37+37;
+  document.querySelectorAll('thead th').forEach(th=>th.style.top=top+'px');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HOME SEARCH — searches across all categories
+══════════════════════════════════════════════════════════════ */
+function homeSearch(){
+  if(!DATA)return;
+  const q=(document.getElementById('home-srch').value||'').trim().toLowerCase();
+  const res=document.getElementById('home-srch-results');
+  const cats=document.getElementById('home-cats');
+  if(!q){res.style.display='none';cats.style.display='block';return;}
+  cats.style.display='none';
+  res.style.display='block';
+
+  // Collect all products across all categories
+  const hits=[];
+  for(const[catId,cat] of Object.entries(DATA.categories)){
+    STORES.forEach(s=>{
+      (cat.stores&&cat.stores[s]||[]).forEach(item=>{
+        if(item.name.toLowerCase().includes(q)){
+          const price=item.price??item.wolt_price;
+          hits.push({name:item.name,cat:cat.name,catId,store:s,price});
+        }
+      });
+    });
+  }
+  // Deduplicate by name (keep cheapest)
+  const seen={};
+  const deduped=[];
+  hits.forEach(h=>{
+    if(!seen[h.name]||h.price<seen[h.name].price){seen[h.name]=h;}
+  });
+  Object.values(seen).sort((a,b)=>(a.price??999)-(b.price??999)).forEach(h=>deduped.push(h));
+
+  if(!deduped.length){
+    res.innerHTML=`<div class="srch-empty">Heç bir məhsul tapılmadı</div>`;
+    return;
+  }
+  let h=`<div class="srch-count">${deduped.length} nəticə</div>`;
+  deduped.slice(0,80).forEach(item=>{
+    const pr=item.price!=null?`<div class="srch-item-price">₼${fmt(item.price)}</div><div class="srch-item-store">${item.store}</div>`:'';
+    h+=`<div class="srch-item" onclick="openCat('${item.catId}');document.getElementById('srch').value=${JSON.stringify(item.name)};rerender();">
+      <div class="srch-item-left">
+        <div class="srch-item-name">${esc(item.name)}</div>
+        <div class="srch-item-cat">${esc(item.cat)}</div>
+      </div>
+      <div class="srch-item-right">${pr}</div>
+    </div>`;
+  });
+  res.innerHTML=h;
 }
 
 /* MISC */
 function setSort(m,btn){sortMode=m;document.querySelectorAll('.srt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rerender();}
-function showHome(){document.getElementById('home-view').style.display='block';document.getElementById('cat-view').style.display='none';document.getElementById('back-btn').style.display='none';window.scrollTo(0,0);}
+function showHome(){
+  document.getElementById('home-view').style.display='block';
+  document.getElementById('cat-view').style.display='none';
+  document.getElementById('back-btn').style.display='none';
+  window.scrollTo(0,0);
+}
 function fmt(n){return n!=null?Number(n).toFixed(2):'—';}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
