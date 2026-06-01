@@ -320,12 +320,12 @@ header{
   padding:6px 18px 0;
   font-size:10px;color:var(--t3);
   font-family:'Space Mono',monospace;min-height:22px;
-}
 .tbl-wrap{
   overflow-x:auto;
-  overflow-y:visible;
-  -webkit-overflow-scrolling:touch;
-  padding:10px 18px 64px;
+  overflow-y:auto;
+  height: calc(100vh - var(--stackH, 220px));
+  -webkit-overflow-scrolling: touch;
+  padding:10px 18px 18px;
 }
 table{width:100%;border-collapse:separate;border-spacing:0;min-width:520px;font-size:13px;}
 
@@ -623,10 +623,7 @@ function updateStickyOffsets(){
 
     // IMPORTANT: +20 təhlükəsizlik boşluğu
     const theadTop = hh + tbH + ftH + fwH + fpH + 20;
-    document.querySelectorAll('thead th').forEach(th => {
-      th.style.top = theadTop + 'px';
-      th.style.zIndex = '150';
-      th.style.background = 'var(--s1)';
+   document.documentElement.style.setProperty('--stackH', stackH + 'px');
     });
   }, 50);
 }
