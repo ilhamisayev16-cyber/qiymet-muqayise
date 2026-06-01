@@ -345,7 +345,7 @@ header{
 }
 .tbl-wrap{
   overflow-x:auto;
-  overflow-y:clip;
+  overflow-y:visible;
   -webkit-overflow-scrolling:touch;
   padding:10px 18px 64px;
 }
@@ -995,29 +995,47 @@ function handlePctChip(chip) {
 
 /* ── FIX: updateStickyOffsets — double-RAF for reliable height measurement ── */
 function updateStickyOffsets() {
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const hdr = document.querySelector('header');
-    const tb  = document.getElementById('toolbar');
-    const ft  = document.getElementById('frow-type');
-    const fw  = document.getElementById('frow-weight');
-    const fp  = document.getElementById('frow-pct');
-    if (!hdr || !tb || !ft || !fw || !fp) return;
+  const hdr = document.querySelector('header');
+  const tb  = document.getElementById('toolbar');
+  const ft  = document.getElementById('frow-type');
+  const fw  = document.getElementById('frow-weight');
+  const fp  = document.getElementById('frow-pct');
 
-    const hh  = hdr.offsetHeight;
-    const tbH = tb.offsetHeight;
-    const ftH = ft.offsetHeight;
-    const fwH = fw.offsetHeight;
-    const fpV = fp.style.display !== 'none';
-    const fpH = fpV ? fp.offsetHeight : 0;
+  if (!hdr || !tb || !ft || !fw) return;
 
-    tb.style.top = hh + 'px';               tb.style.zIndex = '120';
-    ft.style.top = (hh + tbH) + 'px';       ft.style.zIndex = '110';
-    fw.style.top = (hh + tbH + ftH) + 'px'; fw.style.zIndex = '100';
-    fp.style.top = (hh + tbH + ftH + fwH) + 'px'; fp.style.zIndex = '90';
+  const hh  = hdr.offsetHeight;
+  const tbH = tb.offsetHeight;
+  const ftH = ft.offsetHeight;
+  const fwH = fw.offsetHeight;
+  const fpVisible = fp && fp.style.display !== 'none';
+  const fpH = fpVisible ? fp.offsetHeight : 0;
 
-    const theadTop = hh + tbH + ftH + fwH + fpH;
-    document.querySelectorAll('thead th').forEach(th => { th.style.top = theadTop + 'px'; });
-  }));
+  tb.style.position = 'sticky';
+  tb.style.top = hh + 'px';
+  tb.style.zIndex = '120';
+
+  ft.style.position = 'sticky';
+  ft.style.top = (hh + tbH) + 'px';
+  ft.style.zIndex = '110';
+
+  fw.style.position = 'sticky';
+  fw.style.top = (hh + tbH + ftH) + 'px';
+  fw.style.zIndex = '100';
+
+  if (fp) {
+    fp.style.position = 'sticky';
+    fp.style.top = (hh + tbH + ftH + fwH) + 'px';
+    fp.style.zIndex = '90';
+  }
+
+  const theadTop = hh + tbH + ftH + fwH + fpH;
+
+  document.querySelectorAll('thead th').forEach(th => {
+    th.style.position = 'sticky';
+    th.style.top = theadTop + 'px';
+    th.style.zIndex = '80';
+    th.style.background = 'var(--s1)';
+  });
 }
 
 /* ── FIX: rowPasses — correct wmode logic for all cases ── */
