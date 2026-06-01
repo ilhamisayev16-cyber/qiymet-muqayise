@@ -995,6 +995,7 @@ function handlePctChip(chip) {
 
 /* ── FIX: updateStickyOffsets — double-RAF for reliable height measurement ── */
 function updateStickyOffsets() {
+   setTimeout(()=>{
   const hdr = document.querySelector('header');
   const tb  = document.getElementById('toolbar');
   const ft  = document.getElementById('frow-type');
@@ -1035,7 +1036,7 @@ function updateStickyOffsets() {
     th.style.top = theadTop + 'px';
     th.style.zIndex = '100';
     th.style.background = 'var(--s1)';
-  });
+  }, 50); 
 }
 
 /* ── FIX: rowPasses — correct wmode logic for all cases ── */
