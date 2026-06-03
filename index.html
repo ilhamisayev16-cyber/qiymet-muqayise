@@ -56,7 +56,9 @@ header{
   height:var(--hh);background:rgba(9,7,5,.97);
   backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);
   border-bottom:1px solid var(--br2);padding:0 20px;
-  position:sticky;top:0;z-index:200;
+  position:sticky;
+   top:0;
+   z-index:200;
   display:flex;align-items:center;gap:10px;
   box-shadow:0 0 0 1px rgba(255,220,160,.03),0 6px 30px rgba(0,0,0,.7);
 }
@@ -981,38 +983,6 @@ function handlePctChip(chip){
   F.pct=raw===''?null:parseFloat(raw);
   document.querySelectorAll('#fchips-pct .chip').forEach(c=>c.classList.remove('on'));
   chip.classList.add('on');rerender();
-}
-
-/* ── updateStickyOffsets — accounts for sticky cat header ── */
-function updateStickyOffsets() {
-  setTimeout(() => {
-    document.body.offsetHeight; // force full layout
-    const hdr = document.querySelector('header');
-    const csh = document.getElementById('cat-sticky-hdr');
-    const tb = document.getElementById('toolbar');
-    const ft = document.getElementById('frow-type');
-    const fw = document.getElementById('frow-weight');
-    const fp = document.getElementById('frow-pct');
-    if (!hdr || !tb || !ft || !fw || !fp) return;
-    const hh = hdr.offsetHeight;
-    const cshH = (csh && csh.style.display !== 'none') ? csh.offsetHeight : 0;
-    const tbH = tb.offsetHeight, ftH = ft.offsetHeight, fwH = fw.offsetHeight;
-    const fpVisible = fp.style.display !== 'none', fpH = fpVisible ? fp.offsetHeight : 0;
-    const SAFE = 1;
-    if (csh) {
-      csh.style.top = hh + 'px';
-      csh.style.zIndex = '130';
-    }
-    tb.style.top = (hh + cshH) + 'px'; tb.style.zIndex = '120';
-    ft.style.top = (hh + cshH + tbH) + 'px'; ft.style.zIndex = '110';
-    fw.style.top = (hh + cshH + tbH + ftH) + 'px'; fw.style.zIndex = '100';
-    fp.style.top = (hh + cshH + tbH + ftH + fwH) + 'px'; fp.style.zIndex = '90';
-    const theadTop = hh + cshH + tbH + ftH + fwH + fpH + SAFE;
-    document.querySelectorAll('thead th').forEach(th => {
-      th.style.top = theadTop + 'px';
-      th.style.background = 'var(--s1)';
-    });
-  }, 0);
 }
 
 /* ── rowPasses ── */
