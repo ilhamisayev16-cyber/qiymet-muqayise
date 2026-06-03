@@ -965,6 +965,8 @@ function buildPctChips(){
   inScope.forEach(r=>{if(r._pct!=null)pctSet.add(r._pct);});
   if(pctSet.size<2){rowEl.style.display='none';updateStickyOffsets();return;}
   rowEl.style.display='flex';
+  rowEl.offsetHeight;          // force layout ← ADD THIS
+  updateStickyOffsets();       // ← AND THIS
   const vals=[...pctSet].sort((a,b)=>a-b);
   let h=`<div class="chip sm on" data-pct="" onclick="handlePctChip(this)">Hamısı</div><div class="chsep"></div>`;
   vals.forEach(v=>{
@@ -972,7 +974,7 @@ function buildPctChips(){
     h+=`<div class="chip sm" data-pct="${v}" onclick="handlePctChip(this)">${v}% <span class="chip-cnt">${cnt}</span></div>`;
   });
   wrap.innerHTML=h;
-  updateStickyOffsets();
+  updateStickyOffsets(); // (the original call at the end can stay)
 }
 function handlePctChip(chip){
   const raw=chip.dataset.pct;
@@ -982,27 +984,33 @@ function handlePctChip(chip){
 }
 
 /* ── updateStickyOffsets — accounts for sticky cat header ── */
-function updateStickyOffsets(){
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const hdr=document.querySelector('header');
-    const csh=document.getElementById('cat-sticky-hdr');
-    const tb=document.getElementById('toolbar');
-    const ft=document.getElementById('frow-type');
-    const fw=document.getElementById('frow-weight');
-    const fp=document.getElementById('frow-pct');
-    if(!hdr||!tb||!ft||!fw||!fp)return;
-    const hh=hdr.offsetHeight;
-    const cshH=csh&&csh.style.display!=='none'?csh.offsetHeight:0;
-    const tbH=tb.offsetHeight,ftH=ft.offsetHeight,fwH=fw.offsetHeight;
-    const fpV=fp.style.display!=='none',fpH=fpV?fp.offsetHeight:0;
-    if(csh){csh.style.top=hh+'px';csh.style.zIndex='130';}
-    tb.style.top=(hh+cshH)+'px';               tb.style.zIndex='120';
-    ft.style.top=(hh+cshH+tbH)+'px';           ft.style.zIndex='110';
-    fw.style.top=(hh+cshH+tbH+ftH)+'px';       fw.style.zIndex='100';
-    fp.style.top=(hh+cshH+tbH+ftH+fwH)+'px';   fp.style.zIndex='90';
-    const theadTop=hh+cshH+tbH+ftH+fwH+fpH;
-    document.querySelectorAll('thead th').forEach(th=>{th.style.top=theadTop+'px';});
-  }));
+function updateStickyOffsets() {
+  document.body.offsetHeight; // force layout reflow
+  const hdr = document.querySelector('header');
+  const csh = document.getElementById('cat-sticky-hdr');
+  const tb = document.getElementById('toolbar');
+  const ft = document.getElementById('frow-type');
+  const fw = document.getElementById('frow-weight');
+  const fp = document.getElementById('frow-pct');
+  if (!hdr || !tb || !ft || !fw || !fp) return;
+  const hh = hdr.offsetHeight;
+  const cshH = (csh && csh.style.display !== 'none') ? csh.offsetHeight : 0;
+  const tbH = tb.offsetHeight, ftH = ft.offsetHeight, fwH = fw.offsetHeight;
+  const fpVisible = fp.style.display !== 'none', fpH = fpVisible ? fp.offsetHeight : 0;
+  const SAFE = 1;
+  if (csh) {
+    csh.style.top = hh + 'px';
+    csh.style.zIndex = '130';
+  }
+  tb.style.top = (hh + cshH) + 'px'; tb.style.zIndex = '120';
+  ft.style.top = (hh + cshH + tbH) + 'px'; ft.style.zIndex = '110';
+  fw.style.top = (hh + cshH + tbH + ftH) + 'px'; fw.style.zIndex = '100';
+  fp.style.top = (hh + cshH + tbH + ftH + fwH) + 'px'; fp.style.zIndex = '90';
+  const theadTop = hh + cshH + tbH + ftH + fwH + fpH + SAFE;
+  document.querySelectorAll('thead th').forEach(th => {
+    th.style.top = theadTop + 'px';
+    th.style.background = 'var(--s1)';
+  });
 }
 
 /* ── rowPasses ── */
