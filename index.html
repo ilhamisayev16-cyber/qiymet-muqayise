@@ -1,948 +1,745 @@
-<!DOCTYPE html>
-<html lang="az">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QiymətMüqayisə — Bakı Supermarketləri</title>
-  
-  <!-- Qrafik Fontlar -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-  
-  <!-- CDNs: React, Babel, Tailwind CSS və Lucide Icons -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+<!doctype html>
+<html lang="az" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QiymətMüqayisə — Bakı Supermarket Kassası və Wolt Monitoru</title>
+    <meta name="description" content="Bravo, OBA, Araz, Neptun və Rahat supermarketlərinin eyni markalı məhsullarının real vaxt qiymətlərini və Wolt çatdırılma qiymətlərini asanlıqla müqayisə edin." />
+    <meta name="theme-color" content="#faf6ee" />
+  </head>
+  <body class="h-full">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
 
-  <!-- Tailwind CSS Konfiqurasiyası & Mövzu Parametrləri -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            warmblack: '#0b0906',
-            warmdarker: '#050402',
-            warmlight: '#15110a',
-            warmaccent: '#e86820',
-            'warmaccent-light': '#ff853a',
-          },
-          fontFamily: {
-            sans: ['Outfit', 'sans-serif'],
-            display: ['Syne', 'sans-serif'],
-            mono: ['Space Mono', 'monospace'],
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { 
+  initialPricesData, 
+  StoreProduct,
+  PricesData,
+  CategoryData
+} from "./data/prices";
+import { 
+  calculateJaccard, 
+  extractProductAttributes,
+  UnifiedProduct, 
+  mergeCategoryProducts, 
+  countCheapestStoreChampion,
+  normalizeWeight
+} from "./utils/matching";
+import { 
+  motion, 
+  AnimatePresence 
+} from "motion/react";
+import { 
+  Search, 
+  Store, 
+  TrendingUp, 
+  Sparkle, 
+  ArrowLeft, 
+  Scale, 
+  SlidersHorizontal, 
+  Coins, 
+  ChevronRight, 
+  FileCheck2, 
+  X, 
+  Keyboard, 
+  HelpCircle,
+  HelpCircle as InfoIcon,
+  ShoppingBag,
+  Clock,
+  ExternalLink,
+  ChevronUp,
+  Award
+} from "lucide-react";
+
+// Azerbaijani category ID to Emoji & clean title maps
+const CATEGORY_EMOJIS: { [id: string]: string } = {
+  sud_mehsullari: "🥛",
+  yumurta: "🥚",
+  terevez: "🥦",
+  meyve: "🍎",
+  et_baliq: "🥩",
+  taxil_paxlali: "🌾",
+  corek_pasta: "🍞",
+  ickiler: "🥤",
+  sirniyyat: "🍫",
+  yag_sous: "🧈",
+  edviyyat: "🌶"
+};
+
+// Store specific colors and badge styling for light appetizing theme
+const STORE_THEMES: { [store: string]: { border: string; bg: string; text: string; lightBg: string } } = {
+  Bravo: {
+    border: "border-red-200",
+    bg: "bg-red-500 text-white font-bold",
+    text: "text-red-600",
+    lightBg: "bg-red-50/80 border border-red-100"
+  },
+  OBA: {
+    border: "border-sky-200",
+    bg: "bg-sky-500 text-white font-bold",
+    text: "text-sky-600",
+    lightBg: "bg-sky-50/80 border border-sky-100"
+  },
+  Araz: {
+    border: "border-purple-200",
+    bg: "bg-purple-500 text-white font-bold",
+    text: "text-purple-600",
+    lightBg: "bg-purple-50/80 border border-purple-100"
+  },
+  Neptun: {
+    border: "border-emerald-200",
+    bg: "bg-emerald-500 text-white font-bold",
+    text: "text-emerald-700",
+    lightBg: "bg-emerald-50/80 border border-emerald-100"
+  },
+  Rahat: {
+    border: "border-amber-200",
+    bg: "bg-amber-500 text-white font-bold",
+    text: "text-amber-700",
+    lightBg: "bg-amber-50/80 border border-amber-100"
+  }
+};
+
+interface BestUnitValue {
+  unitLabel: string;
+  productName: string;
+  storeName: string;
+  pricePerUnit: number;
+  originalPrice: number;
+  originalQty: string;
+}
+
+export default function App() {
+  // 1. Core database and structural state (loads dynamic data/prices.json with initialPricesData wrapper fallback)
+  const [pricesData, setPricesData] = useState<PricesData>(initialPricesData);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [globalSearchQuery, setGlobalSearchQuery] = useState("");
+  const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
+  const [showKeyboardHints, setShowKeyboardHints] = useState(false);
+  const [isWoltPremiumMode, setIsWoltPremiumMode] = useState(false);
+
+  // Dynamic live data loader for real price/supermarket files
+  useEffect(() => {
+    fetch("/data/prices.json")
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error("Local prices.json fetch failed.");
+      })
+      .then((data) => {
+        if (data && data.categories && data.stores) {
+          console.log("Loaded live custom supermarket database:", data);
+          setPricesData(data);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using high-fidelity fallback local prices.ts dataset:", err);
+      });
+  }, []);
+
+  // 2. Category view filter states
+  const [selectedSubtype, setSelectedSubtype] = useState<string | null>(null);
+  const [weightMode, setWeightMode] = useState<"Hamısı" | "⚖ Çəki" | "💧 Həcm" | "📦 Digər">("Hamısı");
+  const [minWeightInput, setMinWeightInput] = useState("");
+  const [maxWeightInput, setMaxWeightInput] = useState("");
+  const [selectedFatPercentage, setSelectedFatPercentage] = useState<number | null>(null);
+  const [tableSearchQuery, setTableSearchQuery] = useState("");
+
+  // 3. Sorting states
+  const [sortBy, setSortBy] = useState<"name" | "price_asc" | "savings_desc">("savings_desc");
+
+  const globalSearchRef = useRef<HTMLInputElement>(null);
+  const highlightedRowRef = useRef<HTMLTableRowElement>(null);
+
+  // 4. Preprocess and group items utilizing Jaccard similarity (dependent on state load)
+  const groupedCategories = useMemo(() => {
+    const categoriesMap: { [catId: string]: UnifiedProduct[] } = {};
+    for (const [catId, catData] of Object.entries(pricesData.categories) as [string, CategoryData][]) {
+      categoriesMap[catId] = mergeCategoryProducts(catData, catId);
+    }
+    return categoriesMap;
+  }, [pricesData]);
+
+  // 5. Calculate statistics counters
+  const stats = useMemo(() => {
+    let totalItemsCount = 0;
+    let maxSavingFound = 0;
+    let maxSavingProduct = "";
+    let maxSavingPercent = 0;
+    let priceSum = 0;
+    let totalOffers = 0;
+
+    for (const [catId, products] of Object.entries(groupedCategories) as [string, UnifiedProduct[]][]) {
+      totalItemsCount += products.length;
+
+      for (const item of products) {
+        const prices = (Object.values(item.offers) as StoreProduct[]).map(o => isWoltPremiumMode ? o.wolt_price : o.price);
+        if (prices.length > 1) {
+          const maxPrice = Math.max(...prices);
+          const minPrice = Math.min(...prices);
+          const saving = maxPrice - minPrice;
+          const savingPercent = (saving / maxPrice) * 100;
+
+          if (saving > maxSavingFound) {
+            maxSavingFound = saving;
+            maxSavingProduct = item.name;
+            maxSavingPercent = savingPercent;
           }
         }
+
+        // Gather for average price info
+        prices.forEach(p => {
+          priceSum += p;
+          totalOffers++;
+        });
       }
     }
-  </script>
 
-  <style>
-    /* Premium Dotted Grid Fonu & Atmosferik Parıltılar */
-    body {
-      background-color: #0b0906;
-      color: #f5f2eb;
-      font-family: 'Outfit', sans-serif;
-      background-image: radial-gradient(rgba(232, 104, 32, 0.08) 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
+    return {
+      totalCategories: Object.keys(groupedCategories).length,
+      totalItems: totalItemsCount,
+      totalStores: pricesData.stores.length,
+      maxSaving: maxSavingFound,
+      maxSavingProduct,
+      maxSavingPercent,
+      avgPrice: totalOffers > 0 ? priceSum / totalOffers : 0
+    };
+  }, [groupedCategories, isWoltPremiumMode, pricesData]);
+
+  // 6. Global Search matches compiler
+  const globalSearchResults = useMemo(() => {
+    if (!globalSearchQuery.trim()) return [];
     
-    .ambient-glow {
-      background: radial-gradient(circle 800px at 50% -200px, rgba(232, 104, 32, 0.15), transparent 70%);
+    // Normalize string query for search match
+    const cleanSearchStr = (s: string) => s.toLowerCase()
+      .replace(/ç/g, "c").replace(/ə/g, "e").replace(/ğ/g, "g")
+      .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u")
+      .trim();
+
+    const query = cleanSearchStr(globalSearchQuery);
+    const results: Array<{
+      productId: string;
+      matchedName: string;
+      categoryId: string;
+      categoryName: string;
+      cheapestStore: string;
+      cheapestPrice: number;
+    }> = [];
+
+    for (const [catId, products] of Object.entries(groupedCategories) as [string, UnifiedProduct[]][]) {
+      const catData = pricesData.categories[catId];
+      if (!catData) continue;
+      for (const item of products) {
+        const matchesName = cleanSearchStr(item.name).includes(query) ||
+          item.rawNames.some(rn => cleanSearchStr(rn).includes(query));
+
+        if (matchesName) {
+          // Find cheapest offer
+          const offers = Object.entries(item.offers) as [string, StoreProduct][];
+          let cheapestPrice = Infinity;
+          let cheapestStore = "";
+          
+          offers.forEach(([store, off]) => {
+            const currentPrice = isWoltPremiumMode ? off.wolt_price : off.price;
+            if (currentPrice < cheapestPrice) {
+              cheapestPrice = currentPrice;
+              cheapestStore = store;
+            }
+          });
+
+          results.push({
+            productId: item.id,
+            matchedName: item.name,
+            categoryId: catId,
+            categoryName: catData.name,
+            cheapestStore,
+            cheapestPrice
+          });
+        }
+      }
     }
 
-    .glass-glow {
-      background: linear-gradient(135deg, rgba(21, 17, 10, 0.8), rgba(11, 9, 6, 0.95));
-      border: 1px solid rgba(232, 104, 32, 0.15);
-      box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.6);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    return results;
+  }, [globalSearchQuery, groupedCategories, isWoltPremiumMode, pricesData]);
 
-    .glass-glow:hover {
-      border-color: rgba(232, 104, 32, 0.35);
-      box-shadow: 0 4px 30px -2px rgba(232, 104, 32, 0.12);
-    }
-
-    /* Scrollbar Gizlətmə */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0b0906;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e1810;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #e86820;
-    }
-  </style>
-</head>
-<body class="selection:bg-warmaccent/30 selection:text-white">
-
-  <!-- Atmosfer Parıltısı -->
-  <div class="absolute top-0 left-0 right-0 h-[400px] ambient-glow pointer-events-none z-0"></div>
-
-  <!-- React Proyeksiyası Mount Nöqtəsi -->
-  <div id="root"></div>
-
-  <!-- REACT VƏ DOSTLARININ SCRIPT BLOKU -->
-  <script type="text/babel">
-    const { useState, useMemo, useEffect, useRef } = React;
-
-    // --- LOKAL MƏLUMAT BAZASI (prices.json) ---
-    const initialPricesData = {
-      stores: ["Bravo", "OBA", "Araz", "Neptun", "Rahat"],
-      last_updated: "05.06.2026 18:30 (Canlı Son Yenilənmə)",
-      categories: {
-        sud_mehsullari: {
-          name: "Süd məhsulları",
-          stores: {
-            Bravo: [
-              { name: "Milla Süd 1L 1.5%", price: 2.10, wolt_price: 2.50 },
-              { name: "Azərsüd Süd 1L 3.2%", price: 2.45, wolt_price: 2.90 },
-              { name: "Atena Süd 1L 2.5%", price: 2.20, wolt_price: 2.65 },
-              { name: "Atena Süzmə Kəsmik 200q 5%", price: 1.85, wolt_price: 2.20 },
-              { name: "President Süzmə Pendir 400q", price: 6.20, wolt_price: 7.10 },
-              { name: "Pınar Labne 200q", price: 3.40, wolt_price: 4.10 },
-              { name: "Milla Xama 200q 20%", price: 1.95, wolt_price: 2.40 },
-              { name: "Azərsüd Qatıq 1kq 3.2%", price: 2.80, wolt_price: 3.30 },
-              { name: "Milla Ayran 250ml", price: 0.65, wolt_price: 0.85 }
-            ],
-            OBA: [
-              { name: "Milla Sud 1L 1.5% yağlılıq", price: 1.95, wolt_price: 2.30 },
-              { name: "Azərsüd Süd 1L 3.2% yagli", price: 2.30, wolt_price: 2.70 },
-              { name: "Atena Sud 1L 2.5% paket", price: 2.05, wolt_price: 2.40 },
-              { name: "Atena Kazmik 200q 5% yagli", price: 1.70, wolt_price: 2.00 },
-              { name: "President Suzma Pendir 400 gr", price: 5.95, wolt_price: 6.80 },
-              { name: "Pinar Labne Pendiri 200q", price: 3.15, wolt_price: 3.70 },
-              { name: "Milla Xama 200q 20% yagliliq", price: 1.80, wolt_price: 2.15 },
-              { name: "Azersud Qatiq 1kq Plastik", price: 2.60, wolt_price: 3.00 },
-              { name: "Milla Ayran Plastik 250ml", price: 0.55, wolt_price: 0.70 }
-            ],
-            Araz: [
-              { name: "Milla Süd 1L 1.5%", price: 1.99, wolt_price: 2.35 },
-              { name: "Azərsüd Süd 1L 3.2%", price: 2.35, wolt_price: 2.80 },
-              { name: "Atena Süd 1L 2.5%", price: 2.10, wolt_price: 2.50 },
-              { name: "Atena Süzmə Kəsmik 200qr 5%", price: 1.75, wolt_price: 2.10 },
-              { name: "President Süzmə Pendir 400q", price: 5.90, wolt_price: 6.90 },
-              { name: "Pınar Labne 200q", price: 3.20, wolt_price: 3.80 },
-              { name: "Milla Xama 200q 20%", price: 1.85, wolt_price: 2.25 },
-              { name: "Azərsüd Qatıq 1kq 3.2%", price: 2.65, wolt_price: 3.15 },
-              { name: "Milla Ayran 250ml", price: 0.58, wolt_price: 0.75 }
-            ],
-            Neptun: [
-              { name: "Milla Süd 1.5% Yağlılıq 1L", price: 2.05, wolt_price: 2.45 },
-              { name: "Azersüd Süd 3.2% Yağlılıq 1L", price: 2.42, wolt_price: 2.85 },
-              { name: "Atena Süd 2.5% Yağlılıq 1L", price: 2.18, wolt_price: 2.60 },
-              { name: "Atena Süzmə Kəsmik 5% 200q", price: 1.80, wolt_price: 2.15 },
-              { name: "President Süzmə Pendiri 400q", price: 6.10, wolt_price: 7.00 },
-              { name: "Pınar Labne Pendir 200q", price: 3.35, wolt_price: 4.00 },
-              { name: "Milla Xama 20% Yağlılıq 200q", price: 1.90, wolt_price: 2.30 },
-              { name: "Azərsüd Qatıq 3.2% 1kq", price: 2.75, wolt_price: 3.25 },
-              { name: "Milla Ayran 250 ml Banka", price: 0.62, wolt_price: 0.80 }
-            ],
-            Rahat: [
-              { name: "Milla Süd 1 L 1.5%", price: 2.15, wolt_price: 2.55 },
-              { name: "Azərsüd Süd 1 L 3.2%", price: 2.49, wolt_price: 2.95 },
-              { name: "Atena Süd 1 L 2.5%", price: 2.25, wolt_price: 2.70 },
-              { name: "Atena Süzmə Kəsmik 200 q 5%", price: 1.89, wolt_price: 2.25 },
-              { name: "President Süzmə Pendir 400 Trans", price: 6.30, wolt_price: 7.20 },
-              { name: "Pınar Labne Sadə 200q", price: 3.45, wolt_price: 4.15 },
-              { name: "Milla Xama 200q Qutu 20%", price: 1.99, wolt_price: 2.45 },
-              { name: "Azərsüd Plastik Qatıq 1kq 3.2%", price: 2.85, wolt_price: 3.40 },
-              { name: "Milla Ayran Sadə 250ml", price: 0.66, wolt_price: 0.90 }
-            ]
-          }
-        },
-        yumurta: {
-          name: "Yumurta",
-          stores: {
-            Bravo: [
-              { name: "Hacıqabul Yumurta 10-luq qutu", price: 1.80, wolt_price: 2.20 },
-              { name: "Səba Yumurta 15-lik qalaq", price: 2.85, wolt_price: 3.40 },
-              { name: "Giləzi Yumurta 30-luq", price: 5.40, wolt_price: 6.30 }
-            ],
-            OBA: [
-              { name: "Haciqabul Yumurta 10 adet", price: 1.65, wolt_price: 2.00 },
-              { name: "Səba Yumurta 15 ədəd qutu", price: 2.60, wolt_price: 3.10 },
-              { name: "Gilezi Yumurtalari 30-luq", price: 5.00, wolt_price: 5.90 }
-            ],
-            Araz: [
-              { name: "Hacıqabul Yumurta 10-luq", price: 1.70, wolt_price: 2.10 },
-              { name: "Səba Yumurta 15-lik", price: 2.70, wolt_price: 3.25 },
-              { name: "Giləzi Yumurta 30-luq", price: 5.15, wolt_price: 6.10 }
-            ],
-            Neptun: [
-              { name: "Hacıqabul Yumurta Qutuda 10 ədəd", price: 1.76, wolt_price: 2.15 },
-              { name: "Səba Yumurta 15 ədədlik", price: 2.78, wolt_price: 3.35 },
-              { name: "Giləzi Yumurta 30 ədədlik", price: 5.25, wolt_price: 6.20 }
-            ],
-            Rahat: [
-              { name: "Hacıqabul Yumurta 10-luq Paket", price: 1.85, wolt_price: 2.25 },
-              { name: "Səba Yumurta 15-lik Plastik", price: 2.90, wolt_price: 3.50 },
-              { name: "Giləzi Yumurta 30-luq  Böyük", price: 5.50, wolt_price: 6.45 }
-            ]
-          }
-        },
-        terevez: {
-          name: "Tərəvəz",
-          stores: {
-            Bravo: [
-              { name: "Kartof Gədəbəy Yerli 1kq", price: 1.20, wolt_price: 1.50 },
-              { name: "Soğan Yerli Köhnə 1kq", price: 0.80, wolt_price: 1.05 },
-              { name: "Pomidor Zirə İstixanası 1kq", price: 3.40, wolt_price: 4.10 },
-              { name: "Xiyar Şəmkir Yerli 1kq", price: 1.95, wolt_price: 2.40 }
-            ],
-            OBA: [
-              { name: "Kartof Gədəbəy 1kq", price: 1.05, wolt_price: 1.30 },
-              { name: "Soğan Ağ Sürətli 1kq", price: 0.70, wolt_price: 0.90 },
-              { name: "Pomidor Zirə Super 1kq", price: 3.10, wolt_price: 3.70 },
-              { name: "Xiyar Şəmkir Şitil 1kq", price: 1.70, wolt_price: 2.10 }
-            ],
-            Araz: [
-              { name: "Kartof Gədəbəy Seçmə 1kq", price: 1.10, wolt_price: 1.40 },
-              { name: "Soğan Yerli 1kq", price: 0.75, wolt_price: 0.95 },
-              { name: "Pomidor Zirə Dadlı 1kq", price: 3.20, wolt_price: 3.90 },
-              { name: "Xiyar Şəmkir Çay kənarı 1kq", price: 1.80, wolt_price: 2.20 }
-            ],
-            Neptun: [
-              { name: "Kartof Yerli Gədəbəy 1kq", price: 1.15, wolt_price: 1.45 },
-              { name: "Soğan Baş Yerli 1kq", price: 0.78, wolt_price: 1.00 },
-              { name: "Pomidor Zirə Milli 1kq", price: 3.30, wolt_price: 4.00 },
-              { name: "Xiyar Yerli Şəmkir 1kq", price: 1.88, wolt_price: 2.30 }
-            ],
-            Rahat: [
-              { name: "Kartof Gədəbəy Torpaqlı 1kq", price: 1.22, wolt_price: 1.55 },
-              { name: "Soğan Quru Yerli 1kq", price: 0.82, wolt_price: 1.10 },
-              { name: "Pomidor Zirə Premium 1kq", price: 3.50, wolt_price: 4.20 },
-              { name: "Xiyar Şəmkir Tikanlı 1kq", price: 1.99, wolt_price: 2.45 }
-            ]
-          }
-        },
-        meyve: {
-          name: "Meyvə",
-          stores: {
-            Bravo: [
-              { name: "Alma Quba Palitrası 1kq", price: 1.50, wolt_price: 1.85 },
-              { name: "Banan Ekvador İdxal 1kq", price: 2.80, wolt_price: 3.35 },
-              { name: "Portağal Şirin Afrika 1kq", price: 2.50, wolt_price: 3.00 },
-              { name: "Çiyələk Şüvəlan İstixana 500q", price: 3.80, wolt_price: 4.50 }
-            ],
-            OBA: [
-              { name: "Alma Quba Yerli 1kq", price: 1.30, wolt_price: 1.60 },
-              { name: "Banan Idxal Sanpaolo 1kq", price: 2.60, wolt_price: 3.10 },
-              { name: "Portahal Misir Sirin 1kq", price: 2.20, wolt_price: 2.65 },
-              { name: "Ciyalak Suvalan can 500q", price: 3.40, wolt_price: 4.00 }
-            ],
-            Araz: [
-              { name: "Alma Quba Seçmə 1kq", price: 1.40, wolt_price: 1.70 },
-              { name: "Banan İdxal Standart 1kq", price: 2.65, wolt_price: 3.15 },
-              { name: "Portağal İdxal Şirəlik 1kq", price: 2.30, wolt_price: 2.75 },
-              { name: "Çiyələk Şüvəlan Yerli 500q", price: 3.55, wolt_price: 4.20 }
-            ],
-            Neptun: [
-              { name: "Alma Quba Qırmızı 1kq", price: 1.45, wolt_price: 1.75 },
-              { name: "Banan Ekvador Yaşıl-Sarı 1kq", price: 2.72, wolt_price: 3.25 },
-              { name: "Portağal Şirin İdxal 1kq", price: 2.38, wolt_price: 2.85 },
-              { name: "Çiyələk Şüvəlan Şirin 500q", price: 3.65, wolt_price: 4.35 }
-            ],
-            Rahat: [
-              { name: "Alma Quba Premium Şirin 1kq", price: 1.55, wolt_price: 1.90 },
-              { name: "Banan Cavaye Premium 1kq", price: 2.89, wolt_price: 3.45 },
-              { name: "Portağal Premium Şorba 1kq", price: 2.60, wolt_price: 3.10 },
-              { name: "Çiyələk Şüvəlan İri Qutu 500q", price: 3.90, wolt_price: 4.65 }
-            ]
-          }
-        },
-        et_baliq: {
-          name: "Ət / Balıq",
-          stores: {
-            Bravo: [
-              { name: "Dana Əti Sümüksüz Təzə 1kq", price: 17.50, wolt_price: 20.10 },
-              { name: "Qoyun Əti Bud Hissə 1kq", price: 19.80, wolt_price: 22.50 },
-              { name: "Toyuq Filesi Səba Təzə 1kq", price: 7.20, wolt_price: 8.40 }
-            ],
-            OBA: [
-              { name: "Dana Eti Sumuksuz 1kq", price: 16.50, wolt_price: 18.90 },
-              { name: "Qoyun Eti Bud Yerli 1kq", price: 18.90, wolt_price: 21.50 },
-              { name: "Toyuq Filesi Səba Paket 1kq", price: 6.80, wolt_price: 7.90 }
-            ],
-            Araz: [
-              { name: "Dana Əti Sümüksüz Yerli 1kq", price: 16.90, wolt_price: 19.50 },
-              { name: "Qoyun Əti Bud Yerli 1kq", price: 19.20, wolt_price: 22.00 },
-              { name: "Toyuq Filesi Səba Yerli 1kq", price: 6.95, wolt_price: 8.10 }
-            ],
-            Neptun: [
-              { name: "Dana Əti Sümüksüz Hissə 1kq", price: 17.20, wolt_price: 19.80 },
-              { name: "Qoyun Əti Bud Seçmə 1kq", price: 19.50, wolt_price: 22.30 },
-              { name: "Toyuq Filesi Səba Şitil 1kq", price: 7.10, wolt_price: 8.25 }
-            ],
-            Rahat: [
-              { name: "Dana Əti Sümüksüz Kəsilmiş 1kq", price: 17.90, wolt_price: 20.60 },
-              { name: "Qoyun Əti Bud Yumşaq 1kq", price: 19.99, wolt_price: 22.95 },
-              { name: "Toyuq Filesi Səba Seçmə 1kq", price: 7.30, wolt_price: 8.55 }
-            ]
-          }
-        },
-        ickiler: {
-          name: "İçkilər",
-          stores: {
-            Bravo: [
-              { name: "Coca-Cola Klassik Qazlı 1L", price: 1.30, wolt_price: 1.60 },
-              { name: "Sirab Qazlı Mineral Su 1.5L", price: 0.85, wolt_price: 1.10 },
-              { name: "Sandora Portağal Şirəsi 100% 1L", price: 3.40, wolt_price: 4.10 }
-            ],
-            OBA: [
-              { name: "Coca-Cola 1L Plastik", price: 1.15, wolt_price: 1.40 },
-              { name: "Sirab Qazli Su 1.5L", price: 0.70, wolt_price: 0.90 },
-              { name: "Sandora Portahal Sirəsi 1L", price: 3.10, wolt_price: 3.70 }
-            ],
-            Araz: [
-              { name: "Coca-Cola Qazlı İçki 1L", price: 1.20, wolt_price: 1.50 },
-              { name: "Sirab Qazlı Su 1.5L", price: 0.78, wolt_price: 1.00 },
-              { name: "Sandora Portağal Meyvə Şirəsi 1L", price: 3.20, wolt_price: 3.85 }
-            ],
-            Neptun: [
-              { name: "Coca-Cola 1L Qutu", price: 1.25, wolt_price: 1.55 },
-              { name: "Sirab Qazlı Mineral Su 1.5 L", price: 0.82, wolt_price: 1.05 },
-              { name: "Sandora Şirəsi Portağal 1L", price: 3.30, wolt_price: 3.95 }
-            ],
-            Rahat: [
-              { name: "Coca-Cola Klassik 1L", price: 1.35, wolt_price: 1.65 },
-              { name: "Sirab Mineral Qazlı 1.5L", price: 0.89, wolt_price: 1.15 },
-              { name: "Sandora 100% Portağal Şirəsi 1L", price: 3.49, wolt_price: 4.20 }
-            ]
-          }
-        },
-        sirniyyat: {
-          name: "Şirniyyat",
-          stores: {
-            Bravo: [
-              { name: "Albeni Baton Şokolad 40q", price: 0.65, wolt_price: 0.85 },
-              { name: "Snickers Baton Şokolad 50q", price: 0.95, wolt_price: 1.20 },
-              { name: "Nutella Kakaolu Krem 350q", price: 7.20, wolt_price: 8.35 }
-            ],
-            OBA: [
-              { name: "Albeni Baton 40q", price: 0.55, wolt_price: 0.70 },
-              { name: "Snickers Baton 50q", price: 0.85, wolt_price: 1.05 },
-              { name: "Nutella Krem 350q", price: 6.60, wolt_price: 7.60 }
-            ],
-            Araz: [
-              { name: "Albeni Şokolad Baton 40q", price: 0.58, wolt_price: 0.75 },
-              { name: "Snickers Şokolad Baton 50q", price: 0.88, wolt_price: 1.10 },
-              { name: "Nutella Çokolad Krem 350q", price: 6.80, wolt_price: 7.90 }
-            ],
-            Neptun: [
-              { name: "Albeni Karamel Baton 40q", price: 0.62, wolt_price: 0.80 },
-              { name: "Snickers Baton 50 q", price: 0.92, wolt_price: 1.15 },
-              { name: "Nutella Kakaolu Fındıq Kremi 350q", price: 7.00, wolt_price: 8.10 }
-            ],
-            Rahat: [
-              { name: "Albeni Baton Şorba 40q", price: 0.66, wolt_price: 0.90 },
-              { name: "Snickers Şokoladlı Baton 50q", price: 0.98, wolt_price: 1.25 },
-              { name: "Nutella Şokoladlı Krem 350q", price: 7.35, wolt_price: 8.50 }
-            ]
-          }
+  // Keyboard shortcut handlers
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "/") {
+        // Only target if user is not in input text areas
+        if (
+          document.activeElement?.tagName !== "INPUT" &&
+          document.activeElement?.tagName !== "TEXTAREA"
+        ) {
+          e.preventDefault();
+          globalSearchRef.current?.focus();
+        }
+      } else if (e.key === "Escape") {
+        if (globalSearchQuery) {
+          setGlobalSearchQuery("");
+          globalSearchRef.current?.blur();
+        } else if (selectedCategoryId) {
+          // Reset child variables
+          setSelectedCategoryId(null);
+          setSelectedSubtype(null);
+          setWeightMode("Hamısı");
+          setMinWeightInput("");
+          setMaxWeightInput("");
+          setSelectedFatPercentage(null);
+          setTableSearchQuery("");
         }
       }
     };
 
-    // --- AZƏRBAYCAN DİLİNDƏ EMOJİLƏRİN XƏRİTƏSİ ---
-    const CATEGORY_EMOJIS = {
-      sud_mehsullari: "🥛",
-      yumurta: "🥚",
-      terevez: "🥦",
-      meyve: "🍎",
-      et_baliq: "🥩",
-      ickiler: "🥤",
-      sirniyyat: "🍫"
-    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [globalSearchQuery, selectedCategoryId]);
 
-    const STORE_THEMES = {
-      Bravo: { border: "border-red-500/30", bg: "bg-red-600", text: "text-red-400", lightBg: "bg-red-500/10" },
-      OBA: { border: "border-sky-500/30", bg: "bg-sky-600", text: "text-sky-400", lightBg: "bg-sky-500/10" },
-      Araz: { border: "border-purple-500/30", bg: "bg-purple-600", text: "text-purple-400", lightBg: "bg-purple-500/10" },
-      Neptun: { border: "border-emerald-500/30", bg: "bg-emerald-600", text: "text-emerald-400", lightBg: "bg-emerald-500/10" },
-      Rahat: { border: "border-amber-500/30", bg: "bg-amber-600", text: "text-amber-400", lightBg: "bg-amber-100/10" }
-    };
+  // Click handler from global searches to open Category with highlighted rows!
+  const jumpToProductInTable = (catId: string, prodId: string) => {
+    setSelectedCategoryId(catId);
+    setGlobalSearchQuery("");
+    
+    // Clear filters to ensure product is shown
+    setSelectedSubtype(null);
+    setWeightMode("Hamısı");
+    setMinWeightInput("");
+    setMaxWeightInput("");
+    setSelectedFatPercentage(null);
+    setTableSearchQuery("");
 
-    // Subtype keywords mapping for automatic regex/string parser helper
-    const SUBTYPE_KEYWORDS = {
-      sud_mehsullari: {
-        süd: "Süd", sud: "Süd", sut: "Süd",
-        kəsmik: "Kəsmik", kesmik: "Kəsmik", kazmik: "Kəsmik",
-        pendir: "Pendir", labne: "Pendir",
-        xama: "Xama",
-        ayran: "Ayran",
-        qatıq: "Qatıq", qatiq: "Qatıq"
-      },
-      yumurta: {
-        kənd: "Kənd Yumurtası", kend: "Kənd Yumurtası",
-        "10-luq": "10-luq Yumurta", "10 adet": "10-luq Yumurta",
-        "15-lik": "15-lik Yumurta", "15 ədəd": "15-lik Yumurta",
-        "30-luq": "30-luq Yumurta"
-      },
-      terevez: {
-        kartof: "Kartof", soğan: "Soğan", sogan: "Soğan", pomidor: "Pomidor", xiyar: "Xiyar"
-      },
-      meyve: {
-        alma: "Alma", banan: "Banan", portağal: "Portağal", portahal: "Portağal", çiyələk: "Çiyələk", ciyalak: "Çiyələk"
-      },
-      et_baliq: {
-        dana: "Dana Əti", qoyun: "Qoyun Əti", toyuq: "Toyuq"
-      },
-      ickiler: {
-        cola: "Coca-Cola", "coca-cola": "Coca-Cola", fanta: "Fanta", sirab: "Mineral Su", sandora: "Meyvə Şirəsi"
-      },
-      sirniyyat: {
-        albeni: "Albeni", snickers: "Snickers", nutella: "Nutella"
+    // Set highlighted state
+    setHighlightedProductId(prodId);
+
+    // Timeout allows DOM assembly then scrolls elements smoothly
+    setTimeout(() => {
+      const element = document.getElementById(`row-${prodId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Fade out highlight after 4 seconds
+        setTimeout(() => {
+          setHighlightedProductId(null);
+        }, 4000);
       }
-    };
+    }, 450);
+  };
 
-    // Jaccard similarity helpers
-    function getTokens(str) {
-      const clean = str.toLowerCase()
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-        .replace(/ç/g, "c").replace(/ə/g, "e").replace(/ğ/g, "g")
-        .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u");
-      return new Set(clean.split(/\s+/).filter(Boolean));
+  // 7. Get category products & extract layout filters dynamically
+  const currentCategoryProducts = useMemo(() => {
+    if (!selectedCategoryId) return [];
+    return groupedCategories[selectedCategoryId] || [];
+  }, [selectedCategoryId, groupedCategories]);
+
+  // Dynamic filter chips choices
+  const dynamicFilterOptions = useMemo(() => {
+    if (!selectedCategoryId) return { subtypes: [], fats: [] };
+
+    const rawProducts = currentCategoryProducts;
+    
+    // Extract unique dynamic subtypes in category
+    const subtypesMap: { [sub: string]: number } = {};
+    const fatsSet = new Set<number>();
+
+    rawProducts.forEach(item => {
+      if (item.attributes.subtype) {
+        subtypesMap[item.attributes.subtype] = (subtypesMap[item.attributes.subtype] || 0) + 1;
+      }
+      if (item.attributes.fatPercentage !== null) {
+        fatsSet.add(item.attributes.fatPercentage);
+      }
+    });
+
+    const sortedSubtypes = Object.entries(subtypesMap)
+      .sort((a, b) => b[1] - a[1]) // highest frequency subtypes first
+      .map(entry => entry[0]);
+
+    // Top 4 subtypes and "Digər" if there are more
+    let displaySubtypes = sortedSubtypes;
+    if (sortedSubtypes.length > 5) {
+      displaySubtypes = sortedSubtypes.slice(0, 4);
     }
 
-    function calculateJaccard(str1, str2) {
-      const set1 = getTokens(str1);
-      const set2 = getTokens(str2);
-      if (set1.size === 0 && set2.size === 0) return 1;
-      if (set1.size === 0 || set2.size === 0) return 0;
-      const intersection = new Set([...set1].filter(x => set2.has(x)));
-      const union = new Set([...set1, ...set2]);
-      return intersection.size / union.size;
-    }
+    return {
+      subtypes: displaySubtypes,
+      fats: Array.from(fatsSet).sort((a, b) => a - b)
+    };
+  }, [selectedCategoryId, currentCategoryProducts]);
 
-    function extractProductAttributes(name, categoryId) {
-      const lowerName = name.toLowerCase();
-      
-      // Fat Spec
-      let fatPercentage = null;
-      const fatMatch = name.match(/([0-9]+(?:[\.,][0-9]+)?)\s*%/);
-      if (fatMatch) {
-        fatPercentage = parseFloat(fatMatch[1].replace(",", "."));
-      }
+  // 8. Filter items based on active toolbar settings
+  const filteredCategoryProducts = useMemo(() => {
+    if (!selectedCategoryId) return [];
 
-      // Weight Spec
-      let weightValue = null;
-      let weightUnit = null;
-      const weightRegex = /([0-9]+(?:[\.,][0-9]+)?)\s*(kq|q|qr|l|ml|ədəd|gr)/i;
-      const weightMatch = name.match(weightRegex);
+    let items = [...currentCategoryProducts];
 
-      if (weightMatch) {
-        weightValue = parseFloat(weightMatch[1].replace(",", "."));
-        const rawUnit = weightMatch[2].toLowerCase();
-        if (rawUnit === "l") weightUnit = "L";
-        else if (rawUnit === "ml") weightUnit = "ml";
-        else if (rawUnit === "kq") weightUnit = "kq";
-        else if (rawUnit === "q" || rawUnit === "qr" || rawUnit === "gr") weightUnit = "q";
-        else weightUnit = "ədəd";
+    // Filter subtypes
+    if (selectedSubtype) {
+      if (selectedSubtype === "Digər") {
+        const topSubtypes = dynamicFilterOptions.subtypes;
+        items = items.filter(item => !topSubtypes.includes(item.attributes.subtype));
       } else {
-        if (name.includes("10-luq") || name.includes("10 ədəd") || name.includes("10 adet")) {
-          weightValue = 10; weightUnit = "ədəd";
-        } else if (name.includes("15-lik") || name.includes("15 ədəd")) {
-          weightValue = 15; weightUnit = "ədəd";
-        } else if (name.includes("30-luq")) {
-          weightValue = 30; weightUnit = "ədəd";
-        }
+        items = items.filter(item => item.attributes.subtype === selectedSubtype);
       }
-
-      let subtype = "Digər";
-      const catKeywords = SUBTYPE_KEYWORDS[categoryId];
-      if (catKeywords) {
-        for (const kw in catKeywords) {
-          if (lowerName.includes(kw)) {
-            subtype = catKeywords[kw];
-            break;
-          }
-        }
-      }
-      return { subtype, weightValue, weightUnit, fatPercentage };
     }
 
-    function normalizeWeight(value, unit) {
-      if (value === null || !unit) return 1;
-      const u = unit.toLowerCase();
-      if (u === "kq" || u === "l") return value * 1000;
-      return value;
+    // Filter weight modes
+    if (weightMode !== "Hamısı") {
+      items = items.filter(item => {
+        const unit = item.attributes.weightUnit;
+        if (weightMode === "⚖ Çəki") {
+          return unit === "kq" || unit === "q";
+        } else if (weightMode === "💧 Həcm") {
+          return unit === "L" || unit === "ml";
+        } else {
+          return unit === "ədəd" || unit === null;
+        }
+      });
     }
 
-    function mergeCategoryProducts(categoryData, categoryId) {
-      const unifiedList = [];
-      const storeNames = Object.keys(categoryData.stores);
-      let idCounter = 1;
+    // Filter dynamic weight query
+    const minWeightValue = parseFloat(minWeightInput.replace(",", "."));
+    const maxWeightValue = parseFloat(maxWeightInput.replace(",", "."));
 
-      for (const store of storeNames) {
-        const products = categoryData.stores[store];
-        for (const item of products) {
-          let bestMatch = null;
-          let highestScore = 0;
+    if (!isNaN(minWeightValue) || !isNaN(maxWeightValue)) {
+      items = items.filter(item => {
+        const val = item.attributes.weightValue;
+        if (val === null) return false;
 
-          for (const unified of unifiedList) {
-            for (const rawName of unified.rawNames) {
-              const score = calculateJaccard(rawName, item.name);
-              if (score > highestScore) {
-                highestScore = score;
-                bestMatch = unified;
-              }
-            }
-          }
+        // Convert internal weights to comparable units (grams / milliliters factor)
+        const normalizedItemWeight = normalizeWeight(val, item.attributes.weightUnit);
 
-          if (bestMatch && highestScore >= 0.5) {
-            if (!bestMatch.offers[store]) {
-              bestMatch.offers[store] = item;
-              bestMatch.rawNames.push(item.name);
-            }
-          } else {
-            const attributes = extractProductAttributes(item.name, categoryId);
-            unifiedList.push({
-              id: `${categoryId}_${idCounter++}`,
-              name: item.name,
-              rawNames: [item.name],
-              attributes,
-              offers: { [store]: item }
-            });
-          }
-        }
-      }
-      return unifiedList;
+        const checkMin = !isNaN(minWeightValue) ? normalizedItemWeight >= minWeightValue : true;
+        const checkMax = !isNaN(maxWeightValue) ? normalizedItemWeight <= maxWeightValue : true;
+        return checkMin && checkMax;
+      });
     }
 
-    // --- MAIN REACT COMPONENT ---
-    function App() {
-      const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-      const [globalSearchQuery, setGlobalSearchQuery] = useState("");
-      const [highlightedProductId, setHighlightedProductId] = useState(null);
-      const [isWoltPremiumMode, setIsWoltPremiumMode] = useState(false);
+    // Filter fat representation
+    if (selectedFatPercentage !== null) {
+      items = items.filter(item => item.attributes.fatPercentage === selectedFatPercentage);
+    }
 
-      // Category Toolbar parameters
-      const [selectedSubtype, setSelectedSubtype] = useState(null);
-      const [weightMode, setWeightMode] = useState("Hamısı");
-      const [minWeightInput, setMinWeightInput] = useState("");
-      const [maxWeightInput, setMaxWeightInput] = useState("");
-      const [selectedFatPercentage, setSelectedFatPercentage] = useState(null);
-      const [tableSearchQuery, setTableSearchQuery] = useState("");
-      const [sortBy, setSortBy] = useState("savings_desc");
+    // Filter search string within table
+    if (tableSearchQuery.trim()) {
+      const q = tableSearchQuery.toLowerCase()
+        .replace(/ç/g, "c").replace(/ə/g, "e").replace(/ğ/g, "g")
+        .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u")
+        .trim();
 
-      const globalSearchRef = useRef(null);
-
-      // Pre-compile Jaccard merged components
-      const groupedCategories = useMemo(() => {
-        const categoriesMap = {};
-        for (const [catId, catData] of Object.entries(initialPricesData.categories)) {
-          categoriesMap[catId] = mergeCategoryProducts(catData, catId);
-        }
-        return categoriesMap;
-      }, []);
-
-      // Calculate global stats of Baku supermarkets
-      const stats = useMemo(() => {
-        let totalItemsCount = 0;
-        let maxSavingFound = 0;
-        let maxSavingProduct = "";
-        let priceSum = 0;
-        let totalOffers = 0;
-
-        for (const [catId, products] of Object.entries(groupedCategories)) {
-          totalItemsCount += products.length;
-          for (const item of products) {
-            const prices = Object.values(item.offers).map(o => isWoltPremiumMode ? o.wolt_price : o.price);
-            if (prices.length > 1) {
-              const maxPrice = Math.max(...prices);
-              const minPrice = Math.min(...prices);
-              const saving = maxPrice - minPrice;
-              if (saving > maxSavingFound) {
-                maxSavingFound = saving;
-                maxSavingProduct = item.name;
-              }
-            }
-            prices.forEach(p => {
-              priceSum += p;
-              totalOffers++;
-            });
-          }
-        }
-
-        return {
-          totalCategories: Object.keys(groupedCategories).length,
-          totalItems: totalItemsCount,
-          totalStores: initialPricesData.stores.length,
-          maxSaving: maxSavingFound,
-          maxSavingProduct,
-          avgPrice: totalOffers > 0 ? priceSum / totalOffers : 0
-        };
-      }, [groupedCategories, isWoltPremiumMode]);
-
-      // Global Search Auto-complete matching Indexer
-      const globalSearchResults = useMemo(() => {
-        if (!globalSearchQuery.trim()) return [];
-        const cleanSearchStr = (s) => s.toLowerCase()
+      items = items.filter(item => {
+        return item.name.toLowerCase()
           .replace(/ç/g, "c").replace(/ə/g, "e").replace(/ğ/g, "g")
           .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u")
-          .trim();
+          .includes(q) || item.rawNames.some(rn => rn.toLowerCase().includes(q));
+      });
+    }
 
-        const query = cleanSearchStr(globalSearchQuery);
-        const results = [];
-
-        for (const [catId, products] of Object.entries(groupedCategories)) {
-          const catData = initialPricesData.categories[catId];
-          for (const item of products) {
-            const matchesName = cleanSearchStr(item.name).includes(query) ||
-              item.rawNames.some(rn => cleanSearchStr(rn).includes(query));
-
-            if (matchesName) {
-              const offers = Object.entries(item.offers);
-              let cheapestPrice = Infinity;
-              let cheapestStore = "";
-              
-              offers.forEach(([store, off]) => {
-                const currentPrice = isWoltPremiumMode ? off.wolt_price : off.price;
-                if (currentPrice < cheapestPrice) {
-                  cheapestPrice = currentPrice;
-                  cheapestStore = store;
-                }
-              });
-
-              results.push({
-                productId: item.id,
-                matchedName: item.name,
-                categoryId: catId,
-                categoryName: catData.name,
-                cheapestStore,
-                cheapestPrice
-              });
-            }
-          }
-        }
-        return results;
-      }, [globalSearchQuery, groupedCategories, isWoltPremiumMode]);
-
-      // Global hotkeys ( '/' and 'Esc' )
-      useEffect(() => {
-        const handleKeyDown = (e) => {
-          if (e.key === "/") {
-            if (document.activeElement.tagName !== "INPUT") {
-              e.preventDefault();
-              globalSearchRef.current?.focus();
-            }
-          } else if (e.key === "Escape") {
-            if (globalSearchQuery) {
-              setGlobalSearchQuery("");
-              globalSearchRef.current?.blur();
-            } else if (selectedCategoryId) {
-              setSelectedCategoryId(null);
-              setSelectedSubtype(null);
-            }
-          }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-      }, [globalSearchQuery, selectedCategoryId]);
-
-      const jumpToProductInTable = (catId, prodId) => {
-        setSelectedCategoryId(catId);
-        setGlobalSearchQuery("");
-        setSelectedSubtype(null);
-        setWeightMode("Hamısı");
-        setTableSearchQuery("");
-        setHighlightedProductId(prodId);
-
-        setTimeout(() => {
-          const element = document.getElementById(`row-${prodId}`);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-            setTimeout(() => setHighlightedProductId(null), 4000);
-          }
-        }, 300);
+    // 9. Sorting execution
+    items.sort((a, b) => {
+      const getPrices = (uItem: UnifiedProduct) => {
+        const vals = Object.values(uItem.offers).map(o => isWoltPremiumMode ? o.wolt_price : o.price);
+        return vals;
       };
 
-      const currentCategoryProducts = useMemo(() => {
-        if (!selectedCategoryId) return [];
-        return groupedCategories[selectedCategoryId] || [];
-      }, [selectedCategoryId, groupedCategories]);
-
-      const dynamicFilterOptions = useMemo(() => {
-        if (!selectedCategoryId) return { subtypes: [], fats: [] };
-        const rawProducts = currentCategoryProducts;
-        const subtypesMap = {};
-        const fatsSet = new Set();
-
-        rawProducts.forEach(item => {
-          if (item.attributes.subtype) {
-            subtypesMap[item.attributes.subtype] = (subtypesMap[item.attributes.subtype] || 0) + 1;
-          }
-          if (item.attributes.fatPercentage !== null) {
-            fatsSet.add(item.attributes.fatPercentage);
-          }
-        });
-
-        const sortedSubtypes = Object.entries(subtypesMap)
-          .sort((a, b) => b[1] - a[1])
-          .map(entry => entry[0]);
-
-        return {
-          subtypes: sortedSubtypes.slice(0, 4),
-          fats: Array.from(fatsSet).sort((a, b) => a - b)
-        };
-      }, [selectedCategoryId, currentCategoryProducts]);
-
-      const filteredCategoryProducts = useMemo(() => {
-        if (!selectedCategoryId) return [];
-        let items = [...currentCategoryProducts];
-
-        if (selectedSubtype) {
-          if (selectedSubtype === "Digər") {
-            items = items.filter(item => !dynamicFilterOptions.subtypes.includes(item.attributes.subtype));
-          } else {
-            items = items.filter(item => item.attributes.subtype === selectedSubtype);
-          }
-        }
-
-        if (weightMode !== "Hamısı") {
-          items = items.filter(item => {
-            const unit = item.attributes.weightUnit;
-            if (weightMode === "⚖ Çəki") return unit === "kq" || unit === "q";
-            else if (weightMode === "💧 Həcm") return unit === "L" || unit === "ml";
-            return unit === "ədəd" || unit === null;
-          });
-        }
-
-        const minW = parseFloat(minWeightInput.replace(",", "."));
-        const maxW = parseFloat(maxWeightInput.replace(",", "."));
-        if (!isNaN(minW) || !isNaN(maxW)) {
-          items = items.filter(item => {
-            const val = item.attributes.weightValue;
-            if (val === null) return false;
-            const normalized = normalizeWeight(val, item.attributes.weightUnit);
-            const checkMin = !isNaN(minW) ? normalized >= minW : true;
-            const checkMax = !isNaN(maxW) ? normalized <= maxW : true;
-            return checkMin && checkMax;
-          });
-        }
-
-        if (selectedFatPercentage !== null) {
-          items = items.filter(item => item.attributes.fatPercentage === selectedFatPercentage);
-        }
-
-        if (tableSearchQuery.trim()) {
-          const q = tableSearchQuery.toLowerCase()
-            .replace(/ç/g, "c").replace(/ə/g, "e").replace(/ğ/g, "g")
-            .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u")
-            .trim();
-          items = items.filter(item => item.name.toLowerCase().includes(q) || item.rawNames.some(rn => rn.toLowerCase().includes(q)));
-        }
-
-        items.sort((a, b) => {
-          const getPrices = (uItem) => Object.values(uItem.offers).map(o => isWoltPremiumMode ? o.wolt_price : o.price);
-          if (sortBy === "name") return a.name.localeCompare(b.name);
-          
-          const aPrices = getPrices(a);
-          const bPrices = getPrices(b);
-          const aMin = aPrices.length > 0 ? Math.min(...aPrices) : Infinity;
-          const bMin = bPrices.length > 0 ? Math.min(...bPrices) : Infinity;
-
-          if (sortBy === "price_asc") return aMin - bMin;
-          if (sortBy === "savings_desc") {
-            const calcSavings = (p) => p.length <= 1 ? 0 : Math.max(...p) - Math.min(...p);
-            return calcSavings(bPrices) - calcSavings(aPrices);
-          }
-          return 0;
-        });
-
-        return items;
-      }, [selectedCategoryId, currentCategoryProducts, selectedSubtype, weightMode, minWeightInput, maxWeightInput, selectedFatPercentage, tableSearchQuery, sortBy, isWoltPremiumMode, dynamicFilterOptions]);
-
-      const storeCheapStats = useMemo(() => {
-        const counts = {};
-        for (const product of filteredCategoryProducts) {
-          const offers = Object.values(product.offers);
-          if (offers.length === 0) continue;
-          const prices = offers.map(o => isWoltPremiumMode ? o.wolt_price : o.price);
-          const minPrice = Math.min(...prices);
-          
-          Object.entries(product.offers).forEach(([store, off]) => {
-            const currentPrice = isWoltPremiumMode ? off.wolt_price : off.price;
-            if (currentPrice === minPrice) {
-              counts[store] = (counts[store] || 0) + 1;
-            }
-          });
-        }
-        return counts;
-      }, [filteredCategoryProducts, isWoltPremiumMode]);
-
-      const storeChampionsRanked = useMemo(() => {
-        return Object.entries(storeCheapStats).sort((a, b) => b[1] - a[1]);
-      }, [storeCheapStats]);
-
-      // Base Bargain Calculator (per 1kq or 1L)
-      const unitBargains = useMemo(() => {
-        if (!selectedCategoryId || filteredCategoryProducts.length === 0) return [];
-        let liquidBest = null;
-        let weightBest = null;
-        let pieceBest = null;
-
-        filteredCategoryProducts.forEach(prod => {
-          const val = prod.attributes.weightValue;
-          const unit = prod.attributes.weightUnit;
-          if (val === null || !unit) return;
-
-          Object.entries(prod.offers).forEach(([store, off]) => {
-            const price = isWoltPremiumMode ? off.wolt_price : off.price;
-            const totalSize = normalizeWeight(val, unit);
-
-            if (unit === "L" || unit === "ml") {
-              const pricePerL = (price / totalSize) * 1000;
-              if (!liquidBest || pricePerL < liquidBest.pricePerUnit) {
-                liquidBest = { unitLabel: "1 L", productName: prod.name, storeName: store, pricePerUnit: pricePerL, originalPrice: price, originalQty: `${val} ${unit}` };
-              }
-            } else if (unit === "kq" || unit === "q") {
-              const pricePerKq = (price / totalSize) * 1000;
-              if (!weightBest || pricePerKq < weightBest.pricePerUnit) {
-                weightBest = { unitLabel: "1 Kq", productName: prod.name, storeName: store, pricePerUnit: pricePerKq, originalPrice: price, originalQty: `${val} ${unit}` };
-              }
-            } else if (unit === "ədəd") {
-              const pricePerPce = price / val;
-              if (!pieceBest || pricePerPce < pieceBest.pricePerUnit) {
-                pieceBest = { unitLabel: "1 Ədəd", productName: prod.name, storeName: store, pricePerUnit: pricePerPce, originalPrice: price, originalQty: `${val} ədəd` };
-              }
-            }
-          });
-        });
-
-        const res = [];
-        if (weightBest) res.push(weightBest);
-        if (liquidBest) res.push(liquidBest);
-        if (pieceBest) res.push(pieceBest);
-        return res;
-      }, [selectedCategoryId, filteredCategoryProducts, isWoltPremiumMode]);
-
-      function HighlightMatch({ text, query }) {
-        if (!query) return <span>{text}</span>;
-        const index = text.toLowerCase().indexOf(query.toLowerCase());
-        if (index === -1) return <span>{text}</span>;
-        const before = text.substring(0, index);
-        const match = text.substring(index, index + query.length);
-        const after = text.substring(index + query.length);
-        return (
-          <span>{before}<mark class="bg-warmaccent/30 text-white font-semibold rounded px-0.5 border-b border-warmaccent-light">{match}</mark>{after}</span>
-        );
+      if (sortBy === "name") {
+        return a.name.localeCompare(b.name);
       }
 
-      return (
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 relative z-10">
-          
-          {/* HEADER BAR */}
-          <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-warmaccent/10 mb-8">
-            <div>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-warmaccent rounded-xl flex items-center justify-center shadow-lg shadow-warmaccent/20 border border-warmaccent-light/30">
-                  <i data-lucide="trending-up" class="w-5 h-5 text-warmblack"></i>
-                </div>
-                <div>
-                  <h1 class="text-3xl font-black font-display tracking-tight text-white flex items-center gap-2">
-                    Qiymət<span class="text-warmaccent">Müqayisə</span>
-                  </h1>
-                  <p class="text-[10px] font-mono text-warmaccent-light/70 mt-0.5">REAL VAXTDA BAKI SUPERMARKETLƏRİ MONİTORİNQİ</p>
-                </div>
+      const aPrices = getPrices(a);
+      const bPrices = getPrices(b);
+      const aMinPrice = aPrices.length > 0 ? Math.min(...aPrices) : Infinity;
+      const bMinPrice = bPrices.length > 0 ? Math.min(...bPrices) : Infinity;
+
+      if (sortBy === "price_asc") {
+        return aMinPrice - bMinPrice;
+      }
+
+      if (sortBy === "savings_desc") {
+        const calcSavings = (prices: number[]) => {
+          if (prices.length <= 1) return 0;
+          return Math.max(...prices) - Math.min(...prices);
+        };
+        return calcSavings(bPrices) - calcSavings(aPrices);
+      }
+
+      return 0;
+    });
+
+    return items;
+  }, [
+    selectedCategoryId,
+    currentCategoryProducts,
+    selectedSubtype,
+    weightMode,
+    minWeightInput,
+    maxWeightInput,
+    selectedFatPercentage,
+    tableSearchQuery,
+    sortBy,
+    isWoltPremiumMode,
+    dynamicFilterOptions
+  ]);
+
+  // 10. Stores Cheapness counter inside filtered display results
+  const storeCheapStats = useMemo(() => {
+    return countCheapestStoreChampion(filteredCategoryProducts);
+  }, [filteredCategoryProducts]);
+
+  // Sort store champions
+  const storeChampionsRanked = useMemo(() => {
+    return (Object.entries(storeCheapStats) as [string, number][]).sort((a, b) => b[1] - a[1]);
+  }, [storeCheapStats]);
+
+  // 11. Calculate Unit Prices best bargains
+  const unitBargains = useMemo(() => {
+    if (!selectedCategoryId || filteredCategoryProducts.length === 0) return [];
+
+    let liquidBest: BestUnitValue | null = null; // Cheapest per 1L
+    let weightBest: BestUnitValue | null = null; // Cheapest per 1Kq
+    let pieceBest: BestUnitValue | null = null;  // Cheapest per Unit (1 ədəd)
+
+    filteredCategoryProducts.forEach(prod => {
+      const offers = Object.entries(prod.offers) as [string, StoreProduct][];
+      const val = prod.attributes.weightValue;
+      const unit = prod.attributes.weightUnit;
+
+      if (val === null || !unit) return;
+
+      offers.forEach(([store, off]) => {
+        const price = isWoltPremiumMode ? off.wolt_price : off.price;
+
+        // Normalizing to base grams/ml factor
+        const totalSize = normalizeWeight(val, unit); // e.g. 500 for 500q, 1000 for 1L
+        
+        if (unit === "L" || unit === "ml") {
+          // Normalize to per 1 Litir (1000 ml)
+          const pricePerL = (price / totalSize) * 1000;
+          if (!liquidBest || pricePerL < liquidBest.pricePerUnit) {
+            liquidBest = {
+              unitLabel: "1 L",
+              productName: prod.name,
+              storeName: store,
+              pricePerUnit: pricePerL,
+              originalPrice: price,
+              originalQty: `${val} ${unit}`
+            };
+          }
+        } else if (unit === "kq" || unit === "q") {
+          // Normalize to per 1 Kiloqram (1000 q)
+          const pricePerKq = (price / totalSize) * 1000;
+          if (!weightBest || pricePerKq < weightBest.pricePerUnit) {
+            weightBest = {
+              unitLabel: "1 Kq",
+              productName: prod.name,
+              storeName: store,
+              pricePerUnit: pricePerKq,
+              originalPrice: price,
+              originalQty: `${val} ${unit}`
+            };
+          }
+        } else if (unit === "ədəd") {
+          // Normalize to per 1 Piece (ədəd)
+          const pricePerPce = price / val;
+          if (!pieceBest || pricePerPce < pieceBest.pricePerUnit) {
+            pieceBest = {
+              unitLabel: "1 Ədəd",
+              productName: prod.name,
+              storeName: store,
+              pricePerUnit: pricePerPce,
+              originalPrice: price,
+              originalQty: `${val} ədəd`
+            };
+          }
+        }
+      });
+    });
+
+    const results: BestUnitValue[] = [];
+    if (weightBest) results.push(weightBest);
+    if (liquidBest) results.push(liquidBest);
+    if (pieceBest) results.push(pieceBest);
+
+    return results;
+  }, [selectedCategoryId, filteredCategoryProducts, isWoltPremiumMode]);
+
+  // Utility to highlight search result characters nicely
+  function HighlightMatch({ text, query }: { text: string; query: string }) {
+    if (!query) return <span>{text}</span>;
+
+    const cleanStr = (s: string) => s.toLowerCase()
+      .replace(/ç/g, "c").replace(/ə/g, "e").replace(/ğ/g, "g")
+      .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u");
+
+    const cleanText = cleanStr(text);
+    const cleanQuery = cleanStr(query);
+
+    const index = cleanText.indexOf(cleanQuery);
+    if (index === -1) return <span>{text}</span>;
+
+    const before = text.substring(0, index);
+    const match = text.substring(index, index + query.length);
+    const after = text.substring(index + query.length);
+
+    return (
+      <span>
+        {before}
+        <mark className="bg-warmaccent/35 text-neutral-800 font-semibold rounded px-0.5 shadow-xs border-b-2 border-warmaccent">
+          {match}
+        </mark>
+        {after}
+      </span>
+    );
+  }
+
+  return (
+    <div id="app-root-container" className="min-h-screen bg-warmblack text-[#3e2f20] relative overflow-x-hidden dotted-grid font-sans select-none pb-20">
+      
+      {/* Decorative ambient flares */}
+      <div className="absolute top-0 left-0 right-0 h-[400px] ambient-glow pointer-events-none z-0" />
+      <div className="absolute top-[30%] -right-80 w-96 h-96 bg-warmaccent/5 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-[20%] -left-80 w-96 h-96 bg-warmaccent/5 blur-[120px] rounded-full pointer-events-none z-0" />
+
+      {/* Main Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 relative z-10">
+        
+        {/* UPPER HUD - HEADER */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-warmaccent/15 mb-8" id="header-bar">
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-warmaccent rounded-xl flex items-center justify-center shadow-lg shadow-warmaccent/20 border border-warmaccent-light/30">
+                <TrendingUp className="w-5 h-5 text-white stroke-[2.5]" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-black font-display tracking-tight text-[#281505] flex items-center gap-2">
+                  Qiymət<span className="text-warmaccent">Müqayisə</span>
+                </h1>
+                <p className="text-xs font-mono text-warmaccent font-bold mt-0.5">BAKI SUPERMARKET KASSASI & WOLT MONITORU</p>
               </div>
             </div>
-
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-              {/* Wolt Premium mode key slider switch */}
-              <button 
-                onClick={() => setIsWoltPremiumMode(!isWoltPremiumMode)}
-                class={`px-4 py-2.5 rounded-xl border flex items-center justify-between sm:justify-start gap-4 transition-all duration-300 cursor-pointer text-xs font-semibold ${
-                  isWoltPremiumMode 
-                    ? "bg-sky-500/10 border-sky-400 text-sky-400" 
-                    : "bg-warmlight border-warmaccent/10 text-neutral-400 hover:text-white"
-                }`}
-              >
-                <span class="flex items-center gap-2">
-                  <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-                  Wolt Çatdırılma Qiymətləri
-                </span>
-                <div class={`w-8 h-4 rounded-full p-0.5 transition-colors ${isWoltPremiumMode ? "bg-sky-500" : "bg-neutral-800"}`}>
-                  <div class={`bg-white w-3 h-3 rounded-full transition-transform transform ${isWoltPremiumMode ? 'translate-x-4' : 'translate-x-0'}`}></div>
-                </div>
-              </button>
-
-              <div class="bg-warmlight border border-warmaccent/10 px-4 py-2.5 rounded-xl flex items-center gap-2 text-xs text-neutral-400">
-                <i data-lucide="clock" class="w-3.5 h-3.5 text-warmaccent"></i>
-                <span>{initialPricesData.last_updated}</span>
-              </div>
-            </div>
-          </header>
-
-          <div class="flex items-center gap-4 text-xs font-mono text-neutral-500 mb-6 bg-warmlight/30 border border-white/5 p-2 rounded-lg">
-            <span class="px-1.5 py-0.5 bg-neutral-950 border border-neutral-800 rounded text-warmaccent-light">/</span>
-            <span>Axtarışa fokuslanmaq</span>
-            <span class="ml-3 px-1.5 py-0.5 bg-neutral-950 border border-neutral-800 rounded text-warmaccent-light">Esc</span>
-            <span>Geri</span>
+            <p className="text-sm text-[#5c4b37] mt-2 max-w-xl font-light">
+              Bravo, OBA, Araz, Neptun və Rahat mağazalarında eyni məhsulların qiymətlərini real vaxtda dərhal müqayisə edin və optimal qənaət edin.
+            </p>
           </div>
 
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            {/* Wolt Premium mode toggle slider */}
+            <button 
+              id="wolt-toggle-btn"
+              onClick={() => setIsWoltPremiumMode(!isWoltPremiumMode)}
+              className={`px-4 py-2.5 rounded-xl border flex items-center justify-between sm:justify-start gap-3 transition-all duration-300 cursor-pointer text-xs font-semibold ${
+                isWoltPremiumMode 
+                  ? "bg-sky-500/10 border-sky-400 text-sky-600 shadow-md shadow-sky-500/5 font-semibold" 
+                  : "bg-white border-warmaccent/20 text-[#5c4b37] hover:border-warmaccent/45 shadow-xs"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingBag className={`w-4 h-4 ${isWoltPremiumMode ? "text-sky-500 animate-pulse" : "text-[#7c664f]"}`} />
+                <span>Wolt Çatdırılma Qiymətləri</span>
+              </div>
+              <div className={`w-8 h-4 rounded-full p-0.5 transition-colors duration-300 ${isWoltPremiumMode ? "bg-sky-500" : "bg-neutral-200"}`}>
+                <div className={`bg-white w-3 h-3 rounded-full shadow-sm transition-transform duration-300 transform ${isWoltPremiumMode ? "translate-x-4" : "translate-x-0"}`} />
+              </div>
+            </button>
+
+            {/* Timestap info banner */}
+            <div className="bg-white border border-warmaccent/20 px-4 py-2.5 rounded-xl flex items-center gap-2 text-xs text-[#5c4b37] shadow-xs">
+              <Clock className="w-3.5 h-3.5 text-warmaccent animate-spin-slow" />
+              <span>{pricesData.last_updated}</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Dynamic keyboard guidelines */}
+        <div className="flex items-center gap-4 text-xs font-mono text-[#5c4b37] mb-6 bg-white border border-warmaccent/20 p-2 rounded-lg justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center px-1.5 py-0.5 bg-[#f0e8dc] border border-[#eedcc4] rounded text-warmaccent font-bold">/</span>
+            <span>Axtarışa fokuslanmaq</span>
+            <span className="ml-3 flex items-center px-1.5 py-0.5 bg-[#f0e8dc] border border-[#eedcc4] rounded text-warmaccent font-bold">Esc</span>
+            <span>Geri / Təmizlə</span>
+          </div>
+          <div className="hidden sm:inline">Ctrl + D və ya scroll ilə sürətli naviqasiya.</div>
+        </div>
+
+        {/* ----------------- ANA SƏHİFƏ GÖRÜNÜŞÜ ----------------- */}
+        <AnimatePresence mode="wait">
           {!selectedCategoryId ? (
-            /* --- LANDING ANA SƏHİFƏ --- */
-            <div class="space-y-8 animate-fade-in">
-              <div class="relative max-w-2xl mx-auto">
-                <div class="relative">
-                  <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-warmaccent/60"></i>
+            <motion.div
+              key="homepage"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-8"
+              id="homepage-view"
+            >
+              {/* GLOBAL INTERACTIVE SEARCH HUB */}
+              <div className="relative max-w-2xl mx-auto" id="global-search-hub">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-warmaccent/70" />
                   <input
                     ref={globalSearchRef}
+                    id="global-search-input"
                     type="text"
                     value={globalSearchQuery}
                     onChange={(e) => setGlobalSearchQuery(e.target.value)}
-                    placeholder="Bütün kateqoriyalarda axtarış... ('/' düyməsi)"
-                    class="w-full bg-warmlight border-2 border-warmaccent/15 focus:border-warmaccent rounded-2xl py-4 pl-12 pr-10 text-white placeholder-neutral-500 focus:outline-none transition-all shadow-lg"
+                    placeholder="Bütün kateqoriyalarda və mağazalarda axtarış... ('/' basın)"
+                    className="w-full bg-white border-2 border-warmaccent/20 focus:border-warmaccent rounded-2xl py-4 pl-12 pr-10 text-neutral-800 placeholder-neutral-400 text-sm focus:outline-none transition-all duration-300 shadow-md focus:shadow-warmaccent/5 focus:ring-1 focus:ring-warmaccent"
                   />
                   {globalSearchQuery && (
-                    <button onClick={() => setGlobalSearchQuery("")} class="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white">✕</button>
+                    <button
+                      onClick={() => setGlobalSearchQuery("")}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   )}
                 </div>
 
+                {/* Dropdown Live Results under Global search bar */}
                 {globalSearchQuery.trim() !== "" && (
-                  <div class="absolute left-0 right-0 mt-2 bg-[#120e09] border border-warmaccent/20 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto no-scrollbar">
+                  <div className="absolute left-0 right-0 mt-2 bg-white border border-warmaccent/25 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto no-scrollbar divide-y divide-warmaccent/10">
+                    <div className="p-3 bg-[#fdfbf7] text-xs font-semibold text-warmaccent flex items-center justify-between">
+                      <span>UYĞUN GƏLƏN MƏHSUL VƏ ANINDA FILTR</span>
+                      <span className="font-mono text-neutral-500">{globalSearchResults.length} nəticə tapıldı</span>
+                    </div>
+
                     {globalSearchResults.length === 0 ? (
-                      <div class="p-8 text-center text-neutral-500 text-sm">Məhsul tapılmadı.</div>
+                      <div className="p-8 text-center text-neutral-550 text-sm">
+                        Məhsul tapılmadı. Zəhmət olmasa digər açar sözlərlə yoxlayın.
+                      </div>
                     ) : (
                       globalSearchResults.map((res) => (
                         <div
                           key={res.productId}
                           onClick={() => jumpToProductInTable(res.categoryId, res.productId)}
-                          class="p-3 hover:bg-warmaccent/10 cursor-pointer flex justify-between items-center transition-all bg-warmlight/50"
+                          className="p-3.5 hover:bg-warmaccent/5 cursor-pointer flex items-center justify-between transition-colors group"
                         >
-                          <div>
-                            <span class="text-[10px] text-neutral-500 font-medium tracking-wide flex items-center gap-1">
-                              {CATEGORY_EMOJIS[res.categoryId]} {res.categoryName}
+                          <div className="space-y-0.5">
+                            <span className="text-xs text-[#7c664f] font-medium tracking-wide flex items-center gap-1.5">
+                              <span>{CATEGORY_EMOJIS[res.categoryId]}</span>
+                              <span className="group-hover:text-neutral-600">{res.categoryName}</span>
                             </span>
-                            <div class="text-xs font-bold text-white mt-1">
+                            <div className="text-sm text-neutral-800 font-semibold">
                               <HighlightMatch text={res.matchedName} query={globalSearchQuery} />
                             </div>
                           </div>
                           
-                          <div class="text-right flex items-center gap-3">
-                            <span class="text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded text-emerald-400 font-bold">{res.cheapestStore}</span>
-                            <span class="bg-neutral-900 border border-warmaccent/10 px-2 py-1 rounded text-xs font-mono font-bold text-warmaccent-light">
-                              {res.cheapestPrice.toFixed(2)} ₼
-                            </span>
+                          <div className="text-right flex items-center gap-2">
+                            <div className="space-y-0.5 mr-2">
+                              <div className="text-xs text-neutral-500">Ən ucuz mağaza</div>
+                              <div className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                                <span className="bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded text-[10px] tracking-wide border border-emerald-200">
+                                  {res.cheapestStore}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="bg-[#faf6ee] border border-warmaccent/20 p-2 rounded-xl text-center min-w-20">
+                              <div className="text-xs text-neutral-750 font-mono font-bold">
+                                {res.cheapestPrice.toFixed(2)} ₼
+                              </div>
+                              <div className="text-[9px] text-warmaccent font-bold mt-0.5">MÜQAYISƏ ET</div>
+                            </div>
                           </div>
                         </div>
                       ))
@@ -951,150 +748,249 @@
                 )}
               </div>
 
-              {/* STATISTIK HUD BLOKLAR (Overview) */}
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="glass-glow p-5 rounded-2xl flex items-center gap-4">
-                  <div class="w-11 h-11 bg-warmaccent/10 border border-warmaccent/25 rounded-xl flex items-center justify-center shrink-0">
-                    <i data-lucide="store" class="w-5 h-5 text-warmaccent"></i>
+              {/* STATISTICAL SUMMARY BOARD (Hud) */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" id="stats-summary-grid">
+                
+                <div className="glass-glow p-5 rounded-2xl flex items-center gap-4 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-warmaccent/5 border border-warmaccent/15 flex items-center justify-center shrink-0">
+                    <Store className="w-6 h-6 text-warmaccent" />
                   </div>
                   <div>
-                    <div class="text-xl font-bold font-mono text-white leading-none">{stats.totalStores}</div>
-                    <div class="text-[10px] uppercase font-bold tracking-wider text-neutral-400 mt-1">Market Şəbəkəsi</div>
+                    <div className="text-2xl font-black font-mono text-[#281505] leading-none">
+                      {stats.totalStores}
+                    </div>
+                    <div className="text-xs font-semibold text-[#5c4b37] uppercase tracking-wider mt-1.5">Mağaza Şəbəkəsi</div>
                   </div>
                 </div>
 
-                <div class="glass-glow p-5 rounded-2xl flex items-center gap-4">
-                  <div class="w-11 h-11 bg-emerald-500/10 border border-emerald-500/25 rounded-xl flex items-center justify-center shrink-0">
-                    <i data-lucide="coins" class="w-5 h-5 text-emerald-400"></i>
+                <div className="glass-glow p-5 rounded-2xl flex items-center gap-4 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                    <Coins className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
-                    <div class="text-xl font-bold font-mono text-emerald-400 leading-none">{stats.totalItems}</div>
-                    <div class="text-[10px] uppercase font-bold tracking-wider text-neutral-400 mt-1">Müqayisəli Məhsul</div>
+                    <div className="text-2xl font-black font-mono text-emerald-600 leading-none">
+                      {stats.totalItems}
+                    </div>
+                    <div className="text-xs font-semibold text-[#5c4b37] uppercase tracking-wider mt-1.5">Fərqli Məhsul Qiyməti</div>
                   </div>
                 </div>
 
-                <div class="glass-glow p-5 rounded-2xl flex items-center gap-4">
-                  <div class="w-11 h-11 bg-blue-500/10 border border-blue-500/25 rounded-xl flex items-center justify-center shrink-0">
-                    <i data-lucide="scale" class="w-5 h-5 text-blue-400"></i>
+                <div className="glass-glow p-5 rounded-2xl flex items-center gap-4 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-[#e5f5ff] border border-sky-200 flex items-center justify-center shrink-0">
+                    <Scale className="w-6 h-6 text-sky-650" />
                   </div>
                   <div>
-                    <div class="text-xl font-bold font-mono text-white leading-none">{stats.avgPrice.toFixed(2)} ₼</div>
-                    <div class="text-[10px] uppercase font-bold tracking-wider text-neutral-400 mt-1">Səbət Ortalama</div>
+                    <div className="text-2xl font-black font-mono text-[#281505] leading-none">
+                      {stats.avgPrice.toFixed(2)} ₼
+                    </div>
+                    <div className="text-xs font-semibold text-[#5c4b37] uppercase tracking-wider mt-1.5">Ortalama Qiymət</div>
                   </div>
                 </div>
 
-                <div class="glass-glow p-5 rounded-2xl flex items-center gap-4 border border-amber-500/20 bg-amber-500/[0.02]">
-                  <div class="w-11 h-11 bg-amber-500/10 border border-amber-500/25 rounded-xl flex items-center justify-center shrink-0">
-                    <i data-lucide="sparkle" class="w-5 h-5 text-amber-500 animate-pulse"></i>
+                <div className="glass-glow p-5 rounded-xl flex items-center gap-4 transition-all duration-300 border-2 border-amber-300 bg-amber-50/40">
+                  <div className="w-12 h-12 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+                    <Sparkle className="w-6 h-6 text-amber-600 animate-pulse" />
                   </div>
-                  <div class="min-w-0">
-                    <div class="text-xl font-bold font-mono text-amber-400 leading-none">{stats.maxSaving.toFixed(2)} ₼</div>
-                    <div class="text-[10px] uppercase font-bold tracking-wider text-neutral-300 mt-1 truncate">Maks. Qənaət imkanı</div>
+                  <div className="min-w-0">
+                    <div className="text-2xl font-black font-mono text-amber-700 leading-none">
+                      {stats.maxSaving.toFixed(2)} ₼
+                    </div>
+                    <div className="text-xs font-semibold text-[#5c4b37] truncate mt-1 animate-pulse" title={stats.maxSavingProduct}>
+                      Maks. Qənaət: {stats.maxSavingProduct}
+                    </div>
                   </div>
                 </div>
+
               </div>
 
-              {/* KATEQORIYA GRID SEÇİCİSİ */}
+              {/* CATEGORIES GRID */}
               <div>
-                <h2 class="text-sm font-bold font-display uppercase tracking-widest text-[#d4cfc3] mb-4">📂 KATEQORİYALAR üzrə sürətli keçid</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {Object.entries(initialPricesData.categories).map(([id, cat]) => {
-                    const count = groupedCategories[id]?.length || 0;
+                <h2 className="text-lg font-bold font-display text-[#281505] mb-4 flex items-center gap-2 tracking-wide uppercase">
+                  <span>📂</span> Kateqoriya Seçimi
+                </h2>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="categories-cards-grid">
+                  {(Object.entries(pricesData.categories) as [string, CategoryData][]).map(([id, cat]) => {
+                    const countOfUnified = groupedCategories[id]?.length || 0;
+                    
                     return (
-                      <div
+                      <motion.div
                         key={id}
+                        whileHover={{ scale: 1.025, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedCategoryId(id)}
-                        class="glass-glow p-6 rounded-2xl cursor-pointer hover:scale-[1.02] transform transition-all flex flex-col justify-between"
+                        className="glass-glow p-5 rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden group border border-warmaccent/10"
                       >
-                        <div class="flex justify-between items-start mb-4">
-                          <span class="text-3xl">{CATEGORY_EMOJIS[id] || "🥛"}</span>
-                          <span class="bg-neutral-800 text-warmaccent-light text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/5">
-                            {count} model
+                        <div className="absolute top-0 right-0 p-3 text-4xl opacity-10 group-hover:opacity-25 transition-opacity duration-300 group-hover:scale-110">
+                          {CATEGORY_EMOJIS[id] || "🛒"}
+                        </div>
+
+                        <div className="flex justify-between items-start">
+                          <div className="w-12 h-12 bg-warmblack rounded-xl flex items-center justify-center text-2xl border border-warmaccent/10 group-hover:border-warmaccent/30 transition-colors">
+                            {CATEGORY_EMOJIS[id] || "🛒"}
+                          </div>
+                          <span className="bg-warmaccent/10 text-warmaccent font-mono px-2 py-0.5 rounded-full text-xs font-bold border border-warmaccent/15">
+                            {countOfUnified} məhsul
                           </span>
                         </div>
-                        <div>
-                          <h3 class="text-base font-bold text-white">{cat.name}</h3>
-                          <p class="text-xs text-neutral-400 mt-1">Eyni kateqoriyanın məhsullarını və daxili filtr sayğaclarını açın.</p>
+
+                        <div className="mt-6">
+                          <h3 className="text-base font-bold text-neutral-800 group-hover:text-warmaccent transition-colors flex items-center gap-1.5">
+                            {cat.name}
+                            <ChevronRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-warmaccent" />
+                          </h3>
+                          <p className="text-xs text-[#5c4b37] mt-1 lines-clamp-2 leading-relaxed">
+                            {pricesData.stores.length} mağazadakı eyni markalı məhsulların qarşılıqlı Jaccard xəttilə süzülmüş qiymət cədvəli.
+                          </p>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
               </div>
-            </div>
+
+            </motion.div>
           ) : (
-            /* --- KATEQORİYA DAXİLİ GÖRÜNÜŞ --- */
-            <div class="space-y-6">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            // ----------------- KATEQORİYA DASHBOARD GÖRÜNÜŞÜ -----------------
+            <motion.div
+              key="category_inner"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              {/* Back to Home Navigator header */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" id="category-navigator-head">
                 <button
                   onClick={() => {
                     setSelectedCategoryId(null);
                     setSelectedSubtype(null);
                     setWeightMode("Hamısı");
+                    setMinWeightInput("");
+                    setMaxWeightInput("");
+                    setSelectedFatPercentage(null);
+                    setTableSearchQuery("");
                   }}
-                  class="px-4 py-2 bg-warmlight border border-warmaccent/20 hover:border-warmaccent text-[#d4cfc3] hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
+                  className="px-4 py-2 bg-white border border-warmaccent/20 hover:border-warmaccent text-[#5c4b37] hover:text-[#281505] rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm"
                 >
-                  ❮ Ana səhifəyə qayıt
+                  <ArrowLeft className="w-4 h-4 text-warmaccent" />
+                  <span>Ana Səhifəyə Qayıt</span>
                 </button>
 
+                {/* Champion counter summary */}
                 {storeChampionsRanked.length > 0 && (
-                  <div class="bg-emerald-500/[0.04] border border-emerald-500/25 px-4 py-2 rounded-xl text-xs text-emerald-300">
-                     Ən sərfəli market: <strong class="text-white underline decoration-emerald-400 font-bold">{storeChampionsRanked[0][0]}</strong> ({storeChampionsRanked[0][1]} məhsulda ən ucuz qiymət)
+                  <div className="bg-emerald-50 border border-emerald-200 px-4 py-2.5 rounded-xl flex items-center gap-2.5 text-xs text-emerald-800 shadow-sm">
+                    <Award className="w-4 h-4 text-emerald-600 shrink-0 animate-bounce" />
+                    <span>
+                      Bu kateqoriyada ən sərfəli:{" "}
+                      <strong className="font-bold text-emerald-950 underline decoration-emerald-500 underline-offset-4">
+                        {storeChampionsRanked[0][0]}
+                      </strong>{" "}
+                      ({storeChampionsRanked[0][1]} məhsulda ən ucuz qiymət)
+                    </span>
                   </div>
                 )}
               </div>
 
-              {/* KATEQORİYA AD BAŞLIĞI */}
-              <div class="glass-glow p-6 rounded-2xl flex items-center gap-4 relative overflow-hidden">
-                <span class="text-4xl">{CATEGORY_EMOJIS[selectedCategoryId] || "🥛"}</span>
-                <div>
-                  <h2 class="text-xl font-black font-display text-white">{initialPricesData.categories[selectedCategoryId].name}</h2>
-                  <p class="text-xs text-neutral-400 mt-1">Supermarketlər və Wolt çatdırılma qiymətlərinin eyni markalı qarşılıqlı Jaccard xətti ilə bərabərləşdirilməsi.</p>
+              {/* CATEGORY TITLE & SUMMARY */}
+              <div className="glass-glow bg-white p-6 rounded-2xl relative overflow-hidden border border-warmaccent/15 shadow-xs">
+                <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-radial-gradient from-warmaccent/5 to-transparent pointer-events-none" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="text-4xl w-14 h-14 bg-warmblack rounded-2xl border border-warmaccent/15 flex items-center justify-center">
+                    {CATEGORY_EMOJIS[selectedCategoryId] || "🛒"}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black font-display text-[#281505] tracking-tight">
+                      {CATEGORY_EMOJIS[selectedCategoryId]} {pricesData.categories[selectedCategoryId]?.name}
+                    </h2>
+                    <p className="text-xs text-[#5c4b37] mt-1 max-w-2xl font-normal leading-relaxed">
+                      Jaccard oxşarlıq indeksi (treshold ≥0.5) ilə eyni kateqoriyadakı fərqli supermarket məhsulları bir-birinə bərabərləşdirilərək müqayisə zonasına yerləşdirilib.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* EN SERFELI VAHID SUNULAR (Best Unit values) */}
+              {/* BEST VALUE CHEAPEST DEALS PER DIRECT UNIT UNIT CARDS */}
               {unitBargains.length > 0 && (
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {unitBargains.map((bargain, index) => {
-                    const theme = STORE_THEMES[bargain.storeName] || { text: "text-white", bg: "bg-neutral-800" };
-                    return (
-                      <div key={index} class="glass-glow p-4 rounded-xl flex items-center justify-between gap-4">
-                        <div class="min-w-0">
-                          <span class="text-[9px] bg-warmaccent/10 border border-warmaccent/25 px-2 py-0.5 rounded text-warmaccent font-bold uppercase">{bargain.unitLabel} üzrə hesablama</span>
-                          <h4 class="text-xs font-bold text-white truncate mt-2">{bargain.productName}</h4>
-                          <span class="text-[9.5px] text-neutral-400 block mt-0.5">Həqiqi qutu: {bargain.originalQty} ({bargain.originalPrice.toFixed(2)} ₼)</span>
+                <div>
+                  <h3 className="text-xs font-bold text-[#5c4b37] uppercase tracking-widest mb-3 flex items-center gap-1.5 font-mono">
+                    <Sparkle className="w-3.5 h-3.5 text-warmaccent animate-spin-slow" />
+                    Vahid Ölçü Üzrə Ən Sərfəli Seçimlər (1kq və ya 1L üzrə hesablama)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4" id="unit-best-deals-cards">
+                    {unitBargains.map((bargain, idx) => {
+                      const storeTheme = STORE_THEMES[bargain.storeName] || { text: "text-neutral-800", border: "border-warmaccent/10", bg: "bg-neutral-100", lightBg: "bg-neutral-50" };
+                      return (
+                        <div 
+                          key={idx}
+                          className="bg-white p-4 rounded-xl border border-warmaccent/15 flex items-center justify-between gap-4 relative overflow-hidden group hover:border-warmaccent/30 transition-all shadow-xs"
+                        >
+                          <div className="min-w-0">
+                            <span className="inline-block bg-[#fff5ea] text-warmaccent px-2 py-0.5 rounded text-[10px] font-mono border border-warmaccent/15 mb-2">
+                              {bargain.unitLabel} üzre qiymət
+                            </span>
+                            <h4 className="text-xs font-bold text-neutral-850 truncate" title={bargain.productName}>
+                              {bargain.productName}
+                            </h4>
+                            <div className="text-[10px] text-neutral-500 mt-1">
+                              Orijinal həcm: {bargain.originalQty} ({bargain.originalPrice.toFixed(2)} ₼)
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <div className={`text-xs font-mono font-bold ${storeTheme.text}`}>
+                              {bargain.pricePerUnit.toFixed(2)} ₼ / {bargain.unitLabel}
+                            </div>
+                            <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold mt-1 ${storeTheme.bg} uppercase shadow-xs`}>
+                              {bargain.storeName}
+                            </span>
+                          </div>
                         </div>
-                        <div class="text-right shrink-0">
-                          <span class="text-xs font-mono font-bold text-white block">{bargain.pricePerUnit.toFixed(2)} ₼</span>
-                          <span class={`inline-block px-1.5 py-0.5 font-black text-[9px] rounded text-neutral-900 ${theme.bg} uppercase mt-1`}>{bargain.storeName}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
-              {/* FİLTR VƏ TƏNZİMLƏYİCİLƏR ALƏT PANERİ */}
-              <div class="glass-glow p-5 rounded-2xl space-y-4">
-                {/* 1. Növ (Subtype) chipləri */}
-                <div class="space-y-1.5">
-                  <span class="text-[10px] font-mono text-neutral-400 block uppercase tracking-wider">Məhsulun xüsusi növü:</span>
-                  <div class="flex gap-2 items-center overflow-x-auto no-scrollbar py-1">
+              {/* STICKY STACKED FILTER TOOLBAR */}
+              <div 
+                className="bg-white rounded-2xl border border-warmaccent/15 p-4 space-y-4 shadow-md select-none" 
+                id="filter-toolbar-block"
+              >
+                
+                {/* FIRST LAYER: Subtype chips (horizontal scroll, scrollbar hidden) */}
+                <div className="space-y-1.5">
+                  <div className="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider flex items-center justify-between">
+                    <span>Məhsulun növü (Subtype):</span>
+                    {selectedSubtype && (
+                      <button 
+                        onClick={() => setSelectedSubtype(null)} 
+                        className="text-warmaccent hover:underline text-[9px] cursor-pointer"
+                      >
+                        Sıfırla
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2 items-center overflow-x-auto no-scrollbar scroll-smooth py-1">
                     <button
                       onClick={() => setSelectedSubtype(null)}
-                      class={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer ${
-                        selectedSubtype === null ? 'bg-warmaccent text-neutral-950 font-bold' : 'bg-warmlight text-[#a39e93] border border-neutral-800 hover:text-white'
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer shrink-0 transition-all duration-200 ${
+                        selectedSubtype === null
+                          ? "bg-warmaccent text-white font-bold border border-warmaccent"
+                          : "bg-[#faf6ee] text-neutral-600 border border-[#eedcc4] hover:text-[#281505]"
                       }`}
                     >
-                      Hamısı
+                      Bütün növlər
                     </button>
-                    {dynamicFilterOptions.subtypes.map(sub => (
+                    {dynamicFilterOptions.subtypes.map((sub) => (
                       <button
                         key={sub}
                         onClick={() => setSelectedSubtype(sub)}
-                        class={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer ${
-                          selectedSubtype === sub ? 'bg-warmaccent text-neutral-950 font-bold' : 'bg-warmlight text-[#a39e93] border border-neutral-800 hover:text-white'
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer shrink-0 transition-all duration-200 ${
+                          selectedSubtype === sub
+                            ? "bg-warmaccent text-white font-bold border border-warmaccent"
+                            : "bg-[#faf6ee] text-neutral-600 border border-[#eedcc4] hover:text-[#281505]"
                         }`}
                       >
                         {sub}
@@ -1103,27 +999,33 @@
                     {currentCategoryProducts.some(p => !dynamicFilterOptions.subtypes.includes(p.attributes.subtype)) && (
                       <button
                         onClick={() => setSelectedSubtype("Digər")}
-                        class={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer ${
-                          selectedSubtype === "Digər" ? 'bg-warmaccent text-neutral-950 font-bold' : 'bg-warmlight text-[#a39e93] border border-neutral-800 hover:text-white'
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer shrink-0 transition-all duration-200 ${
+                          selectedSubtype === "Digər"
+                            ? "bg-warmaccent text-white font-bold border border-warmaccent"
+                            : "bg-[#faf6ee] text-neutral-600 border border-[#eedcc4] hover:text-[#281505]"
                         }`}
                       >
-                        Digər
+                        Digər növlər
                       </button>
                     )}
                   </div>
                 </div>
 
-                {/* 2. Ölçü və çəki diapazon filtri */}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                  <div class="space-y-1.5">
-                    <span class="text-[10px] font-mono text-neutral-400 block uppercase tracking-wider">Ölçü Modu:</span>
-                    <div class="bg-warmlight border border-neutral-800 rounded-xl p-0.5 flex">
-                      {["Hamısı", "⚖ Çəki", "💧 Həcm"].map(mode => (
+                {/* SECOND LAYER: Weight Mode Toggle buttons, weight range inputs */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                  
+                  {/* Weight modes */}
+                  <div className="md:col-span-4 space-y-1.5">
+                    <span className="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider block">Ölçü Modu:</span>
+                    <div className="bg-[#faf6ee] p-1 rounded-xl border border-[#eedcc4] flex items-center justify-between">
+                      {(["Hamısı", "⚖ Çəki", "💧 Həcm", "📦 Digər"] as const).map((mode) => (
                         <button
                           key={mode}
                           onClick={() => setWeightMode(mode)}
-                          class={`flex-1 py-1 text-center rounded-lg text-xs font-medium cursor-pointer transition-all ${
-                            weightMode === mode ? 'bg-neutral-800 text-white font-semibold' : 'text-neutral-500 hover:text-neutral-300'
+                          className={`flex-1 py-1 text-center rounded-lg text-xs font-medium cursor-pointer transition-all ${
+                            weightMode === mode
+                              ? "bg-white text-neutral-800 shadow-xs font-bold"
+                              : "text-stone-500 hover:text-stone-700"
                           }`}
                         >
                           {mode}
@@ -1132,214 +1034,351 @@
                     </div>
                   </div>
 
-                  <div class="space-y-1.5">
-                    <span class="text-[10px] font-mono text-neutral-400 block uppercase tracking-wider">Həcm aralığı (q / ml):</span>
-                    <div class="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={minWeightInput}
-                        onChange={(e) => setMinWeightInput(e.target.value)}
-                        placeholder="Min çəki"
-                        class="w-full bg-warmlight border border-neutral-800 py-1.5 px-3 rounded-lg text-xs text-white"
-                      />
-                      <span class="text-neutral-600 font-mono text-xs">➔</span>
-                      <input
-                        type="text"
-                        value={maxWeightInput}
-                        onChange={(e) => setMaxWeightInput(e.target.value)}
-                        placeholder="Maks çəki"
-                        class="w-full bg-warmlight border border-neutral-800 py-1.5 px-3 rounded-lg text-xs text-white"
-                      />
+                  {/* Weight Range Inputs (Live filtering) */}
+                  <div className="md:col-span-5 space-y-1.5">
+                    <span className="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider block">
+                      Həcm / Çəki aralığı (Grams / Milliliters üzrə):
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={minWeightInput}
+                          onChange={(e) => setMinWeightInput(e.target.value)}
+                          placeholder="Min (məs: 100)"
+                          className="w-full bg-white border border-[#eedcc4] py-1.5 px-3 rounded-lg text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-warmaccent focus:ring-1 focus:ring-warmaccent"
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-[#5c4b37] font-mono">q/ml</span>
+                      </div>
+                      <span className="text-neutral-500 font-mono text-xs">➔</span>
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={maxWeightInput}
+                          onChange={(e) => setMaxWeightInput(e.target.value)}
+                          placeholder="Maks (məs: 1000)"
+                          className="w-full bg-white border border-[#eedcc4] py-1.5 px-3 rounded-lg text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-warmaccent focus:ring-1 focus:ring-warmaccent"
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-[#5c4b37] font-mono">q/ml</span>
+                      </div>
+                      {(minWeightInput || maxWeightInput) && (
+                        <button 
+                          onClick={() => { setMinWeightInput(""); setMaxWeightInput(""); }}
+                          className="p-1 px-2 rounded bg-neutral-100 border border-[#eedcc4] text-[#5c4b37] hover:text-[#281505] text-[10px] cursor-pointer font-bold"
+                        >
+                          X
+                        </button>
+                      )}
                     </div>
                   </div>
 
+                  {/* Fat percentage indicator (only if category contains fat specs) */}
                   {dynamicFilterOptions.fats.length > 1 && (
-                    <div class="space-y-1.5">
-                      <span class="text-[10px] font-mono text-neutral-400 block uppercase tracking-wider">Südün Yağlılıq dərəcəsi:</span>
-                      <div class="flex gap-1.5 items-center overflow-x-auto no-scrollbar py-0.5">
-                        {dynamicFilterOptions.fats.map(perc => (
+                    <div className="md:col-span-3 space-y-1.5">
+                      <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider flex items-center justify-between">
+                        <span>Yağlılıq dərəcəsi:</span>
+                        {selectedFatPercentage !== null && (
+                          <button 
+                            onClick={() => setSelectedFatPercentage(null)}
+                            className="text-warmaccent hover:underline text-[9px] cursor-pointer"
+                          >
+                            X
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5 animate-fade-in">
+                        {dynamicFilterOptions.fats.map((percentage) => (
                           <button
-                            key={perc}
-                            onClick={() => setSelectedFatPercentage(perc === selectedFatPercentage ? null : perc)}
-                            class={`px-2 py-1 rounded text-xs font-mono font-bold cursor-pointer transition-all ${
-                              selectedFatPercentage === perc ? 'bg-warmaccent text-neutral-950' : 'bg-neutral-900 border border-neutral-800 text-neutral-400 hover:bg-neutral-800'
+                            key={percentage}
+                            onClick={() => setSelectedFatPercentage(percentage === selectedFatPercentage ? null : percentage)}
+                            className={`px-2 py-1 rounded text-xs font-mono font-bold cursor-pointer transition-colors ${
+                              selectedFatPercentage === percentage
+                                ? "bg-warmaccent text-white"
+                                : "bg-[#faf6ee] text-stone-605 border border-[#eedcc4] hover:bg-[#fffaee]"
                             }`}
                           >
-                            {perc}%
+                            {percentage}%
                           </button>
                         ))}
                       </div>
                     </div>
                   )}
+
                 </div>
 
-                {/* Süzmələr və Sıralama nizamı */}
-                <div class="border-t border-neutral-900 pt-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                  <div class="text-xs text-neutral-400 font-light">
-                    Siyahıda <strong class="text-warmaccent-light font-bold font-mono">{filteredCategoryProducts.length}</strong> qiymət müqayisəsi mövcuddur.
+                {/* THIRD LAYER: Sorter controls & Table search query in line */}
+                <div className="border-t border-[#eedcc4]/60 pt-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                  
+                  {/* Row count display */}
+                  <div className="text-xs text-[#5c4b37] flex items-center gap-1.5 font-light">
+                    Siyahıda <strong className="text-warmaccent font-bold font-mono">{filteredCategoryProducts.length}</strong> eyni məhsul qrupu göstərilir.
+                    {filteredCategoryProducts.length < currentCategoryProducts.length && (
+                      <span className="text-neutral-500 font-normal">({currentCategoryProducts.length} məhsul içərisindən süzüldü)</span>
+                    )}
                   </div>
 
-                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <input
-                      type="text"
-                      value={tableSearchQuery}
-                      onChange={(e) => setTableSearchQuery(e.target.value)}
-                      placeholder="Məhsul adı ilə canlı süzgəc..."
-                      class="bg-warmlight border border-neutral-800 py-1.5 px-3 rounded-lg text-xs text-white focus:outline-none focus:border-warmaccent"
-                    />
+                  {/* Sorting parameters toggle row */}
+                  <div className="flex flex-wrap items-center gap-3 font-mono">
+                    <span className="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider">Sıralama:</span>
+                    <div className="flex items-center gap-1 bg-[#faf6ee] p-1 rounded-xl border border-[#eedcc4]">
+                      <button
+                        onClick={() => setSortBy("name")}
+                        className={`px-2.5 py-1 text-[11px] rounded transition-all cursor-pointer font-bold ${
+                          sortBy === "name" 
+                            ? "bg-white text-[#281505] shadow-xs" 
+                            : "text-[#7c664f] hover:text-[#281505]"
+                        }`}
+                      >
+                        A ➔ Z
+                      </button>
+                      <button
+                        onClick={() => setSortBy("price_asc")}
+                        className={`px-2.5 py-1 text-[11px] rounded transition-all cursor-pointer font-bold ${
+                          sortBy === "price_asc" 
+                            ? "bg-white text-[#281505] shadow-xs" 
+                            : "text-[#7c664f] hover:text-[#281505]"
+                        }`}
+                      >
+                        Qiymət ↑
+                      </button>
+                      <button
+                        onClick={() => setSortBy("savings_desc")}
+                        className={`px-2.5 py-1 text-[11px] rounded transition-all cursor-pointer font-bold ${
+                          sortBy === "savings_desc" 
+                            ? "bg-emerald-500 text-white shadow-xs" 
+                            : "text-[#7c664f] hover:text-[#281505]"
+                        }`}
+                      >
+                        Qənaət ↓
+                      </button>
+                    </div>
 
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      class="bg-warmlight border border-neutral-800 py-1.5 px-3 rounded-lg text-xs text-neutral-300 focus:outline-none"
-                    >
-                      <option value="savings_desc">Qənaət dərəcəsi: Ən yüksək</option>
-                      <option value="price_asc">Qiymət: Ən ucuzdan baha</option>
-                      <option value="name">Məhsul adı (A ➔ Z)</option>
-                    </select>
+                    {/* Table search filter input in right place */}
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-500" />
+                      <input
+                        type="text"
+                        value={tableSearchQuery}
+                        onChange={(e) => setTableSearchQuery(e.target.value)}
+                        placeholder="Cədvəldə canlı süz..."
+                        className="bg-white border border-[#eedcc4] text-xs text-neutral-800 placeholder-[#a39789] pl-8 pr-7 py-1.5 rounded-lg focus:outline-none focus:border-warmaccent w-48 transition-all focus:w-60 shadow-xs"
+                      />
+                      {tableSearchQuery && (
+                        <button 
+                          onClick={() => setTableSearchQuery("")}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 pointer-events-auto"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
                   </div>
+
                 </div>
+
               </div>
 
-              {/* ESAS MƏLUMAT CƏDVƏLİ */}
-              <div class="glass-glow rounded-2xl overflow-hidden border border-warmaccent/10">
-                <div class="overflow-x-auto no-scrollbar">
-                  <table class="w-full text-left border-collapse min-w-[700px]">
+              {/* PRODUCTS COMPARISON TABLE CONTAINER */}
+              {filteredCategoryProducts.length === 0 ? (
+                <div className="bg-[#faf6ee] border border-[#eedcc4] rounded-2xl p-16 text-center text-[#5c4b37] shadow-inner font-normal">
+                  Filtrə uyğun heç bir məhsul qarşılaşdırıla bilmədi. Zəhmət olmasa filtrləri təmizləyin və ya çəki aralığını yeniləyin.
+                </div>
+              ) : (
+                <div className="overflow-x-auto rounded-2xl border border-[#eedcc4] shadow-md bg-white select-text">
+                  <table className="w-full text-left border-collapse table-auto">
                     <thead>
-                      <tr class="bg-warmlight/60 border-b border-warmaccent/10">
-                        <th class="p-4 text-xs font-bold uppercase text-[#a39e93]">Məhsul adı & Növü</th>
-                        <th class="p-4 text-xs font-bold uppercase text-center text-[#a39e93]">Ölçü/Format</th>
-                        {initialPricesData.stores.map(store => {
-                          const thTheme = STORE_THEMES[store] || { text: "text-white", border: "border-white/5", lightBg: "bg-white/5" };
+                      <tr className="bg-[#fff3eb] border-b border-[#eedcc4] sticky top-0 z-10 text-[#3e2f20] font-bold">
+                        <th className="p-4 text-xs font-bold uppercase tracking-wider">Məhsul adı və növü</th>
+                        <th className="p-4 text-xs font-bold uppercase tracking-wider text-center">Ölçü / Yağ%</th>
+                        {/* Supermarket price headers */}
+                        {pricesData.stores.map((store) => {
+                          const theme = STORE_THEMES[store] || { text: "text-stone-700", border: "border-stone-200", lightBg: "bg-stone-50" };
                           return (
-                            <th key={store} class="p-4 text-xs font-semibold text-center uppercase min-w-[110px]">
-                              <span class={`px-2 py-1 rounded ${thTheme.lightBg} ${thTheme.text} border ${thTheme.border} text-[10px] font-bold`}>{store}</span>
+                            <th key={store} className="p-4 text-xs font-bold uppercase tracking-wider text-center">
+                              <span className={`px-2.5 py-1 rounded-md ${theme.lightBg} ${theme.text} font-bold text-[10px] shadow-2xs`}>
+                                {store}
+                              </span>
                             </th>
                           );
                         })}
-                        <th class="p-4 text-xs font-bold uppercase text-center text-[#a39e93] min-w-[160px]">Supermarket Qənaəti</th>
+                        <th className="p-4 text-xs font-bold uppercase tracking-wider text-right">Maks. Qənaət</th>
                       </tr>
                     </thead>
+                    <tbody className="divide-y divide-[#eedcc4]/40">
+                      {filteredCategoryProducts.map((prod) => {
+                        // Compute pricing ranges across integrated stores
+                        const storeOffers = Object.entries(prod.offers) as [string, StoreProduct][];
+                        const prices = storeOffers.map(([_, off]) => isWoltPremiumMode ? off.wolt_price : off.price);
+                        
+                        const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                        const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+                        const savingAmount = maxPrice - minPrice;
+                        const savingPercent = maxPrice > 0 ? (savingAmount / maxPrice) * 100 : 0;
 
-                    <tbody class="divide-y divide-warmaccent/5">
-                      {filteredCategoryProducts.length === 0 ? (
-                        <tr>
-                          <td colSpan={3 + initialPricesData.stores.length} class="p-8 text-center text-neutral-500 text-sm">
-                            Süzgəc parametrlərinizə uyğun heç bir supermarket məhsulu tapılmadı.
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredCategoryProducts.map(prod => {
-                          const storeOffers = Object.entries(prod.offers);
-                          const prices = storeOffers.map(([_, off]) => isWoltPremiumMode ? off.wolt_price : off.price);
-                          
-                          const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-                          const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
-                          const saving = maxPrice - minPrice;
-                          const savingPercent = maxPrice > 0 ? (saving / maxPrice) * 100 : 0;
+                        const isFocusedRow = prod.id === highlightedProductId;
 
-                          const isHighlighted = highlightedProductId === prod.id;
-
-                          return (
-                            <tr
-                              id={`row-${prod.id}`}
-                              key={prod.id}
-                              class={`transition-all duration-300 hover:bg-neutral-900/40 ${isHighlighted ? 'bg-warmaccent/20 border-y border-warmaccent/40 scale-[1.01]' : ''}`}
-                            >
-                              <td class="p-4">
-                                <div class="font-bold text-white text-xs">{prod.name}</div>
-                                <div class="flex gap-2 items-center mt-1">
-                                  <span class="bg-neutral-800 text-[9px] font-bold px-1.5 py-0.5 rounded text-neutral-400 border border-white/5">{prod.attributes.subtype}</span>
-                                  {prod.attributes.fatPercentage !== null && (
-                                    <span class="bg-amber-500/10 text-[9px] font-bold px-1.5 py-0.5 rounded text-amber-500 border border-amber-500/10">{prod.attributes.fatPercentage}% Yağ</span>
+                        return (
+                          <motion.tr
+                            id={`row-${prod.id}`}
+                            key={prod.id}
+                            style={{
+                              scrollMargin: "300px"
+                            }}
+                            className={`transition-all duration-300 ${
+                              isFocusedRow 
+                                ? "bg-warmaccent/10 border-y-2 border-warmaccent ring-1 ring-warmaccent" 
+                                : "hover:bg-[#fff9f3]/60"
+                            }`}
+                          >
+                            {/* 1. PRODUCT METADATA CARD HEADER */}
+                            <td className="p-4 min-w-[220px] max-w-[320px]">
+                              <div className="space-y-1.5">
+                                <div className="text-sm font-bold text-neutral-800 transition-colors">
+                                  {tableSearchQuery ? (
+                                    <HighlightMatch text={prod.name} query={tableSearchQuery} />
+                                  ) : (
+                                    <span>{prod.name}</span>
                                   )}
                                 </div>
-                              </td>
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  <span className="bg-[#faf6ee] border border-[#eedcc4] text-[#5c4b37] px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider">
+                                    {prod.attributes.subtype}
+                                  </span>
+                                  {prices.length < pricesData.stores.length && (
+                                    <span className="bg-red-50 border border-red-100 text-red-650 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                                      {pricesData.stores.length - prices.length} Kassada yoxdur
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
 
-                              <td class="p-4 text-center font-mono text-xs text-[#a39e93]">
-                                {prod.attributes.weightValue !== null ? `${prod.attributes.weightValue} ${prod.attributes.weightUnit || ""}` : "Standart"}
-                              </td>
-
-                              {initialPricesData.stores.map(store => {
-                                const offer = prod.offers[store];
-                                if (!offer) {
-                                  return (
-                                    <td key={store} class="p-4 text-center text-[10px] text-neutral-600 font-mono italic">Yoxdur</td>
-                                  );
-                                }
-
-                                const actualPrice = isWoltPremiumMode ? offer.wolt_price : offer.price;
-                                const isMin = actualPrice === minPrice && prices.length > 1;
-                                const isMax = actualPrice === maxPrice && prices.length > 1;
-
-                                // Jaccard pricing ranges dynamic coloring bar helper (yaşıl ➜ sarı ➜ qırmızı)
-                                let bgStyle = "bg-neutral-800/80 border-neutral-700 text-white";
-                                if (isMin) bgStyle = "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold scale-[1.05]";
-                                if (isMax) bgStyle = "bg-red-500/10 border-red-500/20 text-red-400";
-
-                                return (
-                                  <td key={store} class="p-4 text-center">
-                                    <div class={`inline-block py-1 px-2.5 rounded-lg border text-xs font-mono transition-transform ${bgStyle}`}>
-                                      <span class="font-bold">{actualPrice.toFixed(2)} ₼</span>
-                                      {isMin && <span class="ml-1 text-[9px] text-[#f5f2eb]">★</span>}
-                                      {isMax && <span class="ml-1 text-[9px]">●</span>}
-                                    </div>
-                                    <span class="block text-[8.5px] text-neutral-500 font-mono mt-0.5">Wolt: {offer.wolt_price.toFixed(2)} ₼</span>
-                                  </td>
-                                );
-                              })}
-
-                              {/* Supermarket Qənaəti və Müqayisə Barı */}
-                              <td class="p-4 text-center">
-                                {prices.length <= 1 ? (
-                                  <span class="text-[10px] text-neutral-600 font-bold">Müqayisəsiz</span>
-                                ) : (
-                                  <div class="space-y-1 inline-block text-left w-full max-w-[140px]">
-                                    <div class="flex justify-between items-center text-[10px]">
-                                      <span class="text-[#a39e93] font-light">Max savings:</span>
-                                      <strong class="font-bold text-emerald-400 font-mono">{saving.toFixed(2)} ₼</strong>
-                                    </div>
-                                    <div class="w-full bg-neutral-900 rounded-full h-1.5 overflow-hidden border border-white/5 flex">
-                                      <div class="bg-emerald-400 h-full rounded-full transition-all" style={{ width: `${savingPercent}%` }}></div>
-                                    </div>
-                                    <span class="text-[9px] font-mono text-neutral-500 block text-right mt-0.5">En ucuzundan {savingPercent.toFixed(0)}% sərfəli</span>
-                                  </div>
+                            {/* 2. VALUE SIZES & VOLUMES */}
+                            <td className="p-4 text-center min-w-[100px]">
+                              <div className="space-y-1 text-xs">
+                                <div className="font-mono text-[#3e2f20] font-bold">
+                                  {prod.attributes.weightValue ? (
+                                    <strong>{prod.attributes.weightValue} {prod.attributes.weightUnit}</strong>
+                                  ) : (
+                                    <span className="text-neutral-400">-</span>
+                                  )}
+                                </div>
+                                {prod.attributes.fatPercentage !== null && (
+                                  <span className="bg-[#fff2e6] text-[#e35600] border border-[#fddfc4] px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">
+                                    {prod.attributes.fatPercentage}% Yağ
+                                  </span>
                                 )}
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
+                              </div>
+                            </td>
+
+                            {/* 3. SUPERMARKET OFFERS CELLS */}
+                            {pricesData.stores.map((store) => {
+                              const offer = prod.offers[store] as StoreProduct | undefined;
+                              
+                              if (!offer) {
+                                  return (
+                                    <td key={store} className="p-4 text-center text-xs text-[#a09080] font-mono font-semibold">
+                                      Səbətdə yoxdur
+                                    </td>
+                                  );
+                              }
+
+                              const currentPrice = isWoltPremiumMode ? offer.wolt_price : offer.price;
+                              const isCheapest = currentPrice === minPrice && prices.length > 1;
+                              const isMostExpensive = currentPrice === maxPrice && prices.length > 1;
+
+                              // Calculate custom relative comparative margin bar percentage (0 to 100%)
+                              let fillPercent = 0;
+                              if (prices.length > 1 && maxPrice !== minPrice) {
+                                fillPercent = ((currentPrice - minPrice) / (maxPrice - minPrice)) * 100;
+                              }
+
+                              return (
+                                <td key={store} className="p-4 text-center min-w-[120px]">
+                                  <div className="space-y-1">
+                                    {/* Price tag */}
+                                    <div className="flex items-center justify-center gap-1.5">
+                                      <span className={`text-sm font-mono font-extrabold ${isCheapest ? "text-emerald-600 text-base font-black" : isMostExpensive ? "text-red-650" : "text-neutral-800"}`}>
+                                        {currentPrice.toFixed(2)} ₼
+                                      </span>
+                                      
+                                      {/* Star / Dot indications */}
+                                      {isCheapest && (
+                                        <span className="text-amber-500 text-sm" title="Ən Ucuz Qiymət!">★</span>
+                                      )}
+                                      {isMostExpensive && (
+                                        <span className="text-red-500 text-xs leading-none" title="Ən Baha!">●</span>
+                                      )}
+                                    </div>
+
+                                    {/* Wolt small premium label representation */}
+                                    <div className="text-[10px] text-[#706050] flex flex-col items-center justify-center gap-0.5 leading-none">
+                                      <span className="font-mono text-[9px] text-[#807060]">Mağazada: {offer.price.toFixed(2)} ₼</span>
+                                      <span className="text-[9px] bg-sky-50 text-sky-650 px-1 rounded font-bold border border-sky-100">Wolt: {offer.wolt_price.toFixed(2)} ₼</span>
+                                    </div>
+
+                                    {/* Dynamic visual price price bars */}
+                                    {prices.length > 1 && (
+                                      <div className="max-w-[70px] mx-auto h-1.5 bg-[#f5efe5] rounded-full overflow-hidden mt-1 border border-[#eedcc4]/40 relative">
+                                        <div 
+                                          className={`h-full rounded-full transition-all duration-300 ${
+                                            isCheapest 
+                                              ? "bg-emerald-500" 
+                                              : isMostExpensive 
+                                                ? "bg-red-500" 
+                                                : "bg-[#e86820]"
+                                          }`}
+                                          style={{ width: `${100 - fillPercent}%` }}
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
+                              );
+                            })}
+
+                            {/* 4. TOTAL SAVINGS BLOCK */}
+                            <td className="p-4 text-right min-w-[110px]">
+                              {prices.length > 1 ? (
+                                <div className="space-y-1">
+                                  <div className="text-xs font-mono font-black text-emerald-600">
+                                    + {savingAmount.toFixed(2)} ₼
+                                  </div>
+                                  <span className="inline-block bg-emerald-50 border border-emerald-250 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                                    {savingPercent.toFixed(1)}% Qənaət
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-neutral-400 text-xs font-mono">-</span>
+                              )}
+                            </td>
+
+                          </motion.tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
+              )}
+
+              {/* Tips banner footer */}
+              <div className="bg-white border border-[#eedcc4] rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4 text-sm tracking-wide shadow-xs">
+                <div className="w-10 h-10 rounded-full bg-[#fdf2e9] flex items-center justify-center shrink-0 border border-warmaccent/20">
+                  <HelpCircle className="w-5 h-5 text-warmaccent" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#281505]">Qənaət bələdçisi:</h4>
+                  <p className="text-xs text-[#5c4b37] leading-relaxed mt-0.5 font-normal">
+                    Qiymət müqayisə cədvəlimizdə hər bir məhsul üçün ən ucuz supermarket <strong>★ (Yaşıl rənglə)</strong>, ən baha supermarket isə <strong>● (Qırmızı məftillə)</strong> xüsusi işarələrlə vurğulanmışdır. Məhsulun səbətini ucuz olan mağazadan toplamaqla orta hesabla <strong>25%-dək</strong> büdcənizə qənaət edə bilərsiniz.
+                  </p>
+                </div>
               </div>
-            </div>
+
+            </motion.div>
           )}
-          
-          {/* ALT BÖLÜM (Footer) */}
-          <footer class="mt-20 border-t border-warmaccent/10 pt-6 text-center text-xs text-neutral-500 font-mono flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>QiymətMüqayisə © 2026. Bakı şəhəri üzrə real vaxtda kross-market qiymət indekslənməsi.</div>
-            <div class="flex items-center gap-2">
-              <span class="px-1.5 py-0.5 bg-neutral-950 rounded border border-neutral-800 text-[10px] text-warmaccent">V. 1.0.4 Premium</span>
-            </div>
-          </footer>
+        </AnimatePresence>
 
-        </div>
-      );
-    }
-
-    // Lucide ikonlarının hər yenilənmədə aktivləşdirilməsi
-    function renderApp() {
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<App />);
-      setTimeout(() => {
-        if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
-        }
-      }, 500);
-    }
-    renderApp();
-  </script>
-</body>
-</html>
+      </div>
+    </div>
+  );
+}
