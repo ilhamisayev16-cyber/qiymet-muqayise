@@ -1,1100 +1,347 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>QiymətMüqayisə</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-/* ===================== CSS VARS ===================== */
-:root {
-  --bg:       #0b0906;
-  --bg-2:     #12100d;
-  --bg-3:     #1c1813;
-  --bg-4:     #231e18;
-  --acc:      #e86820;
-  --acc-d:    rgba(232,104,32,.13);
-  --acc-glow: rgba(232,104,32,.25);
-  --txt:      #f0e8df;
-  --txt-2:    #a89880;
-  --txt-3:    #5e4e3e;
-  --bdr:      rgba(232,104,32,.11);
-  --bdr-2:    rgba(255,255,255,.055);
-
-  --bravo:    #e53935;
-  --oba:      #1e88e5;
-  --araz:     #8e24aa;
-  --neptun:   #43a047;
-  --rahat:    #e86820;
-
-  --fh: 'Syne',      sans-serif;
-  --fm: 'Space Mono',monospace;
-  --fb: 'Outfit',    sans-serif;
-
-  --r:  12px;
-  --rs: 8px;
+:root{
+  --bg:#0b0906;
+  --card:#15110d;
+  --card2:#1d1712;
+  --accent:#e86820;
+  --text:#f4f4f4;
+  --muted:#9b8f84;
 }
 
-/* ===================== RESET ===================== */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
+  font-family:Outfit,sans-serif;
   background:var(--bg);
-  color:var(--txt);
-  font-family:var(--fb);
-  font-size:15px;
-  line-height:1.5;
-  min-height:100vh;
-  overflow-x:hidden;
+  color:var(--text);
 }
 
-/* dotted grid */
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background-image:radial-gradient(circle,rgba(232,104,32,.14) 1px,transparent 1px);
-  background-size:28px 28px;
-  pointer-events:none;z-index:0;
-}
-/* ambient glow */
-body::after{
-  content:'';
-  position:fixed;
-  top:-25%;left:-15%;
-  width:65%;height:70%;
-  background:radial-gradient(ellipse,rgba(232,104,32,.07) 0%,transparent 70%);
-  pointer-events:none;z-index:0;
-}
+.container{max-width:1200px;margin:auto;padding:20px;}
 
-/* ===================== HEADER ===================== */
-header{
-  position:sticky;top:0;z-index:100;
-  background:rgba(11,9,6,.93);
-  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
-  border-bottom:1px solid var(--bdr);
-}
-.hdr{
-  max-width:1440px;margin:0 auto;
-  height:58px;
-  display:flex;align-items:center;gap:1rem;
-  padding:0 1.5rem;
-}
+.logo{font-size:32px;font-weight:700;}
+.logo span{color:var(--accent);}
 
-.logo{
-  font-family:var(--fh);font-size:1.05rem;font-weight:800;
-  color:var(--acc);text-decoration:none;
-  letter-spacing:-.02em;cursor:pointer;flex-shrink:0;white-space:nowrap;
-  user-select:none;
-}
-.logo b{color:var(--txt);font-weight:400}
-
-/* global search */
-.gsearch{flex:1;max-width:500px;margin:0 auto;position:relative}
-.gsearch svg{
-  position:absolute;left:11px;top:50%;transform:translateY(-50%);
-  color:var(--txt-3);pointer-events:none;width:15px;height:15px;
-}
-.gsearch input{
+.search-box input{
   width:100%;
-  background:var(--bg-3);border:1px solid var(--bdr);
-  color:var(--txt);font-family:var(--fb);font-size:13px;
-  padding:7px 48px 7px 34px;
-  border-radius:var(--rs);outline:none;
-  transition:border-color .2s,box-shadow .2s;
-}
-.gsearch input::placeholder{color:var(--txt-3)}
-.gsearch input:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-d)}
-.g-hint{
-  position:absolute;right:9px;top:50%;transform:translateY(-50%);
-  font-family:var(--fm);font-size:9px;color:var(--txt-3);
-  background:var(--bg-2);border:1px solid var(--bdr-2);
-  padding:2px 5px;border-radius:4px;pointer-events:none;
+  padding:15px;
+  border-radius:12px;
+  border:none;
+  background:var(--card);
+  color:white;
+  margin-top:15px;
 }
 
-/* search dropdown */
-.gdrop{
-  position:absolute;top:calc(100% + 6px);left:0;right:0;
-  background:var(--bg-2);border:1px solid var(--bdr);
-  border-radius:var(--r);overflow:hidden;z-index:200;
-  box-shadow:0 24px 64px rgba(0,0,0,.65);
-  display:none;max-height:380px;overflow-y:auto;
-}
-.gdrop.on{display:block}
-.gdr-item{
-  padding:9px 13px;cursor:pointer;
-  display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid var(--bdr-2);
-  transition:background .12s;
-}
-.gdr-item:last-child{border:none}
-.gdr-item:hover{background:var(--acc-d)}
-.gdr-cat{font-size:10px;color:var(--txt-3);background:var(--bg-3);padding:2px 5px;border-radius:3px;flex-shrink:0}
-.gdr-name{flex:1;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gdr-store{font-size:10px;flex-shrink:0}
-.gdr-price{font-family:var(--fm);font-size:12px;color:var(--acc);flex-shrink:0}
-.gdr-empty{padding:16px;text-align:center;font-size:12px;color:var(--txt-3)}
-
-.updated{font-family:var(--fm);font-size:10px;color:var(--txt-3);flex-shrink:0;white-space:nowrap}
-
-/* ===================== MAIN ===================== */
-main{
-  position:relative;z-index:1;
-  max-width:1440px;margin:0 auto;
-  padding:0 1.5rem 3rem;
-}
-
-/* ===================== HOME ===================== */
-#vHome{}
-.hero{padding:2.5rem 0 1.75rem}
-.hero h1{
-  font-family:var(--fh);font-size:clamp(1.75rem,4vw,2.9rem);
-  font-weight:800;letter-spacing:-.03em;line-height:1.1;
-  margin-bottom:.4rem;
-}
-.hero h1 em{color:var(--acc);font-style:normal}
-.hero p{color:var(--txt-2);font-size:.9rem}
-
-/* stats */
-.stats{display:flex;gap:.9rem;margin-bottom:2rem;flex-wrap:wrap}
-.sc{
-  background:var(--bg-2);border:1px solid var(--bdr);
-  border-radius:var(--r);padding:.9rem 1.2rem;
-  position:relative;overflow:hidden;flex:1;min-width:120px;
-}
-.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--acc)}
-.sc-lbl{font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.sc-val{font-family:var(--fm);font-size:1.55rem;font-weight:700}
-
-/* category grid */
-.cgrid{
+.stats{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:.9rem;
-}
-.ccard{
-  background:var(--bg-2);border:1px solid var(--bdr);
-  border-radius:var(--r);padding:1.4rem;cursor:pointer;
-  transition:border-color .2s,transform .2s,box-shadow .2s;
-  position:relative;overflow:hidden;
-  animation:slideUp .4s ease both;
-}
-.ccard::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 20% 20%,var(--acc-d) 0%,transparent 65%);
-  opacity:0;transition:opacity .3s;
-}
-.ccard:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 14px 44px rgba(0,0,0,.5),0 0 0 1px var(--acc-glow)}
-.ccard:hover::after{opacity:1}
-.ccard:active{transform:translateY(0)}
-.cc-em{font-size:1.9rem;margin-bottom:.6rem;display:block}
-.cc-nm{font-family:var(--fh);font-size:.9rem;font-weight:700;margin-bottom:.35rem}
-.cc-mt{font-size:11px;color:var(--txt-3);font-family:var(--fm)}
-
-@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-/* skeleton shimmer */
-.sk{
-  background:linear-gradient(90deg,var(--bg-2) 25%,var(--bg-3) 50%,var(--bg-2) 75%);
-  background-size:200% 100%;animation:shimmer 1.4s infinite;
-}
-.sk-card{border-radius:var(--r);height:116px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* ===================== CATEGORY VIEW ===================== */
-#vCat{display:none}
-
-.cat-hdr{display:flex;align-items:center;gap:1rem;padding:1.4rem 0 .7rem;flex-wrap:wrap}
-.back{
-  background:var(--bg-3);border:1px solid var(--bdr);color:var(--txt-2);
-  padding:6px 13px;border-radius:var(--rs);cursor:pointer;
-  font-family:var(--fb);font-size:12px;
-  display:flex;align-items:center;gap:5px;transition:all .18s;flex-shrink:0;
-}
-.back:hover{border-color:var(--acc);color:var(--acc)}
-.cat-title{font-family:var(--fh);font-size:1.5rem;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:.45rem}
-
-/* store counters */
-.sbadges{display:flex;gap:7px;flex-wrap:wrap;padding:.3rem 0 .9rem}
-.sbadge{font-size:11px;font-family:var(--fm);padding:3px 10px;border-radius:20px;border:1px solid}
-
-/* ===== FILTER PANEL ===== */
-.fp{
-  position:sticky;top:58px;z-index:90;
-  background:rgba(11,9,6,.96);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--bdr);
-  margin:0 -1.5rem;padding:.55rem 1.5rem;
-}
-.frow{
-  display:flex;align-items:center;gap:6px;
-  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
-  padding:3px 0;min-height:34px;
-}
-.frow::-webkit-scrollbar{display:none}
-.frow+.frow{border-top:1px solid var(--bdr-2);margin-top:4px;padding-top:7px}
-.flbl{font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0;white-space:nowrap;width:42px}
-
-/* chips */
-.chip{
-  padding:4px 11px;border-radius:20px;border:1px solid var(--bdr);
-  background:transparent;color:var(--txt-2);font-family:var(--fb);font-size:12px;
-  cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .14s;
-}
-.chip:hover{border-color:var(--acc);color:var(--txt)}
-.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
-
-/* sort chips */
-.schip{
-  padding:4px 11px;border-radius:20px;border:1px solid var(--bdr);
-  background:transparent;color:var(--txt-2);font-size:12px;
-  cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .14s;
-  font-family:var(--fb);
-}
-.schip:hover{border-color:var(--acc)}
-.schip.on{border-color:var(--acc);color:var(--acc)}
-
-/* range inputs */
-.ri{
-  width:64px;background:var(--bg-3);border:1px solid var(--bdr);
-  color:var(--txt);font-family:var(--fm);font-size:11px;
-  padding:4px 7px;border-radius:var(--rs);outline:none;
-  -moz-appearance:textfield;
-}
-.ri::-webkit-outer-spin-button,.ri::-webkit-inner-spin-button{-webkit-appearance:none}
-.ri:focus{border-color:var(--acc)}
-
-/* category search in filter row */
-.csinp{
-  background:var(--bg-3);border:1px solid var(--bdr);color:var(--txt);
-  font-family:var(--fb);font-size:12px;
-  padding:5px 8px 5px 26px;border-radius:var(--rs);outline:none;
-  width:220px;flex-shrink:0;
-}
-.csinp:focus{border-color:var(--acc)}
-.cswrap{position:relative;flex-shrink:0}
-.cswrap svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--txt-3);width:12px;height:12px}
-
-/* pct row */
-#pctRow{display:none}
-#pctRow.vis{display:flex}
-
-/* ===== UNIT CARDS ===== */
-.ucards{display:flex;gap:9px;padding:.9rem 0;overflow-x:auto;scrollbar-width:none}
-.ucards::-webkit-scrollbar{display:none}
-.ucard{
-  background:var(--bg-2);border:1px solid var(--bdr);
-  border-radius:var(--r);padding:.75rem 1rem;
-  flex-shrink:0;min-width:155px;
-}
-.uc-lbl{font-size:9px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.uc-price{font-family:var(--fm);font-size:1.05rem;color:var(--acc);font-weight:700}
-.uc-name{font-size:11px;color:var(--txt-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.uc-store{font-size:10px;margin-top:1px}
-
-/* ===== TABLE ===== */
-.twrap{
-  overflow-x:auto;
-  border:1px solid var(--bdr);border-radius:var(--r);
-  margin-top:.4rem;
-}
-table{width:100%;border-collapse:collapse;font-size:13px}
-
-thead{position:sticky;z-index:70;background:var(--bg-3)}
-th{
-  padding:9px 12px;text-align:left;
-  font-family:var(--fh);font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;color:var(--txt-2);
-  border-bottom:1px solid var(--bdr);white-space:nowrap;
-}
-th.sth{text-align:center}
-
-tr.pr{border-bottom:1px solid var(--bdr-2);transition:background .13s}
-tr.pr:last-child{border:none}
-tr.pr:hover{background:rgba(255,255,255,.018)}
-tr.pr.hl{background:rgba(232,104,32,.09)}
-
-td{padding:9px 12px;vertical-align:middle}
-
-/* product name cell */
-.pnc{min-width:155px;max-width:230px}
-.pnc .nm{font-size:13px;line-height:1.3}
-.ptags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
-.ptag{
-  font-family:var(--fm);font-size:9px;
-  padding:1px 5px;border-radius:3px;
-  background:var(--bg-3);color:var(--txt-3);border:1px solid var(--bdr-2);
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-top:20px;
 }
 
-/* store price cell */
-.prc{text-align:center;min-width:88px}
-.pm{font-family:var(--fm);font-size:13px;display:flex;align-items:center;justify-content:center;gap:3px}
-.pw{font-family:var(--fm);font-size:10px;color:var(--txt-3);margin-top:2px}
-.wbadge{background:rgba(245,158,11,.13);color:#f59e0b;border:1px solid rgba(245,158,11,.3);padding:0 4px;border-radius:2px;font-size:9px;margin-right:2px}
-.nopr{color:var(--txt-3);font-size:11px}
-
-/* indicators */
-.ich{color:#fdd835;font-size:10px}
-.iex{color:var(--txt-3);font-size:9px}
-
-/* bar cell */
-.brc{min-width:150px;padding:9px 14px}
-.pbar{display:flex;gap:2px;height:4px;border-radius:2px;margin-bottom:4px}
-.pbseg{border-radius:2px;flex:1;opacity:.75;transition:opacity .2s}
-tr.pr:hover .pbseg{opacity:1}
-.sinfo{font-family:var(--fm);font-size:10px;color:var(--txt-2)}
-.sinfo .sv{color:#66bb6a}
-
-mark{background:rgba(232,104,32,.32);color:inherit;border-radius:2px;padding:0 1px}
-
-/* store colour classes */
-.sc-bravo{color:var(--bravo)}.sc-oba{color:var(--oba)}.sc-araz{color:var(--araz)}.sc-neptun{color:var(--neptun)}.sc-rahat{color:var(--rahat)}
-.sb-bravo{color:var(--bravo);border-color:var(--bravo);background:rgba(229,57,53,.1)}
-.sb-oba{color:var(--oba);border-color:var(--oba);background:rgba(30,136,229,.1)}
-.sb-araz{color:var(--araz);border-color:var(--araz);background:rgba(142,36,170,.1)}
-.sb-neptun{color:var(--neptun);border-color:var(--neptun);background:rgba(67,160,71,.1)}
-.sb-rahat{color:var(--rahat);border-color:var(--rahat);background:rgba(232,104,32,.1)}
-
-/* empty */
-.empty{text-align:center;padding:3.5rem 2rem;color:var(--txt-3)}
-.empty .ei{font-size:2.5rem;margin-bottom:.75rem}
-
-/* ===================== RESPONSIVE ===================== */
-@media(max-width:1200px){.brc{display:none}}
-@media(max-width:860px){
-  .updated{display:none}
-  .brc{display:none}
-  .csinp{width:160px}
+.stat{
+  background:var(--card);
+  padding:15px;
+  border-radius:12px;
 }
-@media(max-width:600px){
-  main{padding:0 1rem 2rem}
-  .fp{margin:0 -1rem;padding:.5rem 1rem}
-  .cgrid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
-  .hero{padding:1.5rem 0 1.2rem}
-  .hdr{padding:0 1rem}
+
+.categories{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:15px;
+  margin-top:25px;
 }
-@media(max-width:380px){
-  .logo b{display:none}
-  .cgrid{grid-template-columns:1fr 1fr}
-  .csinp{width:130px}
+
+.category{
+  background:linear-gradient(180deg,var(--card),var(--card2));
+  padding:18px;
+  border-radius:15px;
+  cursor:pointer;
 }
-.hidden{display:none!important}
+
+.hidden{display:none;}
+
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin:15px 0;
+}
+
+.btn{
+  padding:8px 12px;
+  background:var(--card);
+  border:none;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+.btn.active{background:var(--accent);}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.cheapest{color:#22c55e;font-weight:700;}
+
+.store-badge{
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.bravo{background:#ef4444;}
+.oba{background:#0ea5e9;}
+.araz{background:#a855f7;}
+.neptun{background:#10b981;}
+.rahat{background:#f59e0b;}
 </style>
 </head>
+
 <body>
 
-<!-- ======= HEADER ======= -->
-<header>
-  <div class="hdr">
-    <span class="logo" onclick="goHome()">Qiymət<b>Müqayisə</b></span>
-    <div class="gsearch">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="gsi" type="text" placeholder="Bütün məhsullarda axtar…" autocomplete="off">
-      <span class="g-hint">/</span>
-      <div class="gdrop" id="gdrop"></div>
-    </div>
-    <div class="updated" id="updBadge"></div>
-  </div>
-</header>
+<div class="container">
 
-<main>
+<div class="logo">Qiymət<span>Müqayisə</span></div>
 
-<!-- ======= HOME ======= -->
-<div id="vHome">
-  <div class="hero">
-    <h1>Bakı supermarketlərini <em>müqayisə et</em></h1>
-    <p>Bravo · OBA · Araz · Neptun · Rahat — real vaxtda qiymət</p>
-  </div>
-  <div class="stats" id="statsPanel">
-    <div class="sc"><div class="sc-lbl">Məhsul</div><div class="sc-val sk" style="height:1.55rem;width:54px;border-radius:4px"></div></div>
-    <div class="sc"><div class="sc-lbl">Mağaza</div><div class="sc-val sk" style="height:1.55rem;width:36px;border-radius:4px"></div></div>
-    <div class="sc"><div class="sc-lbl">Kateqoriya</div><div class="sc-val sk" style="height:1.55rem;width:36px;border-radius:4px"></div></div>
-  </div>
-  <div class="cgrid" id="cgrid">
-    <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
-    <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
-    <div class="sk sk-card"></div><div class="sk sk-card"></div>
-  </div>
+<div class="search-box">
+<input id="search" placeholder="Axtar..." />
 </div>
 
-<!-- ======= CATEGORY VIEW ======= -->
-<div id="vCat">
-  <div class="cat-hdr">
-    <button class="back" onclick="goHome()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Geri
-    </button>
-    <h2 class="cat-title" id="catTitle"></h2>
-  </div>
-  <div class="sbadges" id="sbadges"></div>
-
-  <!-- FILTER PANEL -->
-  <div class="fp" id="filterPanel">
-    <!-- Row 1: Type chips + search -->
-    <div class="frow">
-      <span class="flbl">Növ</span>
-      <div id="typeChips" style="display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none;align-items:center;"></div>
-      <div class="cswrap" style="margin-left:auto;flex-shrink:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="csi" class="csinp" placeholder="Cədvəldə axtar…">
-      </div>
-    </div>
-    <!-- Row 2: Weight mode + range + sort -->
-    <div class="frow">
-      <span class="flbl">Çəki</span>
-      <button class="chip on" data-wm="all"     onclick="setWM(this)">Hamısı</button>
-      <button class="chip"    data-wm="weight"  onclick="setWM(this)">⚖ Çəki</button>
-      <button class="chip"    data-wm="volume"  onclick="setWM(this)">💧 Həcm</button>
-      <button class="chip"    data-wm="other"   onclick="setWM(this)">📦 Digər</button>
-      <input type="number" id="rMin" class="ri" placeholder="min" oninput="applyF()">
-      <span style="color:var(--txt-3);font-size:10px;flex-shrink:0">—</span>
-      <input type="number" id="rMax" class="ri" placeholder="max" oninput="applyF()">
-      <span id="rUnit" style="font-size:10px;color:var(--txt-3);flex-shrink:0;min-width:16px"></span>
-      <div style="margin-left:auto;display:flex;gap:5px;flex-shrink:0">
-        <button class="schip on" data-s="default"   onclick="setSort(this)">Standart</button>
-        <button class="schip"    data-s="az"         onclick="setSort(this)">A→Z</button>
-        <button class="schip"    data-s="price-asc"  onclick="setSort(this)">Qiymət↑</button>
-        <button class="schip"    data-s="save-desc"  onclick="setSort(this)">Qənaət↓</button>
-      </div>
-    </div>
-    <!-- Row 3: Percentage (conditional) -->
-    <div class="frow" id="pctRow">
-      <span class="flbl">Faiz</span>
-      <div id="pctChips" style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;"></div>
-    </div>
-  </div>
-
-  <!-- UNIT PRICE CARDS -->
-  <div class="ucards" id="ucards"></div>
-
-  <!-- TABLE -->
-  <div class="twrap">
-    <table>
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
+<div class="stats">
+  <div class="stat"><h4>Məhsul</h4><strong id="total">0</strong></div>
+  <div class="stat"><h4>Mağaza</h4><strong>5</strong></div>
+  <div class="stat"><h4>Kateqoriya</h4><strong>5</strong></div>
+  <div class="stat"><h4>Qənaət</h4><strong id="saving">0 ₼</strong></div>
 </div>
 
-</main>
+<!-- HOME -->
+<div id="home">
+
+<div class="categories">
+
+<div class="category" data-cat="sud">🥛 Süd</div>
+<div class="category" data-cat="yumurta">🥚 Yumurta</div>
+<div class="category" data-cat="terevez">🥦 Tərəvəz</div>
+<div class="category" data-cat="meyve">🍎 Meyvə</div>
+<div class="category" data-cat="et">🥩 Ət</div>
+
+</div>
+
+</div>
+
+<!-- CATEGORY -->
+<div id="catView" class="hidden">
+
+<button class="btn" id="back">← Geri</button>
+
+<h2 id="title"></h2>
+
+<div class="toolbar">
+
+<button class="btn active" data-sort="saving">Qənaət</button>
+<button class="btn" data-sort="price">Qiymət</button>
+<button class="btn" data-sort="az">A-Z</button>
+<button class="btn" id="stockBtn">Stock</button>
+
+</div>
+
+<div style="overflow:auto;">
+<table>
+<thead>
+<tr>
+<th>Məhsul</th>
+<th>Ucuz mağaza</th>
+<th>Qiymət</th>
+<th>Qənaət</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+</div>
+
+</div>
 
 <script>
-/* ==================== CONFIG ==================== */
-const STORES = ['Bravo','OBA','Araz','Neptun','Rahat'];
-const SC = {Bravo:'bravo',OBA:'oba',Araz:'araz',Neptun:'neptun',Rahat:'rahat'};
-const SCOL = {Bravo:'#e53935',OBA:'#1e88e5',Araz:'#8e24aa',Neptun:'#43a047',Rahat:'#e86820'};
-const JAC_TH = 0.5;
 
-const EMOJI = [
-  ['sud','🥛'],['süd','🥛'],
-  ['yumurta','🥚'],
-  ['tereveez','🥦'],['tərəvəz','🥦'],['terevez','🥦'],
-  ['meyvə','🍎'],['meyve','🍎'],
-  ['etbalig','🥩'],['ət','🥩'],['balig','🐟'],
-  ['taxil','🌾'],['paxlali','🌿'],
-  ['corekpasta','🍞'],['corek','🍞'],['çörək','🍞'],
-  ['ickiler','🥤'],['içkilər','🥤'],['icki','🥤'],
-  ['sirniyyat','🍬'],['şirniyyat','🍬'],
-  ['yag','🧈'],['sous','🧴'],
-  ['edviyyat','🌶️'],['ədviyyat','🌶️'],
-];
+// ================= DATA =================
+const prices = {
+  sud: [
+    {name:"Milla Süd 1L",stores:{bravo:{price:1.89,stock:true},oba:{price:1.75,stock:true},araz:{price:1.80,stock:true},neptun:{price:1.92,stock:true},rahat:{price:1.85,stock:false}}},
+    {name:"Süd 0.5L",stores:{bravo:{price:1.10,stock:true},oba:{price:1.05,stock:true},araz:{price:1.08,stock:true},neptun:{price:1.15,stock:true},rahat:{price:1.12,stock:true}}}
+  ],
+  yumurta: [
+    {name:"Yumurta 10 ədəd",stores:{bravo:{price:2.8,stock:true},oba:{price:2.6,stock:true},araz:{price:2.75,stock:true},neptun:{price:2.9,stock:true},rahat:{price:2.85,stock:true}}}
+  ],
+  terevez: [
+    {name:"Pomidor 1kg",stores:{bravo:{price:2.4,stock:true},oba:{price:2.1,stock:true},araz:{price:2.3,stock:true},neptun:{price:2.5,stock:true},rahat:{price:2.35,stock:true}}}
+  ],
+  meyve: [
+    {name:"Alma 1kg",stores:{bravo:{price:2.1,stock:true},oba:{price:1.95,stock:true},araz:{price:2.0,stock:true},neptun:{price:2.2,stock:true},rahat:{price:2.05,stock:true}}}
+  ],
+  et: [
+    {name:"Toyuq filesi",stores:{bravo:{price:7.9,stock:true},oba:{price:7.5,stock:true},araz:{price:7.8,stock:true},neptun:{price:8.1,stock:true},rahat:{price:7.7,stock:true}}}
+  ]
+};
 
-/* ==================== STATE ==================== */
-let G = null;          // data
-let curCat = null;
-let matchedRows = [];
-let F = {type:null,wm:'all',wMin:null,wMax:null,pct:null,q:''};
-let sortM = 'default';
+// ================= STATE =================
+let currentCat = null;
+let sortType = "saving";
+let onlyStock = false;
 
-/* ==================== UTILS ==================== */
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-function hl(text, q) {
-  if (!q || !text) return esc(text||'');
-  const safe = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  return esc(text).replace(new RegExp(safe,'gi'), m => `<mark>${m}</mark>`);
-}
-
-function fp(p) {
-  return typeof p === 'number' ? p.toFixed(2)+' ₼' : '—';
-}
-
-function tok(s) {
-  return (s||'').toLowerCase()
-    .replace(/[^\wəüöğşçıi\s]/gi,' ')
-    .split(/\s+/).filter(t => t.length > 1);
-}
-
-function jaccard(a, b) {
-  const sa = new Set(tok(a)), sb = new Set(tok(b));
-  const inter = [...sa].filter(x => sb.has(x)).length;
-  const union = new Set([...sa,...sb]).size;
-  return union ? inter/union : 0;
-}
-
-function extractMeta(name) {
-  const m = {weight:null,unit:null,mode:'other',pct:null};
-  const wm = name.match(/(\d+(?:[.,]\d+)?)\s*(kq|kg|g|qr|ml|l|lt|litr)\b/i);
-  if (wm) {
-    const v = parseFloat(wm[1].replace(',','.')), u = wm[2].toLowerCase();
-    if (u==='kg'||u==='kq') { m.weight=v*1000; m.unit='g'; m.mode='weight'; }
-    else if (u==='g'||u==='qr') { m.weight=v; m.unit='g'; m.mode='weight'; }
-    else if (u==='l'||u==='lt'||u==='litr') { m.weight=v*1000; m.unit='ml'; m.mode='volume'; }
-    else if (u==='ml') { m.weight=v; m.unit='ml'; m.mode='volume'; }
-  } else {
-    const lm = name.match(/(\d+(?:[.,]\d+)?)\s*[Ll]\b/);
-    if (lm) { m.weight=parseFloat(lm[1])*1000; m.unit='ml'; m.mode='volume'; }
-  }
-  const pm = name.match(/(\d+(?:[.,]\d+)?)\s*%/);
-  if (pm) m.pct = parseFloat(pm[1].replace(',','.'));
-  return m;
-}
-
-function catEmoji(id) {
-  const key = id.toLowerCase().replace(/[^a-zəüöğşçıi]/g,'');
-  for (const [k,v] of EMOJI) if (key.includes(k)||k.includes(key)) return v;
-  return '🛒';
-}
-
-function weightLabel(meta) {
-  if (!meta.weight) return null;
-  if (meta.unit === 'ml') {
-    return meta.weight >= 1000
-      ? (meta.weight/1000).toFixed(meta.weight%1000===0?0:2).replace(/\.?0+$/,'')+'L'
-      : meta.weight+'ml';
-  }
-  return meta.weight >= 1000
-    ? (meta.weight/1000).toFixed(meta.weight%1000===0?0:2).replace(/\.?0+$/,'')+'kg'
-    : meta.weight+'g';
-}
-
-/* ==================== MATCHING ==================== */
-function matchProducts(catData) {
-  const groups = [];
-  for (const store of STORES) {
-    const prods = catData.stores?.[store] || [];
-    for (const prod of prods) {
-      let found = false;
-      for (const g of groups) {
-        if (jaccard(g.name, prod.name) >= JAC_TH) {
-          if (!g.stores[store]) g.stores[store] = prod;
-          else if (prod.price < g.stores[store].price) g.stores[store] = prod; // keep cheaper
-          found = true; break;
-        }
-      }
-      if (!found) {
-        const g = {name:prod.name, stores:{}, meta:extractMeta(prod.name), id:Math.random().toString(36).slice(2)};
-        g.stores[store] = prod;
-        groups.push(g);
-      }
+// ================= HELPERS =================
+function cheapest(store){
+  let minStore="",min=999999;
+  for(let k in store){
+    if(store[k].stock && store[k].price<min){
+      min=store[k].price;
+      minStore=k;
     }
   }
-  return groups;
+  return {minStore,min};
 }
 
-/* ==================== FILTERING ==================== */
-function filteredRows() {
-  const q = F.q.toLowerCase().trim();
-  return matchedRows.filter(r => {
-    if (q && !r.name.toLowerCase().includes(q)) return false;
-    if (F.type === '__all__' || !F.type) {/* pass */}
-    else if (F.type === '__other__') {
-      if (F._topKeys && F._topKeys.has(tok(r.name)[0]||'')) return false;
-    } else {
-      if (!r.name.toLowerCase().includes(F.type)) return false;
-    }
-    if (F.wm !== 'all' && r.meta.mode !== F.wm) return false;
-    if (F.wMin != null && r.meta.weight != null && r.meta.weight < F.wMin) return false;
-    if (F.wMax != null && r.meta.weight != null && r.meta.weight > F.wMax) return false;
-    if (F.pct != null && r.meta.pct !== F.pct) return false;
-    return true;
-  });
+function saving(item){
+  const arr = Object.values(item.stores).map(s=>s.price);
+  return Math.max(...arr)-Math.min(...arr);
 }
 
-function sortedRows(rows) {
-  if (sortM === 'az') return [...rows].sort((a,b) => a.name.localeCompare(b.name,'az'));
-  if (sortM === 'price-asc') return [...rows].sort((a,b) => {
-    const mA = Math.min(...Object.values(a.stores).map(s=>s.price).filter(isFinite));
-    const mB = Math.min(...Object.values(b.stores).map(s=>s.price).filter(isFinite));
-    return mA - mB;
-  });
-  if (sortM === 'save-desc') return [...rows].sort((a,b) => {
-    const pA = Object.values(a.stores).map(s=>s.price).filter(isFinite);
-    const pB = Object.values(b.stores).map(s=>s.price).filter(isFinite);
-    return (Math.max(...pB)-Math.min(...pB)) - (Math.max(...pA)-Math.min(...pA));
-  });
-  return rows;
-}
+function sortData(data){
+  let d=[...data];
 
-/* ==================== HOME ==================== */
-function renderHome() {
-  document.getElementById('vCat').style.display = 'none';
-  document.getElementById('vHome').style.display = 'block';
-  document.title = 'QiymətMüqayisə';
-
-  if (G.last_updated) document.getElementById('updBadge').textContent = 'Yeniləndi: '+G.last_updated;
-
-  // stats
-  const cats = Object.values(G.categories||{});
-  let total = 0;
-  cats.forEach(c => Object.values(c.stores||{}).forEach(ps => total += ps.length));
-  document.getElementById('statsPanel').innerHTML = `
-    <div class="sc"><div class="sc-lbl">Məhsul</div><div class="sc-val">${total}</div></div>
-    <div class="sc"><div class="sc-lbl">Mağaza</div><div class="sc-val">${(G.stores||STORES).length}</div></div>
-    <div class="sc"><div class="sc-lbl">Kateqoriya</div><div class="sc-val">${cats.length}</div></div>
-  `;
-
-  // cat grid
-  const grid = document.getElementById('cgrid');
-  grid.innerHTML = '';
-  Object.entries(G.categories||{}).forEach(([id,cat],i) => {
-    let cnt = 0;
-    Object.values(cat.stores||{}).forEach(ps => cnt += ps.length);
-    const d = document.createElement('div');
-    d.className = 'ccard';
-    d.style.animationDelay = (i*.06)+'s';
-    d.innerHTML = `<span class="cc-em">${catEmoji(id)}</span><div class="cc-nm">${esc(cat.name||id)}</div><div class="cc-mt">${cnt} məhsul</div>`;
-    d.onclick = () => openCat(id);
-    grid.appendChild(d);
-  });
-}
-
-/* ==================== CATEGORY ==================== */
-function openCat(catId) {
-  curCat = catId;
-  F = {type:null,wm:'all',wMin:null,wMax:null,pct:null,q:''};
-  sortM = 'default';
-
-  document.getElementById('vHome').style.display = 'none';
-  document.getElementById('vCat').style.display = 'block';
-
-  const cat = G.categories[catId];
-  document.getElementById('catTitle').innerHTML = catEmoji(catId)+' '+esc(cat.name||catId);
-  document.title = (cat.name||catId)+' — QiymətMüqayisə';
-
-  matchedRows = matchProducts(cat);
-
-  // reset UI controls
-  document.getElementById('csi').value = '';
-  document.getElementById('rMin').value = '';
-  document.getElementById('rMax').value = '';
-  document.getElementById('rUnit').textContent = '';
-  document.querySelectorAll('.chip[data-wm]').forEach(c => c.classList.toggle('on', c.dataset.wm==='all'));
-  document.querySelectorAll('.schip[data-s]').forEach(c => c.classList.toggle('on', c.dataset.s==='default'));
-
-  buildTypeChips();
-  buildPctChips();
-  renderStoreCounters();
-  renderUnitCards();
-  renderTable();
-  setStickyThead();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ---- type chips ---- */
-function buildTypeChips() {
-  const counts = {};
-  matchedRows.forEach(r => {
-    const t = tok(r.name)[0]||'digər';
-    counts[t] = (counts[t]||0)+1;
-  });
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  const top4 = sorted.slice(0,4);
-  const topKeys = new Set(top4.map(([k])=>k));
-  const hasOther = sorted.length > 4;
-
-  const c = document.getElementById('typeChips');
-  c.innerHTML = '';
-  const mk = (label, fn) => {
-    const b = document.createElement('button');
-    b.className = 'chip'; b.textContent = label;
-    b.onclick = () => { c.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); fn(); applyF(); };
-    return b;
-  };
-  const allBtn = mk('Hamısı', () => F.type = null);
-  allBtn.classList.add('on');
-  c.appendChild(allBtn);
-  top4.forEach(([k,n]) => c.appendChild(mk(`${k} (${n})`, () => F.type = k)));
-  if (hasOther) {
-    const ob = mk('Digər', () => { F.type = '__other__'; F._topKeys = topKeys; });
-    c.appendChild(ob);
-  }
-}
-
-/* ---- pct chips ---- */
-function buildPctChips() {
-  const pcts = new Set();
-  matchedRows.forEach(r => { if (r.meta.pct != null) pcts.add(r.meta.pct); });
-  const pctRow = document.getElementById('pctRow');
-  if (pcts.size <= 1) { pctRow.classList.remove('vis'); return; }
-  pctRow.classList.add('vis');
-  const c = document.getElementById('pctChips');
-  c.innerHTML = '';
-  const mk = (label, val) => {
-    const b = document.createElement('button');
-    b.className = 'chip'; b.textContent = label;
-    b.onclick = () => { c.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); F.pct = val; applyF(); };
-    return b;
-  };
-  const allB = mk('Hamısı', null); allB.classList.add('on'); c.appendChild(allB);
-  [...pcts].sort((a,b)=>a-b).forEach(p => c.appendChild(mk(p+'%', p)));
-}
-
-/* ---- weight mode ---- */
-function setWM(btn) {
-  document.querySelectorAll('.chip[data-wm]').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
-  F.wm = btn.dataset.wm;
-  const u = document.getElementById('rUnit');
-  u.textContent = F.wm==='weight' ? 'g' : F.wm==='volume' ? 'ml' : '';
-  applyF();
-}
-
-/* ---- sort ---- */
-function setSort(btn) {
-  document.querySelectorAll('.schip[data-s]').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
-  sortM = btn.dataset.s;
-  applyF();
-}
-
-/* ---- apply filters ---- */
-function applyF() {
-  const minV = document.getElementById('rMin').value;
-  const maxV = document.getElementById('rMax').value;
-  F.wMin = minV !== '' ? parseFloat(minV) : null;
-  F.wMax = maxV !== '' ? parseFloat(maxV) : null;
-  F.q = document.getElementById('csi').value;
-  renderTable();
-}
-
-/* ==================== STORE COUNTERS ==================== */
-function renderStoreCounters() {
-  const cat = G.categories[curCat];
-  const cheapCnt = {}; STORES.forEach(s => cheapCnt[s]=0);
-  matchedRows.forEach(r => {
-    const ps = STORES.map(s => ({s, p: r.stores[s]?.price})).filter(x => isFinite(x.p));
-    if (ps.length < 2) return;
-    const min = Math.min(...ps.map(x=>x.p));
-    ps.filter(x=>x.p===min).forEach(x=>cheapCnt[x.s]++);
-  });
-  const cont = document.getElementById('sbadges');
-  cont.innerHTML = '';
-  STORES.forEach(store => {
-    const cnt = cat.stores?.[store]?.length || 0;
-    if (!cnt) return;
-    const b = document.createElement('span');
-    b.className = `sbadge sb-${SC[store]}`;
-    b.textContent = `${store}: ${cnt} · ★${cheapCnt[store]}`;
-    cont.appendChild(b);
-  });
-}
-
-/* ==================== UNIT CARDS ==================== */
-function renderUnitCards() {
-  const cont = document.getElementById('ucards');
-  cont.innerHTML = '';
-  const units = [
-    {label:'100q başına', mode:'weight', base:100},
-    {label:'100ml başına', mode:'volume', base:100},
-    {label:'1kq başına',  mode:'weight', base:1000},
-    {label:'1L başına',   mode:'volume', base:1000},
-  ];
-  units.forEach(u => {
-    let best = null;
-    matchedRows.forEach(r => {
-      if (r.meta.mode !== u.mode || !r.meta.weight) return;
-      STORES.forEach(store => {
-        const prod = r.stores[store];
-        if (!prod || !isFinite(prod.price)) return;
-        const up = (prod.price / r.meta.weight) * u.base;
-        if (!best || up < best.up) best = {up, name:r.name, store, price:prod.price};
-      });
-    });
-    if (!best) return;
-    const d = document.createElement('div');
-    d.className = 'ucard';
-    d.innerHTML = `<div class="uc-lbl">${u.label}</div>
-      <div class="uc-price">${best.up.toFixed(2)} ₼</div>
-      <div class="uc-name">${esc(best.name)}</div>
-      <div class="uc-store sc-${SC[best.store]}">${best.store}</div>`;
-    cont.appendChild(d);
-  });
-}
-
-/* ==================== TABLE ==================== */
-function renderTable() {
-  const thead = document.getElementById('thead');
-  const tbody = document.getElementById('tbody');
-  const q = F.q.trim();
-
-  thead.innerHTML = `<tr>
-    <th>Məhsul</th>
-    ${STORES.map(s=>`<th class="sth" style="color:${SCOL[s]}">${s}</th>`).join('')}
-    <th class="brc">Müqayisə</th>
-  </tr>`;
-
-  const rows = sortedRows(filteredRows());
-
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="${STORES.length+2}"><div class="empty"><div class="ei">🔍</div><p>Nəticə tapılmadı</p></div></td></tr>`;
-    return;
+  if(sortType==="saving"){
+    d.sort((a,b)=>saving(b)-saving(a));
   }
 
-  const frag = document.createDocumentFragment();
+  if(sortType==="price"){
+    d.sort((a,b)=>cheapest(a.stores).min-cheapest(b.stores).min);
+  }
 
-  rows.forEach(row => {
-    const prices = STORES.map(s=>row.stores[s]?.price).filter(isFinite);
-    const minP = prices.length ? Math.min(...prices) : null;
-    const maxP = prices.length ? Math.max(...prices) : null;
-    const rng = maxP - minP;
+  if(sortType==="az"){
+    d.sort((a,b)=>a.name.localeCompare(b.name));
+  }
 
-    const tags = [];
-    const wl = weightLabel(row.meta);
-    if (wl) tags.push(`<span class="ptag">${wl}</span>`);
-    if (row.meta.pct) tags.push(`<span class="ptag">${row.meta.pct}%</span>`);
+  return d;
+}
 
-    const storeCells = STORES.map(store => {
-      const prod = row.stores[store];
-      if (!prod) return `<td class="prc"><span class="nopr">—</span></td>`;
-      const isCheap = isFinite(prod.price) && prod.price === minP && prices.length > 1;
-      const isExp   = isFinite(prod.price) && prod.price === maxP && prices.length > 1;
-      const ind = isCheap ? `<span class="ich" title="Ən ucuz">★</span>` : isExp ? `<span class="iex" title="Ən baha">●</span>` : '';
-      const wolt = prod.wolt_price ? `<div class="pw"><span class="wbadge">w</span>${fp(prod.wolt_price)}</div>` : '';
-      return `<td class="prc"><div class="pm">${ind}<span class="sc-${SC[store]}">${fp(prod.price)}</span></div>${wolt}</td>`;
-    }).join('');
+// ================= RENDER =================
+function render(cat){
 
-    // price bar segments (one per store that has price)
-    const barSegs = STORES.filter(s=>isFinite(row.stores[s]?.price)).map(s => {
-      const pct = rng > 0 ? (row.stores[s].price - minP) / rng : 0;
-      return `<div class="pbseg" style="background:${SCOL[s]};opacity:${(.45+pct*.55).toFixed(2)}" title="${s}: ${fp(row.stores[s].price)}"></div>`;
-    }).join('');
+  let data = prices[cat];
 
-    let saveHtml = '';
-    if (rng > 0.005) {
-      const pct = ((rng/maxP)*100).toFixed(0);
-      saveHtml = `<div class="sinfo">Qənaət: <span class="sv">${rng.toFixed(2)} ₼</span> (${pct}%)</div>`;
-    }
+  if(onlyStock){
+    data = data.filter(i =>
+      Object.values(i.stores).some(s=>s.stock)
+    );
+  }
 
-    const tr = document.createElement('tr');
-    tr.className = 'pr';
-    tr.dataset.id = row.id;
-    tr.innerHTML = `
-      <td class="pnc"><div class="nm">${hl(row.name,q)}</div>${tags.length?`<div class="ptags">${tags.join('')}</div>`:''}</td>
-      ${storeCells}
-      <td class="brc"><div class="pbar">${barSegs}</div>${saveHtml}</td>
+  data = sortData(data);
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML="";
+
+  let best=0;
+
+  data.forEach(i=>{
+    const c = cheapest(i.stores);
+    const s = saving(i);
+    best=Math.max(best,s);
+
+    tbody.innerHTML+=`
+      <tr>
+        <td>${i.name}</td>
+        <td><span class="store-badge ${c.minStore}">${c.minStore.toUpperCase()}</span></td>
+        <td>${c.min.toFixed(2)} ₼</td>
+        <td class="cheapest">-${s.toFixed(2)} ₼</td>
+      </tr>
     `;
-    frag.appendChild(tr);
   });
-  tbody.innerHTML = '';
-  tbody.appendChild(frag);
+
+  document.getElementById("saving").innerText=best.toFixed(2)+" ₼";
+  document.getElementById("total").innerText=data.length;
 }
 
-/* ---- sticky thead offset ---- */
-function setStickyThead() {
-  const fp = document.getElementById('filterPanel');
-  const update = () => {
-    const h = fp.getBoundingClientRect().height;
-    document.getElementById('thead').style.top = (58 + h) + 'px';
+// ================= EVENTS =================
+
+// category open
+document.querySelectorAll(".category").forEach(c=>{
+  c.onclick=()=>{
+    currentCat=c.dataset.cat;
+    document.getElementById("home").classList.add("hidden");
+    document.getElementById("catView").classList.remove("hidden");
+    document.getElementById("title").innerText=c.innerText;
+    render(currentCat);
   };
-  update();
-  const ro = new ResizeObserver(update);
-  ro.observe(fp);
-}
+});
 
-/* ==================== GLOBAL SEARCH ==================== */
-function setupSearch() {
-  const inp = document.getElementById('gsi');
-  const drop = document.getElementById('gdrop');
-  let t;
+// back
+document.getElementById("back").onclick=()=>{
+  document.getElementById("home").classList.remove("hidden");
+  document.getElementById("catView").classList.add("hidden");
+};
 
-  inp.addEventListener('input', () => { clearTimeout(t); t = setTimeout(()=>doGSearch(inp.value), 200); });
-  inp.addEventListener('keydown', e => {
-    if (e.key==='Escape') { inp.value=''; drop.classList.remove('on'); inp.blur(); }
-    if (e.key==='Enter') {
-      const first = drop.querySelector('.gdr-item');
-      if (first) first.click();
-    }
-  });
-  document.addEventListener('click', e => { if (!e.target.closest('.gsearch')) drop.classList.remove('on'); });
-
-  // category search
-  document.getElementById('csi').addEventListener('input', applyF);
-}
-
-function doGSearch(q) {
-  const drop = document.getElementById('gdrop');
-  if (!q || q.length < 2 || !G) { drop.classList.remove('on'); return; }
-  const ql = q.toLowerCase();
-  const hits = {};
-  Object.entries(G.categories||{}).forEach(([catId,cat]) => {
-    Object.entries(cat.stores||{}).forEach(([store,prods]) => {
-      prods.forEach(prod => {
-        if (!prod.name.toLowerCase().includes(ql)) return;
-        const key = catId+'|||'+prod.name.toLowerCase();
-        if (!hits[key] || prod.price < hits[key].price) hits[key] = {catId,catName:cat.name,store,prod,price:prod.price};
-      });
-    });
-  });
-  const items = Object.values(hits).sort((a,b)=>a.price-b.price).slice(0,14);
-  if (!items.length) {
-    drop.innerHTML = `<div class="gdr-empty">Nəticə tapılmadı</div>`;
-    drop.classList.add('on'); return;
-  }
-  drop.innerHTML = items.map(r => `
-    <div class="gdr-item" onclick="gotoResult('${esc(r.catId)}','${esc(r.prod.name)}')">
-      <span class="gdr-cat">${esc(r.catName)}</span>
-      <span class="gdr-name">${hl(r.prod.name,q)}</span>
-      <span class="gdr-store" style="color:${SCOL[r.store]}">${r.store}</span>
-      <span class="gdr-price">${fp(r.prod.price)}</span>
-    </div>
-  `).join('');
-  drop.classList.add('on');
-}
-
-function gotoResult(catId, productName) {
-  document.getElementById('gdrop').classList.remove('on');
-  document.getElementById('gsi').value = '';
-  openCat(catId);
-  setTimeout(() => {
-    const pnl = productName.toLowerCase().slice(0,30);
-    document.querySelectorAll('#tbody tr.pr').forEach(tr => {
-      if (tr.querySelector('.nm')?.textContent.toLowerCase().includes(pnl)) {
-        tr.classList.add('hl');
-        tr.scrollIntoView({behavior:'smooth',block:'center'});
-      }
-    });
-  }, 250);
-}
-
-/* ==================== KEYBOARD ==================== */
-function setupKeys() {
-  document.addEventListener('keydown', e => {
-    const tag = document.activeElement.tagName;
-    if (e.key==='/' && tag!=='INPUT' && tag!=='TEXTAREA') {
-      e.preventDefault();
-      document.getElementById('gsi').focus();
-    }
-    if (e.key==='Escape') {
-      const drop = document.getElementById('gdrop');
-      if (drop.classList.contains('on')) { drop.classList.remove('on'); return; }
-      if (document.getElementById('gsi').value) { document.getElementById('gsi').value=''; return; }
-      if (curCat) goHome();
-    }
-  });
-}
-
-function goHome() {
-  curCat = null;
-  document.getElementById('vCat').style.display = 'none';
-  document.getElementById('vHome').style.display = 'block';
-  document.title = 'QiymətMüqayisə';
-}
-
-/* ==================== INIT ==================== */
-async function init() {
-  try {
-    const res = await fetch('data/prices.json');
-    if (!res.ok) throw 0;
-    G = await res.json();
-  } catch {
-    G = demo();
-  }
-  renderHome();
-  setupSearch();
-  setupKeys();
-}
-
-/* ==================== DEMO DATA ==================== */
-function demo() {
-  return {
-    stores:['Bravo','OBA','Araz','Neptun','Rahat'],
-    last_updated:'2025-06-05',
-    categories:{
-      sud:{name:'Süd məhsulları',stores:{
-        Bravo:[{name:'Gəncə Süd 1L',price:2.49,wolt_price:2.99},{name:'Gəncə Süd 500ml',price:1.39,wolt_price:1.69},{name:'Qatıq 500g 3.2%',price:1.89,wolt_price:2.29},{name:'Kəsmik 200g',price:1.29,wolt_price:null}],
-        OBA:[{name:'Gəncə Süd 1 Litr',price:2.39,wolt_price:null},{name:'Qatıq 500q 3.2%',price:1.79,wolt_price:2.19},{name:'Kəsmik 200g',price:1.19,wolt_price:null},{name:'Qaymaq 200ml',price:2.49,wolt_price:null}],
-        Araz:[{name:'Gəncə Süd 1L',price:2.59,wolt_price:3.09},{name:'Qatıq 500q 2.5%',price:1.69,wolt_price:null},{name:'Qaymaq 200ml',price:2.39,wolt_price:2.79}],
-        Neptun:[{name:'Süd 1L',price:2.29,wolt_price:null},{name:'Qatıq 500g 3.2%',price:1.99,wolt_price:null},{name:'Kəsmik 200g',price:1.09,wolt_price:null}],
-        Rahat:[{name:'Gəncə Süd 1L',price:2.45,wolt_price:2.89},{name:'Qatıq 500g 2.5%',price:1.75,wolt_price:null}]
-      }},
-      yumurta:{name:'Yumurta',stores:{
-        Bravo:[{name:'Yumurta 10 əd',price:3.49,wolt_price:3.99},{name:'Yumurta 20 əd',price:6.49,wolt_price:null}],
-        OBA:[{name:'Yumurta 10 əd',price:3.29,wolt_price:null},{name:'Yumurta 20 əd',price:5.99,wolt_price:6.99}],
-        Araz:[{name:'Yumurta 10 ədəd',price:3.59,wolt_price:null}],
-        Neptun:[{name:'Yumurta 10 əd',price:3.19,wolt_price:null}],
-        Rahat:[{name:'Yumurta 10 əd',price:3.39,wolt_price:3.89},{name:'Yumurta 20 əd',price:6.29,wolt_price:null}]
-      }},
-      ickiler:{name:'İçkilər',stores:{
-        Bravo:[{name:'Su 1.5L',price:0.49,wolt_price:0.79},{name:'Su 5L',price:0.99,wolt_price:null},{name:'Coca-Cola 1L',price:1.89,wolt_price:2.29},{name:'Fanta 1L',price:1.79,wolt_price:2.19},{name:'Çay 100g',price:2.49,wolt_price:null}],
-        OBA:[{name:'Su 1.5L',price:0.45,wolt_price:null},{name:'Su 5L',price:0.89,wolt_price:null},{name:'Coca-Cola 1L',price:1.79,wolt_price:null},{name:'Çay 100g',price:2.29,wolt_price:null}],
-        Araz:[{name:'Su 1.5 Litr',price:0.55,wolt_price:0.85},{name:'Coca-Cola 1L',price:1.99,wolt_price:2.49},{name:'Fanta 1L',price:1.89,wolt_price:null}],
-        Neptun:[{name:'Su 1.5L',price:0.39,wolt_price:null},{name:'Çay 100g',price:2.19,wolt_price:null}],
-        Rahat:[{name:'Su 1.5L',price:0.49,wolt_price:0.69},{name:'Coca-Cola 1L',price:1.85,wolt_price:null}]
-      }},
-      tereveez:{name:'Tərəvəz',stores:{
-        Bravo:[{name:'Pomidor 1 kq',price:1.49,wolt_price:1.89},{name:'Xiyar 1kg',price:1.29,wolt_price:null},{name:'Soğan 1 kq',price:0.79,wolt_price:null},{name:'Sarımsaq 100g',price:0.99,wolt_price:null}],
-        OBA:[{name:'Pomidor 1 kq',price:1.39,wolt_price:null},{name:'Xiyar 1kg',price:1.19,wolt_price:null},{name:'Soğan 1 kq',price:0.69,wolt_price:null}],
-        Araz:[{name:'Pomidor 1kq',price:1.59,wolt_price:1.99},{name:'Xiyar 1 kq',price:1.39,wolt_price:null},{name:'Soğan 1kq',price:0.89,wolt_price:null}],
-        Neptun:[{name:'Pomidor 1kq',price:1.29,wolt_price:null},{name:'Xiyar 1kg',price:1.09,wolt_price:null}],
-        Rahat:[{name:'Pomidor 1 kq',price:1.45,wolt_price:1.79},{name:'Soğan 1 kq',price:0.75,wolt_price:null}]
-      }},
-      meyve:{name:'Meyvə',stores:{
-        Bravo:[{name:'Alma 1kg',price:1.29,wolt_price:1.69},{name:'Banan 1kq',price:1.49,wolt_price:1.99},{name:'Portağal 1kg',price:1.89,wolt_price:null}],
-        OBA:[{name:'Alma 1kg',price:1.19,wolt_price:null},{name:'Banan 1 kq',price:1.39,wolt_price:null},{name:'Portağal 1kq',price:1.69,wolt_price:null}],
-        Araz:[{name:'Alma 1kq',price:1.39,wolt_price:1.79},{name:'Portağal 1kg',price:1.99,wolt_price:null}],
-        Neptun:[{name:'Alma 1kg',price:1.09,wolt_price:null},{name:'Banan 1kg',price:1.29,wolt_price:null}],
-        Rahat:[{name:'Banan 1 kq',price:1.45,wolt_price:null},{name:'Portağal 1 kq',price:1.79,wolt_price:null}]
-      }},
-      etbalig:{name:'Ət/Balıq',stores:{
-        Bravo:[{name:'Toyuq filesi 1kq',price:7.49,wolt_price:8.99},{name:'Qızılbalıq 1kg',price:18.99,wolt_price:null}],
-        OBA:[{name:'Toyuq filesi 1kq',price:6.99,wolt_price:null},{name:'Qızılbalıq 1kq',price:17.99,wolt_price:null}],
-        Araz:[{name:'Toyuq filesi 1 kq',price:7.79,wolt_price:9.29},{name:'Ət qiymə 500g',price:5.49,wolt_price:null}],
-        Neptun:[{name:'Toyuq filesi 1kq',price:6.79,wolt_price:null},{name:'Qızılbalıq 1kg',price:16.99,wolt_price:null}],
-        Rahat:[{name:'Toyuq filesi 1kg',price:7.19,wolt_price:null}]
-      }},
-      sirniyyat:{name:'Şirniyyat',stores:{
-        Bravo:[{name:'Şokolad 100g',price:1.99,wolt_price:2.49},{name:'Peçenye 200g',price:1.49,wolt_price:null},{name:'Vafli 150g',price:1.29,wolt_price:null}],
-        OBA:[{name:'Şokolad 100g',price:1.89,wolt_price:null},{name:'Peçenye 200g',price:1.39,wolt_price:null}],
-        Araz:[{name:'Şokolad 100g',price:2.09,wolt_price:2.59},{name:'Vafli 150g',price:1.19,wolt_price:null}],
-        Neptun:[{name:'Peçenye 200g',price:1.29,wolt_price:null},{name:'Vafli 150g',price:1.09,wolt_price:null}],
-        Rahat:[{name:'Şokolad 100g',price:1.95,wolt_price:null},{name:'Peçenye 200g',price:1.45,wolt_price:null}]
-      }},
-      yag_sous:{name:'Yağ/Sous',stores:{
-        Bravo:[{name:'Günəbaxan yağı 1L',price:3.49,wolt_price:3.99},{name:'Zeytun yağı 500ml',price:8.99,wolt_price:null},{name:'Ketchup 500g',price:1.79,wolt_price:null}],
-        OBA:[{name:'Günəbaxan yağı 1L',price:3.29,wolt_price:null},{name:'Ketchup 500g',price:1.59,wolt_price:null}],
-        Araz:[{name:'Günəbaxan yağı 1 Litr',price:3.59,wolt_price:3.99},{name:'Zeytun yağı 500ml',price:8.49,wolt_price:null}],
-        Neptun:[{name:'Günəbaxan yağı 1L',price:3.19,wolt_price:null},{name:'Ketchup 500g',price:1.49,wolt_price:null}],
-        Rahat:[{name:'Günəbaxan yağı 1L',price:3.39,wolt_price:null}]
-      }},
-      taxil:{name:'Taxıl/Paxlalı',stores:{
-        Bravo:[{name:'Buğda unu 1kg',price:0.99,wolt_price:null},{name:'Düyü 1kq',price:2.49,wolt_price:null},{name:'Makaron 500g',price:1.29,wolt_price:null}],
-        OBA:[{name:'Buğda unu 1kg',price:0.89,wolt_price:null},{name:'Düyü 1kq',price:2.29,wolt_price:null}],
-        Araz:[{name:'Buğda unu 1kq',price:1.09,wolt_price:null},{name:'Makaron 500g',price:1.19,wolt_price:null}],
-        Neptun:[{name:'Düyü 1kg',price:2.19,wolt_price:null},{name:'Makaron 500g',price:1.09,wolt_price:null}],
-        Rahat:[{name:'Buğda unu 1kg',price:0.95,wolt_price:null},{name:'Düyü 1kq',price:2.39,wolt_price:null}]
-      }},
-      corek_pasta:{name:'Çörək-Pasta',stores:{
-        Bravo:[{name:'Ağ çörək 500g',price:0.79,wolt_price:0.99},{name:'Qara çörək 500g',price:0.89,wolt_price:null}],
-        OBA:[{name:'Ağ çörək 500g',price:0.69,wolt_price:null},{name:'Qara çörək 500g',price:0.79,wolt_price:null}],
-        Araz:[{name:'Ağ çörək 500g',price:0.85,wolt_price:1.05}],
-        Neptun:[{name:'Ağ çörək 500g',price:0.65,wolt_price:null}],
-        Rahat:[{name:'Qara çörək 500g',price:0.85,wolt_price:null}]
-      }},
-      edviyyat:{name:'Ədviyyat',stores:{
-        Bravo:[{name:'Duz 1kg',price:0.49,wolt_price:null},{name:'Qara istiot 100g',price:1.49,wolt_price:null},{name:'Şəkər 1kq',price:1.29,wolt_price:null}],
-        OBA:[{name:'Duz 1kq',price:0.39,wolt_price:null},{name:'Şəkər 1kq',price:1.19,wolt_price:null}],
-        Araz:[{name:'Duz 1kg',price:0.55,wolt_price:null},{name:'Qara istiot 100q',price:1.39,wolt_price:null}],
-        Neptun:[{name:'Şəkər 1kq',price:1.09,wolt_price:null},{name:'Duz 1kg',price:0.45,wolt_price:null}],
-        Rahat:[{name:'Şəkər 1kq',price:1.25,wolt_price:null},{name:'Qara istiot 100g',price:1.55,wolt_price:null}]
-      }}
-    }
+// sort buttons
+document.querySelectorAll("[data-sort]").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("[data-sort]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    sortType=b.dataset.sort;
+    render(currentCat);
   };
-}
+});
 
-init();
+// stock filter
+document.getElementById("stockBtn").onclick=()=>{
+  onlyStock=!onlyStock;
+  document.getElementById("stockBtn").classList.toggle("active");
+  render(currentCat);
+};
+
+// search
+document.getElementById("search").oninput=(e)=>{
+  const val=e.target.value.toLowerCase();
+  if(!currentCat) return;
+
+  const filtered = prices[currentCat].filter(i=>
+    i.name.toLowerCase().includes(val)
+  );
+
+  const tbody=document.getElementById("tbody");
+  tbody.innerHTML="";
+
+  filtered.forEach(i=>{
+    const c=cheapest(i.stores);
+    const s=saving(i);
+
+    tbody.innerHTML+=`
+      <tr>
+        <td>${i.name}</td>
+        <td><span class="store-badge ${c.minStore}">${c.minStore.toUpperCase()}</span></td>
+        <td>${c.min.toFixed(2)} ₼</td>
+        <td class="cheapest">-${s.toFixed(2)} ₼</td>
+      </tr>
+    `;
+  });
+};
+
 </script>
+
 </body>
 </html>
