@@ -1,0 +1,12 @@
+wolt brand 200 1099434
+venue slugs: []
+slug fields: []
+oba /products/ 200 173778 https://oba.az/products/
+title: OBA Market | Məhsulları | oba.az
+json-ld: 1  __NEXT_DATA__: False  next_f: False
+api-like: []
+hrefs: ['/application/', '/branches/', '/cabinet/', '/contacts/', '/customer-rights/', '/endirim-jurnali/', '/haqqimizda/', '/layihelerimiz/', '/laysalqazan/', '/lotereya/', '/lotereyalarimiz/', '/media/', '/products-category/', '/products/', '/recipes/', '/satisfaction/', '/site/templates/css/snow-flurry.css', '/site/templates/css/vendor/bootstrap-grid-15.css', '/site/templates/css/vendor/datatables.min.css', '/site/templates/css/vendor/micromodal.min.css', '/site/templates/css/vendor/normalize.min.css', '/site/templates/css/vendor/nouislider.min.css', '/site/templates/css/vendor/selectric.css', '/site/templates/css/vendor/swiper.min.css', '/xususi-teklifler/']
+price snippets: []
+js /site/templates/js/app.js?v=1035 ['product']
+js /site/templates/js/functions.js?v=1035 ['product']
+js https://wchat.freshchat.com/js/widget.js ['production']
