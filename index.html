@@ -1,1063 +1,500 @@
 <!doctype html>
-<html lang="az" class="h-full bg-[#faf6ee]">
+<html lang="az">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QiymətMüqayisə — Bakı Supermarket Qiymət Müqayisəsi</title>
-  <meta name="description" content="Bravo, OBA, Araz, Neptun və Rahat supermarketlərinin eyni markalı məhsullarının qiymətlərini asanlıqla müqayisə edin." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @keyframes shimmer {
-      0%   { background-position: -600px 0; }
-      100% { background-position:  600px 0; }
-    }
-    .animate-shimmer {
-      background: linear-gradient(90deg, #f0ebe0 0%, #e5dcc8 50%, #f0ebe0 100%);
-      background-size: 600px 100%;
-      animation: shimmer 1.6s ease-in-out infinite;
-      border-radius: 8px;
-    }
-  </style>
-</head>
-<body class="min-h-screen text-stone-800" x-data="priceApp()">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QiymətMüqayisə — Bakı supermarket qiymətləri</title>
+<meta name="description" content="Bravo, OBA, Araz, Neptun və Rahat supermarketlərinin qiymətlərini bir yerdə müqayisə edin.">
+<meta name="theme-color" content="#e35600">
+<link rel="preload" href="data/prices.json" as="fetch" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛒%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#faf6ee; --card:#fff; --ink:#281505; --mute:#6b5a46; --line:#eedcc4; --soft:#f6efe2;
+  --brand:#e35600; --brand-soft:#fff1e6; --good:#0f9d58; --good-soft:#e6f6ee; --bad:#d93025; --bad-soft:#fdecea;
+  --shadow:0 1px 2px rgba(40,21,5,.06),0 4px 14px rgba(40,21,5,.05);
+  --Bravo:#d93025; --OBA:#0b79d0; --Araz:#8e44ad; --Neptun:#0f9d58; --Rahat:#c77700;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#151009; --card:#1f1810; --ink:#f5ebdc; --mute:#b4a58f; --line:#3a2e20; --soft:#2a2118;
+  --brand:#ff7a2f; --brand-soft:#33210f; --good:#3ddc84; --good-soft:#12301f; --bad:#ff6b5e; --bad-soft:#3a1a17;
+  --shadow:none;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 56px}
+.mono{font-variant-numeric:tabular-nums}
 
-  <!-- Background atmosphere -->
-  <div class="fixed inset-0 pointer-events-none opacity-50 z-0 overflow-hidden">
-    <div class="absolute -top-[40%] -left-[20%] w-[80%] h-[80%] rounded-full blur-3xl"
-         style="background:radial-gradient(circle,rgba(251,191,36,0.18) 0%,transparent 70%)"></div>
-    <div class="absolute -bottom-[40%] -right-[20%] w-[80%] h-[80%] rounded-full blur-3xl"
-         style="background:radial-gradient(circle,rgba(251,146,60,0.13) 0%,transparent 70%)"></div>
+/* header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;padding-top:10px;padding-bottom:10px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em;
+  background:none;border:0;padding:0;white-space:nowrap}
+.logo i{font-style:normal;display:grid;place-items:center;width:36px;height:36px;border-radius:11px;
+  background:var(--ink);color:var(--bg);font-size:18px}
+.logo b{color:var(--brand)}
+.search{position:relative;flex:1;max-width:560px;margin-left:auto}
+.search input{width:100%;border:1px solid var(--line);background:var(--card);border-radius:12px;
+  padding:9px 12px 9px 36px;outline:none}
+.search input:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 18%,transparent)}
+.search:before{content:"🔍";position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.7}
+.results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);
+  border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);max-height:70vh;overflow:auto}
+.results:empty{display:none}
+.res{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 14px}
+.res:last-child{border:0}
+.res:hover,.res:focus{background:var(--soft);outline:none}
+.res small{color:var(--mute)}
+.res strong{display:block;font-size:14px}
+
+/* hero */
+.hero{padding:26px 0 8px}
+.hero h1{margin:0 0 4px;font-size:clamp(22px,4vw,32px);letter-spacing:-.03em;line-height:1.15}
+.hero p{margin:0;color:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.stat span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute)}
+.stat b{display:block;font-size:24px;line-height:1.2;margin-top:2px}
+.stat small{display:block;color:var(--mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat.good b{color:var(--good)}
+
+/* store freshness */
+.stores{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);
+  border-radius:999px;padding:4px 11px;font-size:12px;color:var(--mute)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c,#999);flex:none}
+
+/* category grid */
+h2.sec{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--mute);margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.cat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 14px;text-align:left;
+  display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.cat:hover{transform:translateY(-2px);border-color:var(--brand)}
+.cat .em{font-size:30px;line-height:1}
+.cat b{font-size:15px}
+.cat small{color:var(--mute);font-size:12px}
+
+/* category view */
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:20px 0 14px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:11px;padding:7px 13px;font-size:13px;font-weight:600}
+.btn:hover{border-color:var(--brand);color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.title{display:flex;align-items:center;gap:12px;margin:0}
+.title span{font-size:34px}
+.title h1{margin:0;font-size:26px;letter-spacing:-.02em}
+.champ{margin-left:auto;background:var(--good-soft);color:var(--good);border-radius:11px;padding:7px 13px;font-size:13px;font-weight:600}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row + .row{margin-top:10px}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);margin-right:4px}
+.pill{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--mute)}
+.pill.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;flex:1;min-width:0}
+.scroll::-webkit-scrollbar{display:none}
+.scroll .pill{flex:none}
+.panel input,.panel select{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:6px 9px;width:110px;font-size:13px;outline:none}
+.panel select{width:auto}
+.panel input:focus,.panel select:focus{border-color:var(--brand)}
+.bargains{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px}
+.barg{background:var(--brand-soft);border:1px solid var(--line);border-radius:14px;padding:11px 14px;display:flex;justify-content:space-between;gap:10px}
+.barg small{color:var(--mute);display:block}
+.barg b{white-space:nowrap}
+
+/* table */
+.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:auto;box-shadow:var(--shadow);max-height:78vh}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:760px}
+th{position:sticky;top:0;z-index:2;background:var(--soft);font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--mute);padding:11px 12px;text-align:center;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--card);z-index:1;min-width:220px;max-width:320px}
+th:first-child{background:var(--soft);z-index:3}
+th .dot{margin-right:5px}
+td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border:0}
+tr.hl td{background:var(--brand-soft)}
+td .name{font-weight:600;font-size:14px;line-height:1.3}
+td .sub{font-size:11px;color:var(--mute);margin-top:2px}
+.p{font-weight:700;font-size:14px}
+.p.min{color:var(--good);font-size:15px;font-weight:800}
+.p.max{color:var(--bad)}
+.p sup{font-size:9px;color:var(--mute);font-weight:600;margin-left:1px;cursor:help}
+.na{color:var(--line);font-weight:700}
+.save{font-weight:800;color:var(--good);font-size:14px}
+.save small{display:block;font-size:11px;font-weight:600;background:var(--good-soft);border-radius:6px;padding:0 6px;margin-top:2px}
+.more{display:block;margin:16px auto 0}
+.empty{padding:50px 16px;text-align:center;color:var(--mute)}
+.note{margin-top:18px;color:var(--mute);font-size:12.5px;line-height:1.6}
+.note sup{font-weight:700}
+
+/* states */
+.skel{border-radius:14px;background:linear-gradient(90deg,var(--soft) 25%,var(--line) 50%,var(--soft) 75%);
+  background-size:400% 100%;animation:sh 1.4s infinite}
+@keyframes sh{from{background-position:100% 0}to{background-position:0 0}}
+.err{padding:40px 16px;text-align:center}
+[hidden]{display:none!important}
+
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .top .wrap{flex-wrap:wrap}
+  .search{max-width:none;order:3;flex-basis:100%}
+  .champ{margin-left:0}
+  .tablewrap{max-height:none;overflow:visible;background:none;border:0;box-shadow:none}
+  table{min-width:0}
+  thead{display:none}
+  table,tbody{display:block}
+  tr{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:var(--shadow)}
+  td{display:block;border:0;padding:0;text-align:left}
+  td:first-child{grid-column:1/-1;position:static;max-width:none;min-width:0}
+  td.sz{grid-column:1/-1;font-size:12px;color:var(--mute)}
+  td[data-l]:not(.sz):not(.sv):before{content:attr(data-l);display:block;font-size:10px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--mute)}
+  td.sv{grid-column:1/-1}
+  td.sv .save{display:flex;align-items:center;gap:8px}
+  td.sv .save small{display:inline-block;margin:0}
+  tr.hl{background:var(--brand-soft)}
+  tr.hl td{background:none}
+  td.empty{grid-column:1/-1;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <button class="logo" id="home" aria-label="Ana səhifə"><i>🛒</i><span>Qiymət<b>Müqayisə</b></span></button>
+  <div class="search">
+    <input id="q" type="search" placeholder="Məhsul axtar: süd, banan, kartof…" autocomplete="off" aria-label="Axtarış">
+    <div class="results" id="results" role="listbox"></div>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <div id="loading">
+    <div class="hero"><div class="skel" style="height:34px;width:60%"></div></div>
+    <div class="stats"><div class="skel" style="height:78px"></div><div class="skel" style="height:78px"></div>
+      <div class="skel" style="height:78px"></div><div class="skel" style="height:78px"></div></div>
+    <div class="grid" id="skelgrid"></div>
   </div>
 
-  <main class="relative z-10 max-w-7xl mx-auto px-4 py-8 lg:py-12 flex flex-col gap-8 min-h-screen">
+  <div id="error" class="err" hidden>
+    <div style="font-size:42px">⚠️</div>
+    <p><b>Məlumat yüklənmədi</b><br><span id="errmsg" class="mono" style="color:var(--mute)"></span></p>
+    <button class="btn primary" id="retry">Yenidən cəhd et</button>
+  </div>
 
-    <!-- ═══════════════════════════════════════════
-         HEADER
-    ═══════════════════════════════════════════ -->
-    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#eedcc4] pb-6">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-[#281505] rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-          <span class="text-2xl">📊</span>
-        </div>
-        <div>
-          <h1 class="text-2xl font-black tracking-tight text-[#281505]">
-            Qiymət<span class="text-[#e35600]">Müqayisə</span>
-          </h1>
-          <p class="text-xs text-[#5c4b37] mt-0.5">Jaccard İndeksi ilə Supermarket Qiymət Müqayisəsi</p>
-        </div>
-      </div>
-      <div x-show="pricesData.last_updated"
-           class="text-[10px] font-mono text-[#5c4b37] bg-white border border-[#eedcc4] px-3 py-1.5 rounded-xl shadow-sm"
-           x-text="'↺ ' + pricesData.last_updated"
-           style="display:none;"></div>
-    </header>
-
-    <!-- ═══════════════════════════════════════════
-         LOADING SKELETON
-    ═══════════════════════════════════════════ -->
-    <div x-show="isLoading" class="flex flex-col gap-6">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <template x-for="i in 4" :key="i">
-          <div class="bg-white p-5 rounded-2xl border border-[#eedcc4] space-y-3">
-            <div class="animate-shimmer h-2.5 w-24"></div>
-            <div class="animate-shimmer h-7 w-16"></div>
-            <div class="animate-shimmer h-2 w-28"></div>
-          </div>
-        </template>
-      </div>
-      <div class="animate-shimmer h-14 rounded-2xl"></div>
-      <div class="animate-shimmer h-3 w-48 rounded"></div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <template x-for="i in 6" :key="i">
-          <div class="bg-white p-5 rounded-2xl border border-[#eedcc4] flex items-center gap-4">
-            <div class="animate-shimmer w-14 h-14 rounded-xl flex-shrink-0"></div>
-            <div class="flex-1 space-y-2">
-              <div class="animate-shimmer h-4 w-3/4 rounded"></div>
-              <div class="animate-shimmer h-3 w-1/2 rounded"></div>
-            </div>
-          </div>
-        </template>
-      </div>
+  <section id="homeView" hidden>
+    <div class="hero">
+      <h1>Hansı market daha ucuzdur?</h1>
+      <p>Bravo, OBA, Araz, Neptun və Rahat qiymətləri bir cədvəldə.</p>
     </div>
+    <div class="stats" id="stats"></div>
+    <div class="stores" id="storeChips"></div>
+    <h2 class="sec">Kateqoriyalar</h2>
+    <div class="grid" id="catGrid"></div>
+    <p class="note" id="srcNote"></p>
+  </section>
 
-    <!-- ═══════════════════════════════════════════
-         ERROR STATE
-    ═══════════════════════════════════════════ -->
-    <div x-show="loadError && !isLoading"
-         class="bg-red-50 border border-red-200 rounded-2xl p-10 text-center flex flex-col items-center gap-4"
-         style="display:none;">
-      <div class="text-5xl">❌</div>
-      <div>
-        <p class="font-bold text-red-800 text-base">Məlumat yüklənmədi</p>
-        <p class="text-red-600 text-xs mt-1 font-mono" x-text="'Xəta: ' + loadError"></p>
-        <p class="text-red-400 text-[10px] mt-2">Serveri işə salın: <code class="bg-red-100 px-1 rounded">python -m http.server 8000</code></p>
+  <section id="catView" hidden>
+    <div class="bar">
+      <button class="btn" id="back">← Geri</button>
+      <h1 class="title"><span id="catEm"></span><span id="catName" style="font-size:26px"></span></h1>
+      <div class="champ" id="champ" hidden></div>
+    </div>
+    <div class="bargains" id="bargains"></div>
+    <div class="panel">
+      <div class="row">
+        <span class="lbl">Növ</span>
+        <div class="scroll" id="subs"></div>
       </div>
-      <button @click="init()"
-              class="px-5 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 cursor-pointer transition-colors shadow-sm">
-        Yenidən cəhd et
-      </button>
+      <div class="row">
+        <span class="lbl">Ölçü</span>
+        <div class="row" id="modes" style="gap:6px"></div>
+        <input id="minW" type="number" min="0" placeholder="Min q/ml" aria-label="Minimum çəki">
+        <input id="maxW" type="number" min="0" placeholder="Maks q/ml" aria-label="Maksimum çəki">
+        <span class="lbl" id="fatLbl">Yağ</span>
+        <div class="row" id="fats" style="gap:6px"></div>
+      </div>
+      <div class="row">
+        <input id="tq" type="search" placeholder="Siyahıda süz…" style="width:200px" aria-label="Siyahıda süz">
+        <span class="lbl" style="margin-left:auto">Sıralama</span>
+        <select id="sort" aria-label="Sıralama">
+          <option value="savings_desc">Ən çox qənaət</option>
+          <option value="price_asc">Ən ucuz</option>
+          <option value="name">A → Z</option>
+        </select>
+      </div>
+      <div class="row" style="color:var(--mute);font-size:13px"><span id="count"></span></div>
     </div>
+    <div class="tablewrap"><table>
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table></div>
+    <button class="btn primary more" id="more" hidden>Daha çox göstər</button>
+    <p class="note"><b>★ yaşıl</b> — ən ucuz, <b style="color:var(--bad)">qırmızı</b> — ən baha qiymət.
+      <sup>W</sup> — qiymət Wolt-dan götürülüb və mağaza rəfindəki qiymətdən bir qədər yüksək ola bilər.</p>
+  </section>
+</main>
 
-    <!-- ═══════════════════════════════════════════
-         MAIN CONTENT
-    ═══════════════════════════════════════════ -->
-    <div x-show="!isLoading && !loadError" class="flex flex-col gap-8" style="display:none;">
+<script>
+"use strict";
+/* ─────────── constants ─────────── */
+const EMOJI={sud:"🥛",yumurta:"🥚",kere_yagi:"🧈",pendir:"🧀",qatiq:"🫙",xama:"🥄",kefir:"🥛",ayran:"🥤",
+  kartof:"🥔",pomidor:"🍅",xiyar:"🥒",soyan:"🧅",kelem:"🥬",yerkoyu:"🥕",cuqundur:"🫚",badimcan:"🍆",biber:"🌶️",
+  sarimsaq:"🧄",alma:"🍎",armud:"🍐",saftal:"🍑",gilas:"🍒",uzum:"🍇",banan:"🍌",kivi:"🥝",limon:"🍋",
+  portaqal:"🍊",nar:"🍎",toyuq:"🍗",dana_ati:"🥩",qoyun_ati:"🍖",hindi:"🦃",kolbasa:"🌭",sosis:"🌭",baliq:"🐟",
+  duyu:"🍚",merci:"🫘",noxud:"🟡",fasulya:"🫘",qarabashaq:"🌾",yulaf:"🌾",un:"🌾",makaron:"🍝",corek:"🍞",
+  pecenye:"🍪",cay:"🍵",qehve:"☕",sire:"🧃",su:"💧",kola:"🥤",energetik:"⚡",sokolad:"🍫",halva:"🍬",bal:"🍯",
+  dondurma:"🍦",zeytun_yagi:"🫒",bitki_yagi:"🌻",mayonez:"🫙",ketcup:"🍅",duz:"🧂",sekerqum:"🍬",istiot:"🌶️"};
+const PAGE=60;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>n.toFixed(2)+" ₼";
 
-      <!-- STATS ROW -->
-      <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-[#eedcc4] shadow-sm flex flex-col gap-1">
-          <span class="text-neutral-500 text-[10px] uppercase tracking-wider font-mono">Mağaza Şəbəkəsi</span>
-          <span class="text-2xl font-black text-[#281505] font-mono leading-none mt-1" x-text="pricesData.stores.length">0</span>
-          <span class="text-[9px] text-[#5c4b37] mt-1">Azərbaycanın ən böyük marketləri</span>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-[#eedcc4] shadow-sm flex flex-col gap-1">
-          <span class="text-neutral-500 text-[10px] uppercase tracking-wider font-mono">Eyniləşdirilmiş Məhsul</span>
-          <span class="text-2xl font-black text-[#281505] font-mono leading-none mt-1" x-text="stats.totalItemsCount">0</span>
-          <span class="text-[9px] text-[#5c4b37] mt-1">Müqayisə oluna bilən qrup</span>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-[#eedcc4] shadow-sm flex flex-col gap-1">
-          <span class="text-neutral-500 text-[10px] uppercase tracking-wider font-mono">Ortalama Qiymət</span>
-          <span class="text-2xl font-black text-[#281505] font-mono leading-none mt-1"
-                x-text="(stats.priceSum / (stats.totalOffers || 1)).toFixed(2) + ' ₼'">0 ₼</span>
-          <span class="text-[9px] text-[#5c4b37] mt-1">Bütün məhsullar üzrə</span>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-[#eedcc4] shadow-sm flex flex-col gap-1 relative overflow-hidden">
-          <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-emerald-500/5 pointer-events-none"></div>
-          <span class="text-emerald-700 text-[10px] uppercase tracking-wider font-mono flex items-center gap-1.5">
-            Maks. Qənaət
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          </span>
-          <span class="text-2xl font-black text-emerald-600 font-mono leading-none mt-1"
-                x-text="'+ ' + stats.maxSavingFound.toFixed(2) + ' ₼'">+0 ₼</span>
-          <span class="text-[9px] text-emerald-800 font-semibold mt-1 truncate"
-                :title="stats.maxSavingProduct"
-                x-text="stats.maxSavingProduct || '—'">—</span>
-        </div>
-      </section>
+/* ─────────── matching / attribute extraction ─────────── */
+const TR={"ç":"c","ə":"e","ğ":"g","ı":"i","ö":"o","ş":"s","ü":"u"};
+function tokens(str){
+  return new Set(str.toLowerCase().replace(/[çəğıöşü]/g,c=>TR[c]).replace(/[^\w\s]/g," ").split(/\s+/).filter(Boolean));
+}
+function jaccard(a,b){
+  let i=0; for(const t of a) if(b.has(t)) i++;
+  const u=a.size+b.size-i; return u?i/u:1;
+}
+const STOP=new Set(["sabun","şampun","yuyucu","dezodorant","krem","losyon","jel","maye","plastik","şüşə","qabda","qalib",
+  "mini","maxi","vita","nano","bio","eco","premium","classic","original","special","super","ultra","mega","extra",
+  "ve","ilə","üçün","olan","həm","da","də","ki","bu","bir","bütün"]);
+const isAdj=w=>/[lL][ıiuüIİUÜ]$/.test(w);
+const AL="[a-zA-ZğüşıöçĞÜŞIÖÇəƏ]";
+function productType(name){
+  const m=name.match(new RegExp("\\d[\\d.,]*\\s*(?:%|kq|kg|litr|lt(?!"+AL+")|ml(?!"+AL+")|[lL](?!"+AL+")|[qQgG][rR]?(?!"+AL+"))"));
+  const before=name.slice(0,m?m.index:name.length).trim();
+  const w=(before||name).split(/\s+/).filter(x=>/^\p{L}+$/u.test(x));
+  if(!w.length) return "Digər";
+  const up=x=>x[0].toUpperCase()+x.slice(1);
+  if(w.length<2) return up(w[0]);
+  for(let i=1;i<w.length;i++){ if(isAdj(w[i])||STOP.has(w[i].toLowerCase())) continue; return up(w[i]); }
+  return up(w[w.length-1]);
+}
+const WPATS=[[/(\d+[.,]?\d*)\s*kq(?!AL)/i,"kq"],[/(\d+[.,]?\d*)\s*kg(?!AL)/i,"kq"],[/(\d+[.,]?\d*)\s*litr/i,"L"],
+  [/(\d+[.,]?\d*)\s*lt(?!AL)/i,"L"],[/(\d+[.,]?\d*)\s*[lL](?!AL)/,"L"],[/(\d+[.,]?\d*)\s*ml(?!AL)/i,"ml"],
+  [/(\d+[.,]?\d*)\s*gr(?!AL)/i,"q"],[/(\d+[.,]?\d*)\s*[gG](?!AL)/,"q"],[/(\d+[.,]?\d*)\s*qr?(?!AL)/i,"q"]]
+  .map(([r,u])=>[new RegExp(r.source.replace(/AL/g,AL),r.flags),u]);
+function attrs(name){
+  let fat=null; const f=name.match(/(\d+[.,]?\d*)\s*%/);
+  if(f){const v=parseFloat(f[1].replace(",","."));if(!isNaN(v))fat=v;}
+  let wv=null,wu=null;
+  for(const [re,u] of WPATS){const m=name.match(re); if(m){const v=parseFloat(m[1].replace(",","."));if(v>0){wv=v;wu=u;break;}}}
+  if(!wv){
+    if(/10-luq|10\s*[əea]d[əe]d|10\s*adet/i.test(name)){wv=10;wu="ədəd";}
+    else if(/15-lik|15\s*[əe]d[əe]d/i.test(name)){wv=15;wu="ədəd";}
+    else if(/30-luq|30\s*[əe]d[əe]d/i.test(name)){wv=30;wu="ədəd";}
+    else if(/6-l[ıi]q|6\s*[əe]d[əe]d/i.test(name)){wv=6;wu="ədəd";}
+  }
+  return {subtype:productType(name),wv,wu,fat};
+}
+const norm=(v,u)=>v==null||!u?null:(u==="kq"||u==="L")?v*1000:v;
 
-      <!-- GLOBAL SEARCH -->
-      <section class="relative">
-        <div class="relative bg-white border border-[#eedcc4]/90 p-1.5 rounded-2xl shadow-sm flex items-center">
-          <span class="px-3.5 text-stone-400 text-base">🔍</span>
-          <input
-            type="text"
-            x-model="globalSearchQuery"
-            placeholder="Bravo, OBA, Araz-da məhsul axtar (məs. 'Milla', 'Banan', 'Kartof')..."
-            class="w-full bg-transparent border-0 py-2.5 px-1 text-sm text-[#281505] placeholder-[#a29281] focus:ring-0 focus:outline-none"
-            @keydown.escape="globalSearchQuery = ''"
-          >
-          <button x-show="globalSearchQuery"
-                  @click="globalSearchQuery = ''"
-                  class="p-2 text-stone-400 hover:text-[#281505] text-xs font-bold cursor-pointer mr-2 flex-shrink-0">
-            Sıfırla (Esc)
-          </button>
-        </div>
-
-        <!-- Dropdown results -->
-        <div x-show="globalSearchResults.length > 0"
-             class="absolute left-0 right-0 top-full mt-2 bg-white border border-[#eedcc4] rounded-2xl shadow-xl z-50 max-h-80 overflow-y-auto divide-y divide-[#eedcc4]/40">
-          <template x-for="res in globalSearchResults" :key="res.prod.id">
-            <button
-              @click="selectProductFromSearch(res.categoryId, res.prod.id)"
-              class="w-full text-left p-4 hover:bg-[#fffcf7] transition-all flex items-center justify-between gap-4 cursor-pointer"
-            >
-              <div class="min-w-0">
-                <span class="text-xs text-stone-400 block font-mono"
-                      x-text="(CATEGORY_EMOJIS[res.categoryId] || '📦') + ' ' + pricesData.categories[res.categoryId].name"></span>
-                <span class="text-sm font-bold text-stone-800 truncate block mt-0.5" x-text="res.prod.name"></span>
-                <!-- Inline price pills in search dropdown -->
-                <div class="flex flex-wrap gap-1 mt-1.5">
-                  <template x-for="store in pricesData.stores" :key="store">
-                    <span
-                      x-show="res.prod.offers[store]"
-                      class="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full border"
-                      :class="STORE_THEMES[store]
-                        ? (STORE_THEMES[store].lightBg + ' ' + STORE_THEMES[store].text + ' border-current/20')
-                        : 'bg-stone-50 text-stone-500 border-stone-200'"
-                    >
-                      <span class="font-black" x-text="STORE_ABBR[store] || store.slice(0,2)"></span>
-                      <span class="font-mono" x-text="getCurrentPrice(res.prod.offers[store]).toFixed(2) + '₼'"></span>
-                    </span>
-                  </template>
-                </div>
-              </div>
-              <div class="text-right flex-shrink-0">
-                <span class="inline-block bg-[#fff5ea] text-[#e35600] border border-[#fddfc4] text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg"
-                      x-text="res.prod.attributes.subtype"></span>
-                <span class="text-[10px] text-stone-500 block mt-1"
-                      x-text="Object.keys(res.prod.offers).length + ' supermarketdə'"></span>
-              </div>
-            </button>
-          </template>
-        </div>
-      </section>
-
-      <!-- CATEGORY GRID -->
-      <section x-show="!selectedCategoryId">
-        <h2 class="text-xs font-bold text-[#5c4b37] uppercase tracking-wider mb-4 font-mono">
-          Kateqoriya üzrə qiymət müqayisəsi:
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <template x-for="[id, cat] in Object.entries(pricesData.categories)" :key="id">
-            <button
-              @click="openCategory(id)"
-              class="bg-white p-5 rounded-2xl border border-[#eedcc4] hover:border-[#e35600]/50 hover:shadow-md transition-all flex items-center justify-between gap-4 text-left cursor-pointer group"
-            >
-              <div class="flex items-center gap-4">
-                <div class="text-3xl w-14 h-14 bg-[#faf6ee] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0"
-                     x-text="CATEGORY_EMOJIS[id] || '📦'"></div>
-                <div>
-                  <h3 class="text-base font-bold text-[#281505] group-hover:text-[#e35600] transition-colors"
-                      x-text="cat.name"></h3>
-                  <p class="text-[11px] text-[#5c4b37] mt-1"
-                     x-text="(groupedCategoriesData[id] ? groupedCategoriesData[id].length : 0) + ' eyniləşdirilmiş məhsul qrupu'"></p>
-                </div>
-              </div>
-              <span class="text-stone-300 group-hover:text-[#e35600] transition-all group-hover:translate-x-1 flex-shrink-0">➔</span>
-            </button>
-          </template>
-        </div>
-      </section>
-
-      <!-- ═══════════════════════════════════════════
-           CATEGORY DETAIL VIEW
-      ═══════════════════════════════════════════ -->
-      <section x-show="selectedCategoryId" class="flex flex-col gap-6" style="display:none;">
-
-        <!-- Back + champion row -->
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <button
-            @click="resetCategoryView()"
-            class="px-4 py-2 bg-white border border-[#eedcc4] hover:border-orange-200 text-[#5c4b37] hover:text-[#281505] rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm"
-          >
-            ⬅ Ana Səhifəyə Qayıt
-          </button>
-          <div x-show="storeChampions.length > 0"
-               class="bg-emerald-50 border border-emerald-200 px-4 py-2.5 rounded-xl flex items-center gap-2 text-xs text-emerald-800 shadow-sm">
-            <span class="text-emerald-500 animate-bounce">🏆</span>
-            Bu kateqoriyada ən sərfəli:
-            <strong class="font-bold text-emerald-950 underline decoration-emerald-500 underline-offset-4"
-                    x-text="storeChampions[0] ? storeChampions[0][0] : ''"></strong>
-            (<span x-text="storeChampions[0] ? storeChampions[0][1] : ''"></span> məhsulda ən ucuz qiymət)
-          </div>
-        </div>
-
-        <!-- Category header -->
-        <div class="bg-white p-6 rounded-2xl border border-[#eedcc4] shadow-sm relative overflow-hidden">
-          <div class="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-transparent to-[#fff8f0]/60 pointer-events-none"></div>
-          <div class="flex items-center gap-4 relative z-10">
-            <div class="text-4xl w-16 h-16 bg-[#faf6ee] rounded-2xl border border-[#eedcc4] flex items-center justify-center flex-shrink-0"
-                 x-text="selectedCategoryId ? (CATEGORY_EMOJIS[selectedCategoryId] || '📦') : ''"></div>
-            <div>
-              <h2 class="text-2xl font-black text-[#281505] tracking-tight"
-                  x-text="selectedCategoryId ? pricesData.categories[selectedCategoryId]?.name : ''"></h2>
-              <p class="text-xs text-[#5c4b37] mt-1 max-w-2xl leading-relaxed">
-                Jaccard oxşarlıq indeksi (threshold ≥0.5) ilə eyni kateqoriyadakı fərqli supermarket
-                məhsulları bir-birinə bərabərləşdirilərək müqayisə zonasına yerləşdirilib.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Unit bargains -->
-        <div x-show="unitBargains.length > 0" class="flex flex-col gap-3">
-          <h3 class="text-xs font-bold text-[#5c4b37] uppercase tracking-widest flex items-center gap-1.5 font-mono">
-            <span>✨</span> Vahid Ölçü Üzrə Ən Sərfəli Seçimlər (1kq / 1L üzrə hesablama)
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <template x-for="(bargain, idx) in unitBargains" :key="idx">
-              <div class="bg-white p-4 rounded-xl border border-[#eedcc4] flex items-center justify-between gap-4 hover:border-orange-300 transition-all shadow-sm">
-                <div class="min-w-0">
-                  <span class="inline-block bg-[#fff5ea] text-[#e35600] px-2 py-0.5 rounded text-[10px] font-mono border border-orange-100 mb-2"
-                        x-text="bargain.unitLabel + ' üzrə qiymət'"></span>
-                  <h4 class="text-xs font-bold text-neutral-800 truncate" :title="bargain.productName" x-text="bargain.productName"></h4>
-                  <div class="text-[10px] text-stone-400 mt-1"
-                       x-text="'Orijinal: ' + bargain.originalQty + ' (' + bargain.originalPrice.toFixed(2) + ' ₼)'"></div>
-                </div>
-                <div class="text-right flex-shrink-0">
-                  <div class="text-xs font-mono font-bold text-stone-800"
-                       x-text="bargain.pricePerUnit.toFixed(2) + ' ₼ / ' + bargain.unitLabel"></div>
-                  <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold mt-1 text-white bg-orange-500 uppercase shadow-sm"
-                        x-text="bargain.storeName"></span>
-                </div>
-              </div>
-            </template>
-          </div>
-        </div>
-
-        <!-- ── FILTER PANEL ── -->
-        <div class="bg-white rounded-2xl border border-[#eedcc4] p-5 space-y-4 shadow-sm">
-
-          <!-- Subtype chips -->
-          <div class="space-y-1.5">
-            <div class="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider flex items-center justify-between">
-              <span>Məhsulun növü (Subtype):</span>
-              <button x-show="selectedSubtype !== null"
-                      @click="selectedSubtype = null"
-                      class="text-[#e35600] hover:underline text-[9px] cursor-pointer">Sıfırla</button>
-            </div>
-            <div class="flex gap-2 items-center overflow-x-auto no-scrollbar py-1">
-              <button
-                @click="selectedSubtype = null"
-                class="px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer flex-shrink-0 transition-all"
-                :class="selectedSubtype === null
-                  ? 'bg-[#e35600] text-white border border-[#e35600]'
-                  : 'bg-[#faf6ee] text-neutral-600 border border-[#eedcc4] hover:text-[#281505]'"
-              >Bütün növlər</button>
-              <template x-for="sub in filterOptions.subtypes" :key="sub">
-                <button
-                  @click="selectedSubtype = sub"
-                  class="px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer flex-shrink-0 transition-all"
-                  :class="selectedSubtype === sub
-                    ? 'bg-[#e35600] text-white border border-[#e35600]'
-                    : 'bg-[#faf6ee] text-neutral-600 border border-[#eedcc4] hover:text-[#281505]'"
-                  x-text="sub"
-                ></button>
-              </template>
-            </div>
-          </div>
-
-          <!-- Weight mode + range -->
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-
-            <div class="md:col-span-4 space-y-1.5">
-              <span class="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider block">Ölçü Modu:</span>
-              <div class="bg-[#faf6ee] p-1 rounded-xl border border-[#eedcc4] flex items-center">
-                <template x-for="mode in ['Hamısı','⚖ Çəki','💧 Həcm','📦 Digər']" :key="mode">
-                  <button
-                    @click="weightMode = mode"
-                    class="flex-1 py-1 text-center rounded-lg text-xs font-medium cursor-pointer transition-all"
-                    :class="weightMode === mode
-                      ? 'bg-white text-neutral-800 shadow-sm font-bold'
-                      : 'text-stone-500 hover:text-stone-700'"
-                    x-text="mode"
-                  ></button>
-                </template>
-              </div>
-            </div>
-
-            <div class="md:col-span-5 space-y-1.5">
-              <span class="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider block">Həcm / Çəki aralığı (q / ml):</span>
-              <div class="flex items-center gap-2">
-                <div class="relative flex-1">
-                  <input type="number" x-model="minWeightInput" placeholder="Min (məs. 100)"
-                         class="w-full bg-white border border-[#eedcc4] py-1.5 px-3 rounded-lg text-xs focus:outline-none focus:border-[#e35600]">
-                  <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-[#5c4b37] font-mono">q/ml</span>
-                </div>
-                <span class="text-neutral-400 font-mono text-xs">➔</span>
-                <div class="relative flex-1">
-                  <input type="number" x-model="maxWeightInput" placeholder="Maks (məs. 1000)"
-                         class="w-full bg-white border border-[#eedcc4] py-1.5 px-3 rounded-lg text-xs focus:outline-none focus:border-[#e35600]">
-                  <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-[#5c4b37] font-mono">q/ml</span>
-                </div>
-                <button x-show="minWeightInput || maxWeightInput"
-                        @click="minWeightInput = ''; maxWeightInput = '';"
-                        class="p-1 px-2 rounded bg-neutral-100 border border-[#eedcc4] text-[10px] cursor-pointer font-bold text-[#5c4b37] flex-shrink-0">X</button>
-              </div>
-            </div>
-
-            <div class="md:col-span-3 space-y-1.5" x-show="filterOptions.fats.length > 1">
-              <div class="text-[10px] font-mono text-neutral-500 uppercase tracking-wider flex items-center justify-between">
-                <span>Yağlılıq dərəcəsi:</span>
-                <button x-show="selectedFatPercentage !== null"
-                        @click="selectedFatPercentage = null"
-                        class="text-[#e35600] hover:underline text-[9px] cursor-pointer">X</button>
-              </div>
-              <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                <template x-for="p in filterOptions.fats" :key="p">
-                  <button
-                    @click="selectedFatPercentage = p"
-                    class="px-2 py-1 rounded text-xs font-mono font-bold cursor-pointer transition-colors flex-shrink-0"
-                    :class="selectedFatPercentage === p
-                      ? 'bg-[#e35600] text-white'
-                      : 'bg-[#faf6ee] text-stone-600 border border-[#eedcc4] hover:bg-[#fffaee]'"
-                    x-text="p + '%'"
-                  ></button>
-                </template>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Sort + live search row -->
-          <div class="border-t border-[#eedcc4]/60 pt-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            <div class="text-xs text-[#5c4b37] flex items-center gap-1.5">
-              Siyahıda
-              <strong class="text-[#e35600] font-bold font-mono" x-text="filteredProducts.length">0</strong>
-              məhsul qrupu göstərilir.
-            </div>
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="text-[10px] font-mono text-[#5c4b37] uppercase tracking-wider">Sıralama:</span>
-              <div class="flex items-center gap-1 bg-[#faf6ee] p-1 rounded-xl border border-[#eedcc4]">
-                <button @click="sortBy = 'name'"
-                        class="px-2.5 py-1 text-[11px] rounded transition-all cursor-pointer font-bold"
-                        :class="sortBy === 'name' ? 'bg-white text-[#281505] shadow-sm' : 'text-[#7c664f] hover:text-[#281505]'">
-                  A ➔ Z
-                </button>
-                <button @click="sortBy = 'price_asc'"
-                        class="px-2.5 py-1 text-[11px] rounded transition-all cursor-pointer font-bold"
-                        :class="sortBy === 'price_asc' ? 'bg-white text-[#281505] shadow-sm' : 'text-[#7c664f] hover:text-[#281505]'">
-                  Qiymət ↑
-                </button>
-                <button @click="sortBy = 'savings_desc'"
-                        class="px-2.5 py-1 text-[11px] rounded transition-all cursor-pointer font-bold"
-                        :class="sortBy === 'savings_desc' ? 'bg-emerald-500 text-white shadow-sm' : 'text-[#7c664f] hover:text-[#281505]'">
-                  Qənaət ↓
-                </button>
-              </div>
-              <div class="relative">
-                <input type="text" x-model="tableSearchQuery" placeholder="Cədvəldə canlı süz..."
-                       class="bg-white border border-[#eedcc4] text-xs text-neutral-800 placeholder-[#a39789] pl-3 pr-7 py-1.5 rounded-lg focus:outline-none focus:border-[#e35600] w-48 shadow-sm transition-all focus:w-56">
-                <button x-show="tableSearchQuery" @click="tableSearchQuery = ''"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 font-bold text-xs cursor-pointer">✕</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ── COMPARISON TABLE ── -->
-        <div class="overflow-x-auto rounded-2xl border border-[#eedcc4] shadow-md bg-white">
-          <table class="w-full text-left border-collapse table-auto">
-            <thead>
-              <tr class="bg-[#fff3eb] border-b border-[#eedcc4] sticky top-0 z-10">
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[#3e2f20] whitespace-nowrap">
-                  Məhsul adı və növü
-                </th>
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[#3e2f20] text-center whitespace-nowrap">
-                  Ölçü / Yağ%
-                </th>
-                <template x-for="store in pricesData.stores" :key="store">
-                  <th class="p-4 text-xs font-bold uppercase tracking-wider text-center whitespace-nowrap">
-                    <span
-                      class="px-2.5 py-1 rounded-md font-bold text-[10px] block text-center"
-                      :class="STORE_THEMES[store]
-                        ? (STORE_THEMES[store].lightBg + ' ' + STORE_THEMES[store].text)
-                        : 'bg-stone-50 text-stone-600'"
-                      x-text="store"
-                    ></span>
-                  </th>
-                </template>
-                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[#3e2f20] text-right whitespace-nowrap">
-                  Maks. Qənaət
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#eedcc4]/40">
-
-              <template x-for="prod in filteredProducts" :key="prod.id">
-                <tr
-                  :class="highlightedProductId === prod.id
-                    ? 'bg-[#fff5ea]/70 border-y-2 border-orange-300'
-                    : 'hover:bg-[#fffaf4]/70 transition-colors'"
-                  :id="'prod-row-' + prod.id"
-                >
-                  <!-- Product name + subtype + PRICE PILLS -->
-                  <td class="p-4">
-                    <div class="space-y-1.5">
-                      <div class="text-sm font-bold text-neutral-800" x-text="prod.name"></div>
-                      <div class="flex flex-wrap items-center gap-1.5">
-                        <span class="bg-[#faf6ee] border border-[#eedcc4] text-[#5c4b37] px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider"
-                              x-text="prod.attributes.subtype"></span>
-                        <span
-                          x-show="Object.keys(prod.offers).length < pricesData.stores.length"
-                          class="bg-red-50 border border-red-100 text-red-700 px-1.5 py-0.5 rounded text-[9px] font-bold"
-                          x-text="(pricesData.stores.length - Object.keys(prod.offers).length) + ' kassada yoxdur'"
-                        ></span>
-                      </div>
-
-                      <!-- ── Inline price pills with store badges ── -->
-                      <div class="flex flex-wrap gap-1 pt-0.5">
-                        <template x-for="store in pricesData.stores" :key="store">
-                          <span
-                            x-show="prod.offers[store]"
-                            class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border transition-all"
-                            :class="isCheapest(prod, store)
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300 ring-1 ring-emerald-300/60'
-                              : isMostExpensive(prod, store)
-                                ? 'bg-red-50 text-red-600 border-red-200'
-                                : (STORE_THEMES[store]
-                                    ? (STORE_THEMES[store].lightBg + ' ' + STORE_THEMES[store].text + ' border-current/20')
-                                    : 'bg-stone-50 text-stone-500 border-stone-200')"
-                          >
-                            <span class="font-black tracking-wide" x-text="STORE_ABBR[store] || store.slice(0,2)"></span>
-                            <span class="font-mono font-extrabold" x-text="getCurrentPrice(prod.offers[store]).toFixed(2) + ' ₼'"></span>
-                            <span x-show="isCheapest(prod, store)" class="text-amber-500 leading-none">★</span>
-                          </span>
-                        </template>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Weight / fat -->
-                  <td class="p-4 text-center min-w-[100px]">
-                    <div class="space-y-1">
-                      <div class="font-mono text-[#3e2f20] font-bold text-xs">
-                        <span x-show="prod.attributes.weightValue"
-                              x-text="prod.attributes.weightValue + ' ' + prod.attributes.weightUnit"></span>
-                        <span x-show="!prod.attributes.weightValue" class="text-neutral-300">—</span>
-                      </div>
-                      <span
-                        x-show="prod.attributes.fatPercentage !== null"
-                        class="bg-[#fff2e6] text-[#e35600] border border-[#fddfc4] px-1.5 py-0.5 rounded text-[10px] font-mono font-bold inline-block"
-                        x-text="prod.attributes.fatPercentage + '% Yağ'"
-                      ></span>
-                    </div>
-                  </td>
-
-                  <!-- Store price cells -->
-                  <template x-for="store in pricesData.stores" :key="store">
-                    <td class="p-4 text-center min-w-[110px]">
-                      <!-- Not available -->
-                      <div x-show="!prod.offers[store]"
-                           class="text-xs text-[#c0b0a0] font-mono font-semibold">—</div>
-
-                      <!-- Available -->
-                      <div x-show="prod.offers[store]">
-                        <!-- Store micro-badge -->
-                        <div class="flex items-center justify-center mb-1.5">
-                          <span
-                            class="inline-block text-[8px] font-black px-1.5 py-0.5 rounded tracking-widest border"
-                            :class="STORE_THEMES[store]
-                              ? (STORE_THEMES[store].lightBg + ' ' + STORE_THEMES[store].text + ' border-current/25')
-                              : 'bg-stone-50 text-stone-400 border-stone-200'"
-                            x-text="STORE_ABBR[store] || store.slice(0,2).toUpperCase()"
-                          ></span>
-                        </div>
-                        <div class="flex items-center justify-center gap-1.5">
-                          <span
-                            class="font-mono font-extrabold"
-                            :class="isCheapest(prod, store)
-                              ? 'text-emerald-600 text-base font-black'
-                              : isMostExpensive(prod, store)
-                                ? 'text-red-600 text-sm'
-                                : 'text-neutral-800 text-sm'"
-                            x-text="getCurrentPrice(prod.offers[store]).toFixed(2) + ' ₼'"
-                          ></span>
-                          <span x-show="isCheapest(prod, store)" class="text-amber-500 text-sm" title="Ən Ucuz!">★</span>
-                          <span x-show="isMostExpensive(prod, store)" class="text-red-400 text-xs leading-none" title="Ən Baha!">●</span>
-                        </div>
-                        <!-- Price bar -->
-                        <div x-show="getOffersCount(prod) > 1"
-                             class="mt-1.5 mx-auto w-14 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                          <div
-                            class="h-full rounded-full"
-                            :style="'width:' + getPriceBarPct(prod,store) + '%;background:' + getPriceBarColor(getPriceBarPct(prod,store))"
-                          ></div>
-                        </div>
-                      </div>
-                    </td>
-                  </template>
-
-                  <!-- Savings -->
-                  <td class="p-4 text-right min-w-[110px]">
-                    <div x-show="getOffersCount(prod) > 1" class="space-y-1">
-                      <div class="text-xs font-mono font-black text-emerald-600"
-                           x-text="'+ ' + getSavingAmount(prod).toFixed(2) + ' ₼'"></div>
-                      <span class="inline-block bg-emerald-50 border border-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] font-bold"
-                            x-text="getSavingPercent(prod).toFixed(1) + '% Qənaət'"></span>
-                    </div>
-                    <span x-show="getOffersCount(prod) <= 1" class="text-neutral-300 text-xs font-mono">—</span>
-                  </td>
-
-                </tr>
-              </template>
-
-              <!-- Empty state -->
-              <tr x-show="filteredProducts.length === 0">
-                <td :colspan="pricesData.stores.length + 3" class="p-14 text-center text-stone-400 text-sm">
-                  Seçilmiş filtrə uyğun məhsul tapılmadı.
-                </td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Tips footer -->
-        <div class="bg-white border border-[#eedcc4] rounded-2xl p-5 flex flex-col sm:flex-row items-start gap-4 shadow-sm">
-          <div class="w-10 h-10 rounded-full bg-[#fdf2e9] flex items-center justify-center flex-shrink-0 border border-orange-100 text-lg mt-0.5">ℹ️</div>
-          <div>
-            <h4 class="font-bold text-[#281505]">Qənaət bələdçisi:</h4>
-            <p class="text-xs text-[#5c4b37] leading-relaxed mt-1">
-              Hər məhsul üçün ən ucuz supermarket <strong>★ yaşıl rənglə</strong>, ən baha isə
-              <strong>● qırmızı rənglə</strong> vurğulanır. Məhsul adının altındakı rəngli etiketlər
-              (<strong>BR · OBA · AR · NP · RH</strong>) hər mağazanın qiymətini birbaşa göstərir —
-              ən ucuzu yaşıl, ən bahalısı qırmızı olur. Orta hesabla
-              <strong>25%-dək</strong> büdcənizə qənaət edə bilərsiniz.
-            </p>
-          </div>
-        </div>
-
-      </section>
-      <!-- end category detail -->
-
-    </div>
-    <!-- end main content -->
-
-  </main>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       SCRIPTS
-  ═══════════════════════════════════════════════════════════ -->
-  <script>
-
-    /* ── Category emoji map ── */
-    const CATEGORY_EMOJIS = {
-      sud_mehsullari:"🥛", sud:"🥛", yumurta:"🥚", kere_yagi:"🧈", pendir:"🧀",
-      qatiq:"🫙", xama:"🥄", kefir:"🥛", ayran:"🥤",
-      kartof:"🥔", pomidor:"🍅", xiyar:"🥒", soyan:"🧅", kelem:"🥬",
-      yerkoyu:"🥕", cuqundur:"🫚", badimcan:"🍆", biber:"🌶️", sarimsaq:"🧄", ispanaq:"🌿",
-      alma:"🍎", armud:"🍐", saftal:"🍑", gilas:"🍒", uzum:"🍇", banan:"🍌",
-      kivi:"🥝", limon:"🍋", portaqal:"🍊", nar:"🍎",
-      toyuq:"🍗", dana_ati:"🥩", qoyun_ati:"🍖", hindi:"🦃",
-      kolbasa:"🌭", sosis:"🌭", baliq:"🐟",
-      duyu:"🍚", merci:"🫘", noxud:"🟡", fasulya:"🫘", qarabashaq:"🌾", yulaf:"🌾",
-      un:"🌾", makaron:"🍝", corek:"🍞", pecenye:"🍪",
-      cay:"🍵", qehve:"☕", sire:"🧃", su:"💧", kola:"🥤", energetik:"⚡",
-      sokolad:"🍫", halva:"🍬", bal:"🍯", dondurma:"🍦",
-      zeytun_yagi:"🫒", bitki_yagi:"🌻", mayonez:"🫙", ketcup:"🍅",
-      duz:"🧂", sekerqum:"🍬", istiot:"🌶️",
-      terevez:"🥦", meyve:"🍎", et_baliq:"🥩",
-      taxil_paxlali:"🌾", corek_pasta:"🍞", ickiler:"🥤",
-      sirniyyat:"🍫", yag_sous:"🧈", edviyyat:"🌶",
-    };
-
-    /* ── Store color themes ── */
-    const STORE_THEMES = {
-      Bravo:  { lightBg: "bg-red-50",     text: "text-red-600"     },
-      OBA:    { lightBg: "bg-sky-50",     text: "text-sky-600"     },
-      Araz:   { lightBg: "bg-purple-50",  text: "text-purple-600"  },
-      Neptun: { lightBg: "bg-emerald-50", text: "text-emerald-700" },
-      Rahat:  { lightBg: "bg-amber-50",   text: "text-amber-700"   },
-    };
-
-    /* ── Store abbreviations (badge labels) ── */
-    const STORE_ABBR = {
-      Bravo:  'BR',
-      OBA:    'OBA',
-      Araz:   'AR',
-      Neptun: 'NP',
-      Rahat:  'RH',
-    };
-
-    /* ══════════════════════════════════════════
-       JACCARD SIMILARITY
-    ══════════════════════════════════════════ */
-    function getTokens(str) {
-      return new Set(
-        str.toLowerCase()
-          .replace(/ç/g,'c').replace(/ə/g,'e').replace(/ğ/g,'g')
-          .replace(/ı/g,'i').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ü/g,'u')
-          .replace(/[^\w\s]/g,' ')
-          .split(/\s+/).filter(Boolean)
-      );
-    }
-    function calculateJaccard(a, b) {
-      const sa = getTokens(a), sb = getTokens(b);
-      if (!sa.size && !sb.size) return 1;
-      if (!sa.size || !sb.size) return 0;
-      let inter = 0;
-      sa.forEach(t => { if (sb.has(t)) inter++; });
-      return inter / (sa.size + sb.size - inter);
-    }
-
-    /* ══════════════════════════════════════════
-       PRODUCT TYPE EXTRACTION  (from name)
-    ══════════════════════════════════════════ */
-    const STOP_WORDS = new Set([
-      'sabun','şampun','yuyucu','dezodorant','krem','losyon','jel','maye',
-      'plastik','şüşə','qabda','qalib','mini','maxi','vita','nano','bio','eco',
-      'premium','classic','original','special','super','ultra','mega','extra',
-      've','ilə','üçün','olan','həm','da','də','ki','bu','bir','bütün',
-    ]);
-    function isAzAdj(w) { return /[lL][ıiuüIİUÜ]$/.test(w); }
-
-    function extractProductType(name) {
-      const qualRe = /\d[\d.,]*\s*(?:%|kq|kg|litr|lt(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|ml(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[lL](?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ])|[qQgG][rR]?(?![a-zA-ZğüşıöçĞÜŞIÖÇəƏ]))/;
-      const m = name.match(qualRe);
-      const cutIdx = m ? m.index : name.length;
-      const before = name.slice(0, cutIdx).trim();
-      const words = (before || name).split(/\s+/).filter(w => /^\p{L}+$/u.test(w));
-      if (!words.length) return 'Digər';
-      if (words.length < 2) return words[0][0].toUpperCase() + words[0].slice(1);
-      for (let i = 1; i < words.length; i++) {
-        const w = words[i];
-        if (isAzAdj(w) || STOP_WORDS.has(w.toLowerCase())) continue;
-        return w[0].toUpperCase() + w.slice(1);
+/* group products across stores (inverted index: only compare names that share a token) */
+function group(cat){
+  const out=[], idx=new Map(); let n=1;
+  for(const store of Object.keys(cat.stores||{})){
+    for(const it of cat.stores[store]||[]){
+      const tk=tokens(it.name); let best=null,bs=0; const seen=new Set();
+      for(const t of tk){
+        const l=idx.get(t); if(!l) continue;
+        for(const e of l){ if(seen.has(e)) continue; seen.add(e);
+          const s=jaccard(e.tk,tk); if(s>bs){bs=s;best=e.g;} }
       }
-      const last = words[words.length - 1];
-      return last[0].toUpperCase() + last.slice(1);
+      if(best&&bs>=.5){ if(!best.offers[store]) best.offers[store]=mk(it); continue; }
+      const g={id:"p"+n++,name:it.name,a:attrs(it.name),offers:{[store]:mk(it)},lc:it.name.toLowerCase()};
+      out.push(g); const e={g,tk};
+      for(const t of tk){ (idx.get(t)||idx.set(t,[]).get(t)).push(e); }
     }
+  }
+  for(const g of out){ // precompute price stats once
+    const v=Object.values(g.offers).map(o=>o.p);
+    g.n=v.length; g.min=Math.min(...v); g.max=Math.max(...v); g.save=g.n>1?g.max-g.min:0;
+  }
+  return out;
+}
+function mk(it){ const own=it.price!=null; return {p:own?it.price:(it.wolt_price||0), w:!own}; }
 
-    /* ══════════════════════════════════════════
-       ATTRIBUTE EXTRACTION  (weight, fat, subtype)
-    ══════════════════════════════════════════ */
-    function extractProductAttributes(name) {
-      /* 1. Fat percentage */
-      let fatPercentage = null;
-      const fatM = name.match(/(\d+[.,]?\d*)\s*%/);
-      if (fatM) {
-        const v = parseFloat(fatM[1].replace(',', '.'));
-        if (!isNaN(v)) fatPercentage = v;
-      }
+/* ─────────── state ─────────── */
+let DB=null; const GROUPS={}; let stores=[];
+let cur=null, filtered=[], shown=PAGE, hl=null;
+const F={sub:null,mode:"Hamısı",min:"",max:"",fat:null,q:"",sort:"savings_desc"};
+const groups=id=>GROUPS[id]||(GROUPS[id]=group(DB.categories[id]));
 
-      /* 2. Weight / volume */
-      let weightValue = null, weightUnit = null;
-      const AL = '[a-zA-ZğüşıöçĞÜŞIÖÇəƏ]';
-      const pats = [
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*kq(?!'+AL+')','i'), unit:'kq' },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*kg(?!'+AL+')','i'), unit:'kq' },
-        { re: /(\d+[.,]?\d*)\s*litr/i,                            unit:'L'  },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*lt(?!'+AL+')','i'), unit:'L'  },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*[lL](?!'+AL+')'),   unit:'L'  },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*ml(?!'+AL+')','i'), unit:'ml' },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*gr(?!'+AL+')','i'), unit:'q'  },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*[gG](?!'+AL+')'),   unit:'q'  },
-        { re: new RegExp('(\\d+[.,]?\\d*)\\s*qr?(?!'+AL+')','i'),unit:'q'  },
-      ];
-      for (const p of pats) {
-        const wm = name.match(p.re);
-        if (wm) {
-          const v = parseFloat(wm[1].replace(',', '.'));
-          if (v > 0) { weightValue = v; weightUnit = p.unit; break; }
-        }
-      }
-      /* Egg-count fallback */
-      if (!weightValue) {
-        if (/10-luq|10\s*[əeaä]d[əe]d|10\s*adet/i.test(name))  { weightValue=10; weightUnit='ədəd'; }
-        else if (/15-lik|15\s*[əe]d[əe]d/i.test(name))           { weightValue=15; weightUnit='ədəd'; }
-        else if (/30-luq|30\s*[əe]d[əe]d/i.test(name))           { weightValue=30; weightUnit='ədəd'; }
-        else if (/6-l[ıi]q|6\s*[əe]d[əe]d/i.test(name))         { weightValue=6;  weightUnit='ədəd'; }
-      }
+/* ─────────── load ─────────── */
+async function load(){
+  $("loading").hidden=false; $("error").hidden=true;
+  try{
+    const r=await fetch("data/prices.json"); if(!r.ok) throw new Error("HTTP "+r.status);
+    DB=await r.json(); stores=DB.stores||[];
+    renderHome(); route();
+  }catch(e){ $("errmsg").textContent=e.message; $("error").hidden=false; }
+  finally{ $("loading").hidden=true; }
+}
 
-      /* 3. Subtype */
-      const subtype = extractProductType(name) || 'Digər';
-      return { subtype, weightValue, weightUnit, fatPercentage };
+/* ─────────── home ─────────── */
+function renderHome(){
+  const cats=Object.entries(DB.categories);
+  const raw=id=>Object.values(DB.categories[id].stores).reduce((a,l)=>a+l.length,0);
+  const shownCats=cats.filter(([id])=>raw(id)>0).sort((a,b)=>raw(b[0])-raw(a[0]));
+  $("catGrid").innerHTML=shownCats.map(([id,c])=>
+    `<button class="cat" data-id="${id}"><span class="em">${EMOJI[id]||"📦"}</span><b>${esc(c.name)}</b>
+     <small>${raw(id)} qiymət</small></button>`).join("");
+  const total=shownCats.reduce((a,[id])=>a+raw(id),0);
+  $("stats").innerHTML=stat("Mağaza",stores.length,"Bravo · OBA · Araz · Neptun · Rahat")+
+    stat("Kateqoriya",shownCats.length,"ərzaq qrupu")+stat("Qiymət qeydi",total.toLocaleString("az"),"bütün mağazalar üzrə")+
+    `<div class="stat good"><span>Maks. qənaət</span><b id="maxSave">…</b><small id="maxSaveP">hesablanır</small></div>`;
+  const meta=DB.meta||{};
+  $("storeChips").innerHTML=stores.map(s=>{
+    const m=meta[s], n=cats.reduce((a,[,c])=>a+(c.stores[s]||[]).length,0);
+    return `<span class="chip" style="--c:var(--${s})"><span class="dot"></span><b>${s}</b> ${n?n+" məhsul":"məlumat yoxdur"}${m?` · ${esc(m.updated)}`:""}</span>`;
+  }).join("");
+  $("srcNote").innerHTML=`Son yenilənmə: <b>${esc(DB.last_updated||"—")}</b>. Mağazanın öz saytından alınan qiymətlər dəqiqdir;
+    Wolt-dan alınanlar <sup>W</sup> ilə işarələnib və rəfdəki qiymətdən bir qədər yüksək ola bilər.`;
+  // heavy stats computed after first paint, in small slices
+  let i=0,best=0,bp="",ids=shownCats.map(x=>x[0]);
+  (function step(){
+    const t=performance.now();
+    while(i<ids.length&&performance.now()-t<12){
+      for(const g of groups(ids[i])) if(g.save>best){best=g.save;bp=g.name;} i++;
     }
+    if($("maxSave")){ $("maxSave").textContent="+ "+fmt(best); $("maxSaveP").textContent=bp||"—"; }
+    if(i<ids.length) (window.requestIdleCallback||setTimeout)(step);
+  })();
+}
+const stat=(l,v,s)=>`<div class="stat"><span>${l}</span><b class="mono">${v}</b><small>${s}</small></div>`;
 
-    function normalizeWeight(value, unit) {
-      if (value == null || !unit) return null;
-      const u = unit.toLowerCase();
-      if (u === 'kq') return value * 1000;
-      if (u === 'l')  return value * 1000;
-      return value;
+/* ─────────── category view ─────────── */
+function openCat(id,focus){
+  cur=id; hl=focus||null; shown=PAGE;
+  Object.assign(F,{sub:null,mode:"Hamısı",min:"",max:"",fat:null,q:"",sort:"savings_desc"});
+  $("minW").value=$("maxW").value=$("tq").value=""; $("sort").value=F.sort;
+  $("catEm").textContent=EMOJI[id]||"📦"; $("catName").textContent=DB.categories[id].name;
+  $("thead").innerHTML="<tr><th>Məhsul</th><th>Ölçü</th>"+stores.map(s=>`<th><span class="dot" style="--c:var(--${s})"></span>${s}</th>`).join("")+"<th>Qənaət</th></tr>";
+  const gs=groups(id), subs=new Map(), fats=new Set();
+  gs.forEach(g=>{subs.set(g.a.subtype,(subs.get(g.a.subtype)||0)+1); if(g.a.fat!=null)fats.add(g.a.fat);});
+  const top=[...subs].sort((a,b)=>b[1]-a[1]).slice(0,40).map(x=>x[0]).sort((a,b)=>a.localeCompare(b,"az"));
+  $("subs").innerHTML=pill("Hamısı",null,"sub")+top.map(s=>pill(s,s,"sub")).join("");
+  $("modes").innerHTML=["Hamısı","⚖ Çəki","💧 Həcm","📦 Digər"].map(m=>pill(m,m,"mode")).join("");
+  const fl=[...fats].sort((a,b)=>a-b); $("fatLbl").hidden=$("fats").hidden=fl.length<2;
+  $("fats").innerHTML=fl.length<2?"":pill("Hamısı",null,"fat")+fl.map(f=>pill(f+"%",f,"fat")).join("");
+  // champion + unit bargains
+  const cnt={}; gs.forEach(g=>{ if(g.n<2)return; for(const[s,o]of Object.entries(g.offers)) if(o.p===g.min) cnt[s]=(cnt[s]||0)+1; });
+  const ch=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+  $("champ").hidden=!ch; if(ch) $("champ").textContent=`🏆 Ən sərfəli: ${ch[0]} (${ch[1]} məhsulda ən ucuz)`;
+  const kg=[],lt=[];
+  gs.forEach(g=>{ const {wv:v,wu:u}=g.a; if(!v||!u)return;
+    for(const[s,o]of Object.entries(g.offers)){
+      if(u==="kq"||u==="q"){const q=u==="kq"?v:v/1000; q>0&&kg.push({l:"1 kq",n:g.name,s,u:o.p/q,o:o.p,q:v+" "+u});}
+      else if(u==="L"||u==="ml"){const q=u==="L"?v:v/1000; q>0&&lt.push({l:"1 L",n:g.name,s,u:o.p/q,o:o.p,q:v+" "+u});}
+    }});
+  const bst=a=>a.sort((x,y)=>x.u-y.u)[0];
+  $("bargains").innerHTML=[kg,lt].filter(a=>a.length).map(bst).map(b=>
+    `<div class="barg"><div style="min-width:0"><small>✨ ${b.l} üzrə ən ucuz</small><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.n)}</b>
+     <small>${esc(b.q)} · ${fmt(b.o)} · ${esc(b.s)}</small></div><b class="mono">${fmt(b.u)}</b></div>`).join("");
+  syncPills(); apply();
+}
+const pill=(label,val,k)=>`<button class="pill" data-k="${k}" data-v="${val==null?"":esc(val)}">${esc(label)}</button>`;
+function syncPills(){
+  document.querySelectorAll(".pill").forEach(b=>{
+    const k=b.dataset.k, v=b.dataset.v, cv=F[k];
+    b.classList.toggle("on",(cv==null&&v==="")||(cv!=null&&String(cv)===v));
+  });
+}
+function apply(){
+  let l=groups(cur).slice();
+  if(F.sub) l=l.filter(g=>g.a.subtype===F.sub);
+  if(F.mode!=="Hamısı") l=l.filter(g=>{const u=g.a.wu;
+    return F.mode==="⚖ Çəki"?(u==="kq"||u==="q"):F.mode==="💧 Həcm"?(u==="L"||u==="ml"):(u==="ədəd"||u==null);});
+  const mn=parseFloat(F.min), mx=parseFloat(F.max);
+  if(!isNaN(mn)) l=l.filter(g=>{const n=norm(g.a.wv,g.a.wu);return n!=null&&n>=mn;});
+  if(!isNaN(mx)) l=l.filter(g=>{const n=norm(g.a.wv,g.a.wu);return n!=null&&n<=mx;});
+  if(F.fat!=null) l=l.filter(g=>g.a.fat===+F.fat);
+  if(F.q.trim()){const q=F.q.trim().toLowerCase(); l=l.filter(g=>g.lc.includes(q)||g.a.subtype.toLowerCase().includes(q));}
+  if(F.sort==="name") l.sort((a,b)=>a.name.localeCompare(b.name,"az"));
+  else if(F.sort==="price_asc") l.sort((a,b)=>a.min-b.min);
+  else l.sort((a,b)=>b.save-a.save||b.n-a.n);
+  filtered=l; shown=Math.max(shown,PAGE); render();
+}
+function cell(g,s){
+  const o=g.offers[s]; if(!o) return `<td data-l="${s}"><span class="na">—</span></td>`;
+  const c=g.n>1?(o.p===g.min?" min":o.p===g.max?" max":""):"";
+  return `<td data-l="${s}"><span class="p mono${c}">${c===" min"?"★ ":""}${fmt(o.p)}${o.w?`<sup title="Wolt qiyməti">W</sup>`:""}</span></td>`;
+}
+function render(){
+  const list=filtered.slice(0,shown);
+  $("count").textContent=`${filtered.length} məhsul qrupu`;
+  $("tbody").innerHTML=list.length?list.map(g=>{
+    const a=g.a, size=a.wv?`${a.wv} ${a.wu}`:"—", fat=a.fat!=null?` · ${a.fat}%`:"";
+    return `<tr id="r-${g.id}"${hl===g.id?' class="hl"':""}><td><div class="name">${esc(g.name)}</div>
+      <div class="sub">${esc(a.subtype)}${g.n<stores.length?` · ${stores.length-g.n} mağazada yoxdur`:""}</div></td>
+      <td class="mono sz" data-l="Ölçü" style="white-space:nowrap">${size}${fat}</td>${stores.map(s=>cell(g,s)).join("")}
+      <td class="sv" data-l="Qənaət">${g.n>1?`<div class="save mono">+ ${fmt(g.save)}<small>${(g.save/g.max*100).toFixed(0)}%</small></div>`:'<span class="na">—</span>'}</td></tr>`;
+  }).join(""):`<tr><td colspan="${stores.length+3}" class="empty">Filtrə uyğun məhsul tapılmadı.</td></tr>`;
+  $("more").hidden=shown>=filtered.length;
+  $("more").textContent=`Daha çox göstər (${filtered.length-shown} qalıb)`;
+}
+
+/* ─────────── routing (hash) ─────────── */
+function route(){
+  if(!DB) return;
+  const m=location.hash.match(/^#\/c\/([\w-]+)(?:\/(p\d+))?/);
+  if(m&&DB.categories[m[1]]){
+    $("homeView").hidden=true; $("catView").hidden=false; openCat(m[1],m[2]);
+    if(m[2]) setTimeout(()=>{const r=$("r-"+m[2]); r&&r.scrollIntoView({block:"center"});},50);
+    else window.scrollTo(0,0);
+  }else{ $("catView").hidden=true; $("homeView").hidden=false; }
+}
+addEventListener("hashchange",route);
+const go=h=>{ location.hash===h?route():(location.hash=h); };
+
+/* ─────────── events ─────────── */
+$("home").onclick=()=>{ $("q").value=""; $("results").innerHTML=""; go("#/"); };
+$("back").onclick=()=>go("#/");
+$("retry").onclick=load;
+$("catGrid").onclick=e=>{const b=e.target.closest(".cat"); if(b) go("#/c/"+b.dataset.id);};
+$("catView").addEventListener("click",e=>{
+  const b=e.target.closest(".pill"); if(!b) return;
+  const k=b.dataset.k, v=b.dataset.v;
+  F[k]=k==="mode"?v:(v===""?null:v); syncPills(); hl=null; shown=PAGE; apply();
+});
+$("more").onclick=()=>{shown+=PAGE;render();};
+const debounce=(f,t=120)=>{let h;return(...a)=>{clearTimeout(h);h=setTimeout(()=>f(...a),t);};};
+$("minW").oninput=debounce(e=>{F.min=e.target.value;shown=PAGE;apply();});
+$("maxW").oninput=debounce(e=>{F.max=e.target.value;shown=PAGE;apply();});
+$("tq").oninput=debounce(e=>{F.q=e.target.value;shown=PAGE;apply();});
+$("sort").onchange=e=>{F.sort=e.target.value;apply();};
+
+/* global search */
+$("q").oninput=debounce(e=>{
+  const q=e.target.value.trim().toLowerCase(), box=$("results");
+  if(q.length<2){box.innerHTML="";return;}
+  const res=[];
+  for(const id of Object.keys(DB.categories)){
+    for(const g of groups(id)){
+      if(g.lc.includes(q)) res.push([id,g]);
+      if(res.length>=400) break;
     }
+  }
+  res.sort((a,b)=>b[1].n-a[1].n||a[1].min-b[1].min);
+  box.innerHTML=res.slice(0,8).map(([id,g])=>
+    `<button class="res" data-go="#/c/${id}/${g.id}"><small>${EMOJI[id]||"📦"} ${esc(DB.categories[id].name)}</small>
+     <strong>${esc(g.name)}</strong><small class="mono">${Object.entries(g.offers).map(([s,o])=>s+" "+fmt(o.p)).join(" · ")}</small></button>`).join("")
+     ||'<div class="res"><small>Heç nə tapılmadı</small></div>';
+},150);
+$("results").onclick=e=>{const b=e.target.closest("[data-go]"); if(!b)return; $("results").innerHTML=""; $("q").value=""; go(b.dataset.go);};
+addEventListener("keydown",e=>{ if(e.key==="Escape"){$("results").innerHTML="";$("q").blur();} });
+addEventListener("click",e=>{ if(!e.target.closest(".search")) $("results").innerHTML=""; });
 
-    /* ══════════════════════════════════════════
-       MERGE PRODUCTS (Jaccard matching across stores)
-    ══════════════════════════════════════════ */
-    function mergeCategoryProducts(categoryData) {
-      const unified = [];
-      const storeNames = Object.keys(categoryData.stores || {});
-      let counter = 1;
-
-      for (const store of storeNames) {
-        const items = categoryData.stores[store] || [];
-        for (const item of items) {
-          let bestMatch = null, bestScore = 0;
-          for (const u of unified) {
-            for (const raw of u.rawNames) {
-              const s = calculateJaccard(raw, item.name);
-              if (s > bestScore) { bestScore = s; bestMatch = u; }
-            }
-          }
-          if (bestMatch && bestScore >= 0.5) {
-            if (!bestMatch.offers[store]) {
-              bestMatch.offers[store] = item;
-              bestMatch.rawNames.push(item.name);
-            }
-          } else {
-            unified.push({
-              id: `prod_${counter++}`,
-              name: item.name,
-              rawNames: [item.name],
-              attributes: extractProductAttributes(item.name),
-              offers: { [store]: item },
-            });
-          }
-        }
-      }
-      return unified;
-    }
-
-    /* ══════════════════════════════════════════
-       ALPINE COMPONENT
-    ══════════════════════════════════════════ */
-    function priceApp() {
-      return {
-        /* Expose constants to Alpine templates */
-        CATEGORY_EMOJIS,
-        STORE_THEMES,
-        STORE_ABBR,
-
-        /* State */
-        pricesData: { stores: [], last_updated: '', categories: {} },
-        groupedCategoriesData: {},
-        isLoading: true,
-        loadError: null,
-
-        selectedCategoryId: null,
-        globalSearchQuery: '',
-        highlightedProductId: null,
-
-        selectedSubtype: null,
-        weightMode: 'Hamısı',
-        minWeightInput: '',
-        maxWeightInput: '',
-        selectedFatPercentage: null,
-        tableSearchQuery: '',
-        sortBy: 'savings_desc',
-
-        /* ── Auto-called by Alpine ── */
-        async init() {
-          try {
-            const resp = await fetch('data/prices.json');
-            if (!resp.ok) throw new Error(`HTTP ${resp.status} – ${resp.statusText}`);
-            this.pricesData = await resp.json();
-
-            /* Pre-compute Jaccard groupings once */
-            const map = {};
-            for (const [id, data] of Object.entries(this.pricesData.categories)) {
-              map[id] = mergeCategoryProducts(data);
-            }
-            this.groupedCategoriesData = map;
-          } catch (e) {
-            this.loadError = e.message;
-          } finally {
-            this.isLoading = false;
-          }
-        },
-
-        /* ── Computed: dashboard stats ── */
-        get stats() {
-          let totalItemsCount = 0, maxSavingFound = 0, maxSavingProduct = '';
-          let priceSum = 0, totalOffers = 0;
-          for (const products of Object.values(this.groupedCategoriesData)) {
-            totalItemsCount += products.length;
-            for (const p of products) {
-              const offs = Object.values(p.offers);
-              offs.forEach(o => {
-                priceSum += this.getCurrentPrice(o);
-                totalOffers++;
-              });
-              if (offs.length > 1) {
-                const prices = offs.map(o => this.getCurrentPrice(o));
-                const diff = Math.max(...prices) - Math.min(...prices);
-                if (diff > maxSavingFound) { maxSavingFound = diff; maxSavingProduct = p.name; }
-              }
-            }
-          }
-          return { totalItemsCount, maxSavingFound, maxSavingProduct, priceSum, totalOffers };
-        },
-
-        /* ── Computed: global search results ── */
-        get globalSearchResults() {
-          if (!this.globalSearchQuery.trim()) return [];
-          const q = this.globalSearchQuery.toLowerCase();
-          const res = [];
-          for (const [catId, products] of Object.entries(this.groupedCategoriesData)) {
-            for (const p of products) {
-              if (p.name.toLowerCase().includes(q) || p.attributes.subtype.toLowerCase().includes(q))
-                res.push({ categoryId: catId, prod: p });
-            }
-          }
-          return res.slice(0, 8);
-        },
-
-        /* ── Computed: filter options for active category ── */
-        get filterOptions() {
-          if (!this.selectedCategoryId) return { subtypes: [], fats: [] };
-          const products = this.groupedCategoriesData[this.selectedCategoryId] || [];
-          const subs = new Set(), fats = new Set();
-          products.forEach(p => {
-            if (p.attributes.subtype) subs.add(p.attributes.subtype);
-            if (p.attributes.fatPercentage != null) fats.add(p.attributes.fatPercentage);
-          });
-          return { subtypes: [...subs].sort(), fats: [...fats].sort((a,b) => a-b) };
-        },
-
-        /* ── Computed: filtered + sorted product list ── */
-        get filteredProducts() {
-          if (!this.selectedCategoryId) return [];
-          let list = [...(this.groupedCategoriesData[this.selectedCategoryId] || [])];
-
-          if (this.selectedSubtype)
-            list = list.filter(p => p.attributes.subtype === this.selectedSubtype);
-
-          if (this.weightMode !== 'Hamısı') {
-            list = list.filter(p => {
-              const u = p.attributes.weightUnit;
-              if (this.weightMode === '⚖ Çəki')  return u === 'kq' || u === 'q';
-              if (this.weightMode === '💧 Həcm')  return u === 'L'  || u === 'ml';
-              return u === 'ədəd' || u == null;
-            });
-          }
-
-          if (this.minWeightInput !== '') {
-            const mn = parseFloat(this.minWeightInput);
-            if (!isNaN(mn)) list = list.filter(p => {
-              const n = normalizeWeight(p.attributes.weightValue, p.attributes.weightUnit);
-              return n != null && n >= mn;
-            });
-          }
-          if (this.maxWeightInput !== '') {
-            const mx = parseFloat(this.maxWeightInput);
-            if (!isNaN(mx)) list = list.filter(p => {
-              const n = normalizeWeight(p.attributes.weightValue, p.attributes.weightUnit);
-              return n != null && n <= mx;
-            });
-          }
-
-          if (this.selectedFatPercentage != null)
-            list = list.filter(p => p.attributes.fatPercentage === this.selectedFatPercentage);
-
-          if (this.tableSearchQuery.trim()) {
-            const q = this.tableSearchQuery.toLowerCase();
-            list = list.filter(p =>
-              p.name.toLowerCase().includes(q) || p.attributes.subtype.toLowerCase().includes(q)
-            );
-          }
-
-          if      (this.sortBy === 'name')         list.sort((a,b) => a.name.localeCompare(b.name,'az'));
-          else if (this.sortBy === 'price_asc')    list.sort((a,b) => this.getMinPrice(a) - this.getMinPrice(b));
-          else if (this.sortBy === 'savings_desc') list.sort((a,b) => this.getSavingAmount(b) - this.getSavingAmount(a));
-
-          return list;
-        },
-
-        /* ── Computed: cheapest per-unit bargains ── */
-        get unitBargains() {
-          if (!this.selectedCategoryId) return [];
-          const list = this.groupedCategoriesData[this.selectedCategoryId] || [];
-          const kqB = [], lB = [];
-          list.forEach(p => {
-            Object.entries(p.offers).forEach(([store, offer]) => {
-              const price = this.getCurrentPrice(offer);
-              const { weightValue: v, weightUnit: u } = p.attributes;
-              if (!v || !u) return;
-              if (u === 'kq' || u === 'q') {
-                const norm = u === 'kq' ? v : v / 1000;
-                if (norm > 0) kqB.push({ unitLabel:'1kq', productName:p.name, storeName:store,
-                  pricePerUnit: price/norm, originalPrice: price, originalQty: v+' '+u });
-              } else if (u === 'L' || u === 'ml') {
-                const norm = u === 'L' ? v : v / 1000;
-                if (norm > 0) lB.push({ unitLabel:'1L', productName:p.name, storeName:store,
-                  pricePerUnit: price/norm, originalPrice: price, originalQty: v+' '+u });
-              }
-            });
-          });
-          kqB.sort((a,b) => a.pricePerUnit - b.pricePerUnit);
-          lB.sort((a,b) => a.pricePerUnit - b.pricePerUnit);
-          const res = [];
-          if (kqB.length) res.push(kqB[0]);
-          if (lB.length)  res.push(lB[0]);
-          return res;
-        },
-
-        /* ── Computed: which store is cheapest most often ── */
-        get storeChampions() {
-          if (!this.selectedCategoryId) return [];
-          const list = this.groupedCategoriesData[this.selectedCategoryId] || [];
-          const counts = {};
-          list.forEach(p => {
-            const offs = Object.entries(p.offers);
-            if (!offs.length) return;
-            let mn = Infinity, winners = [];
-            offs.forEach(([store, off]) => {
-              const pr = this.getCurrentPrice(off);
-              if (pr < mn) { mn = pr; winners = [store]; }
-              else if (pr === mn) winners.push(store);
-            });
-            winners.forEach(w => { counts[w] = (counts[w] || 0) + 1; });
-          });
-          return Object.entries(counts).sort((a,b) => b[1]-a[1]);
-        },
-
-        /* ── Methods ── */
-        getCurrentPrice(offer) {
-          if (!offer) return 0;
-          return offer.price ?? offer.wolt_price ?? 0;
-        },
-        getMinPrice(prod) {
-          const prices = Object.values(prod.offers).map(o => this.getCurrentPrice(o));
-          return prices.length ? Math.min(...prices) : 0;
-        },
-        getMaxPrice(prod) {
-          const prices = Object.values(prod.offers).map(o => this.getCurrentPrice(o));
-          return prices.length ? Math.max(...prices) : 0;
-        },
-        getOffersCount(prod) {
-          return Object.keys(prod.offers).length;
-        },
-        isCheapest(prod, store) {
-          if (!prod.offers[store] || this.getOffersCount(prod) <= 1) return false;
-          return this.getCurrentPrice(prod.offers[store]) === this.getMinPrice(prod);
-        },
-        isMostExpensive(prod, store) {
-          if (!prod.offers[store] || this.getOffersCount(prod) <= 1) return false;
-          return this.getCurrentPrice(prod.offers[store]) === this.getMaxPrice(prod);
-        },
-        getSavingAmount(prod) {
-          if (this.getOffersCount(prod) <= 1) return 0;
-          return this.getMaxPrice(prod) - this.getMinPrice(prod);
-        },
-        getSavingPercent(prod) {
-          const mx = this.getMaxPrice(prod);
-          return mx > 0 ? (this.getSavingAmount(prod) / mx) * 100 : 0;
-        },
-        getPriceBarPct(prod, store) {
-          const offer = prod.offers[store];
-          if (!offer) return 0;
-          const mn = this.getMinPrice(prod), mx = this.getMaxPrice(prod);
-          if (mx === mn) return 0;
-          return Math.round(((this.getCurrentPrice(offer) - mn) / (mx - mn)) * 100);
-        },
-        getPriceBarColor(pct) {
-          if (pct <= 5)  return '#22c55e';
-          if (pct < 35)  return '#86efac';
-          if (pct < 65)  return '#facc15';
-          if (pct < 85)  return '#fb923c';
-          return '#ef4444';
-        },
-
-        openCategory(id) {
-          this.selectedCategoryId = id;
-          this.resetFilters();
-        },
-        selectProductFromSearch(categoryId, productId) {
-          this.selectedCategoryId = categoryId;
-          this.resetFilters();
-          this.highlightedProductId = productId;
-          this.globalSearchQuery = '';
-          setTimeout(() => {
-            const row = document.getElementById('prod-row-' + productId);
-            if (row) row.scrollIntoView({ behavior:'smooth', block:'center' });
-          }, 200);
-        },
-        resetFilters() {
-          this.selectedSubtype = null;
-          this.weightMode = 'Hamısı';
-          this.minWeightInput = '';
-          this.maxWeightInput = '';
-          this.selectedFatPercentage = null;
-          this.tableSearchQuery = '';
-          this.sortBy = 'savings_desc';
-          this.highlightedProductId = null;
-        },
-        resetCategoryView() {
-          this.selectedCategoryId = null;
-          this.resetFilters();
-        },
-      };
-    }
-  </script>
-
+$("skelgrid").innerHTML=Array(8).fill('<div class="skel" style="height:104px"></div>').join("");
+load();
+</script>
 </body>
 </html>

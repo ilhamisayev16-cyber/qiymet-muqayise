@@ -41,6 +41,12 @@ qiymet-project/
 ### 5. Hazırdır! 
 Scraper hər gün avtomatik işləyəcək.
 
+## Qiymət mənbələri və etibarlılıq
+- Mağazanın öz saytından/API-dən alınan qiymət (`price`) həmişə Wolt qiymətindən (`wolt_price`) üstün tutulur.
+- Cədvəldə Wolt qiymətləri <sup>W</sup> ilə işarələnir (Wolt qiyməti rəf qiymətindən bir qədər yüksək ola bilər).
+- Scrape boş nəticə qaytararsa, köhnə qiymətlər silinmir (`meta` bölməsində hər mağazanın son yenilənmə vaxtı var).
+- Wolt filialının slug-ı dəyişibsə, mühit dəyişəni ilə verin: `WOLT_SLUG_RAHAT=rahat-supermarket-...` (vergüllə bir neçə).
+
 ## Mağazalar
 - **Bravo** → birmarket.az
 - **Neptun** → neptun.az  

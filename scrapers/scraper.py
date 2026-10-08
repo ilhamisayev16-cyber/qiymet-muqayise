@@ -12,12 +12,13 @@ QiymətMüqayisə Scraper
   python scraper.py --store bravo
   python scraper.py --store oba
 """
-import json, re, time, argparse
+import json, os, re, time, argparse
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
 CATEGORIES = {
-    "sud":       {"name":"Süd",              "kw":["süd","milk"],
+    "sud":       {"name":"Süd",              "kw":["süd"],
                   "excl":["şokolad","kakao","qatıq","kefir","ayran","xama","soya"]},
     "yumurta":   {"name":"Yumurta",          "kw":["yumurta"]},
     "kere_yagi": {"name":"Kərə yağı",        "kw":["kərə yağ","butter"]},
@@ -89,13 +90,24 @@ CATEGORIES = {
 
 ALL_STORES = ["Bravo","OBA","Araz","Neptun","Rahat"]
 
+# Hər mağaza üçün bir neçə Wolt filialı: ilk işləyən istifadə olunur.
+# Mühit dəyişəni ilə əvəz etmək olar: WOLT_SLUG_RAHAT=... (vergüllə bir neçə)
 WOLT_SLUGS = {
-    "Bravo":  "bravo-supermarket-globus-centre",
-    "OBA":    "oba-market-nerimanov-1",
-    "Araz":   "araz-supermarket-narimanov",
-    "Neptun": "neptun-supermarket-28",
-    "Rahat":  "rahat-supermarket-heydar-aliyev",
+    "Bravo":  ["bravo-supermarket-globus-centre", "bravo-supermarket-28-may",
+               "bravo-supermarket-narimanov"],
+    "OBA":    ["oba-market-nerimanov-1", "oba-market-narimanov", "oba-market-yasamal"],
+    "Araz":   ["araz-supermarket-narimanov", "araz-supermarket-yasamal",
+               "araz-supermarket-28-may"],
+    "Neptun": ["neptun-supermarket-28", "neptun-supermarket-narimanov",
+               "neptun-supermarket-nizami"],
+    "Rahat":  ["rahat-supermarket-heydar-aliyev", "rahat-supermarket-narimanov",
+               "rahat-supermarket-yasamal", "rahat-supermarket-nasimi"],
 }
+
+def wolt_slugs(store):
+    env = os.environ.get("WOLT_SLUG_" + store.upper(), "")
+    extra = [x.strip() for x in env.split(",") if x.strip()]
+    return extra + WOLT_SLUGS.get(store, [])
 
 JUICE_WORDS = ["şirəsi","suyu","nektarı","mors","şərbəti","kompot","içkisi",
                "limonadı","ətirli dadlı","dadlı"]
@@ -112,14 +124,26 @@ def has_juice(name):
     n = name.lower()
     return any(w in n for w in JUICE_WORDS)
 
+def _kw_re(words):
+    # söz əvvəlində uyğunluq: "nar" -> "Nar", amma "Qarnar"/"Narzan" yox
+    # qısa açar sözlər (nar, bal, su, un) tam söz kimi axtarılır
+    parts = [re.escape(w.lower()) + (r"(?!\w)" if not w.endswith(" ") and (len(w) <= 3 or w.lower() in ("nar", "bal", "duz")) else "")
+             for w in words]
+    return re.compile(r"(?<!\w)(?:" + "|".join(parts) + ")")
+
+_CAT_RE = {
+    cid: (_kw_re(info["kw"]), _kw_re(info["excl"]) if info.get("excl") else None)
+    for cid, info in CATEGORIES.items()
+}
+
 def assign_cat(name):
     n = name.lower()
     if has_juice(n):
         return "sire"
-    for cid, info in CATEGORIES.items():
-        if any(e.lower() in n for e in info.get("excl",[])):
+    for cid, (kw, ex) in _CAT_RE.items():
+        if ex and ex.search(n):
             continue
-        if any(kw.lower() in n for kw in info["kw"]):
+        if kw.search(n):
             return cid
     return None
 
@@ -302,41 +326,73 @@ WOLT_HEADS = {
     "Referer":"https://wolt.com/",
 }
 
-def scrape_wolt(store):
+def _session():
     import requests
-    slug = WOLT_SLUGS.get(store)
-    if not slug: return {}
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+    ses = requests.Session()
+    retry = Retry(total=3, backoff_factor=0.6, status_forcelist=(429, 500, 502, 503, 504),
+                  allowed_methods=None)
+    ses.mount("https://", HTTPAdapter(max_retries=retry, pool_maxsize=16))
+    ses.headers.update(WOLT_HEADS)
+    return ses
+
+def _wolt_url(slug):
+    return (f"https://consumer-api.wolt.com/consumer-api/consumer-assortment"
+            f"/v1/venues/slug/{slug}/assortment/items/search?language=az")
+
+def _wolt_price(item):
+    for k in ("price", "baseprice", "unit_price"):
+        v = item.get(k)
+        if isinstance(v, dict): v = v.get("amount") or v.get("value")
+        if isinstance(v, (int, float)) and v > 0:
+            return round(v / 100, 2)
+    return None
+
+def scrape_wolt(store):
+    """Wolt-dan çəkir: filialları yoxlayır, sorğuları paralel göndərir."""
+    ses = _session()
+    url = None
+    for slug in wolt_slugs(store):
+        try:
+            r = ses.post(_wolt_url(slug), json={"q": "süd"}, timeout=15)
+            if r.status_code == 200 and (r.json().get("items") is not None):
+                url = _wolt_url(slug)
+                print(f"  [Wolt/{store}] filial: {slug}")
+                break
+        except Exception:
+            continue
+    if not url:
+        print(f"  [Wolt/{store}] ✗ heç bir filial cavab vermədi "
+              f"(WOLT_SLUG_{store.upper()} ilə düzgün slug verin)")
+        return None   # None = uğursuz, boş nəticə ilə qarışdırılmasın
+
+    queries = sorted({kw.strip() for info in CATEGORIES.values() for kw in info["kw"]})
+
+    def run(q):
+        try:
+            r = ses.post(url, json={"q": q}, timeout=20)
+            return r.json().get("items") or [] if r.status_code == 200 else []
+        except Exception:
+            return []
+
     results = {c: [] for c in CATEGORIES}
     seen = set()
-    url = (f"https://consumer-api.wolt.com/consumer-api/consumer-assortment"
-           f"/v1/venues/slug/{slug}/assortment/items/search?language=az")
-    queries = list({info["kw"][0] for info in CATEGORIES.values()})
-    print(f"  [Wolt/{store}]", end="", flush=True)
-    for q in queries:
-        try:
-            r = requests.post(url, headers=WOLT_HEADS, json={"q":q}, timeout=15)
-            if r.status_code != 200: continue
-            items = r.json().get("items") or []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for items in ex.map(run, queries):
             for item in items:
-                name = item.get("name","")
+                name = item.get("name", "")
                 if isinstance(name, dict): name = name.get("az") or name.get("en") or ""
-                price = None
-                for k in ["price","baseprice","unit_price"]:
-                    v = item.get(k)
-                    if isinstance(v,dict): v = v.get("amount") or v.get("value")
-                    if isinstance(v,(int,float)) and v>0: price = round(v/100,2); break
-                if not name or price is None: continue
+                price = _wolt_price(item)
+                if not name or price is None or price >= 999: continue
                 uid = name.lower().strip()
                 if uid in seen: continue
                 seen.add(uid)
                 cat = assign_cat(name)
-                if cat: results[cat].append({"name":name,"wolt_price":price})
-        except Exception:
-            pass
-        time.sleep(0.15)
+                if cat: results[cat].append({"name": name, "wolt_price": price})
     total = sum(len(v) for v in results.values())
-    print(f" {total} məhsul")
-    return results
+    print(f"  [Wolt/{store}] {total} məhsul")
+    return results if total else None
 
 # ── BİRLƏŞDİRMƏ ──────────────────────────────────────────────────────────
 def merge_own_wolt(own_list, wolt_list):
@@ -361,7 +417,11 @@ def merge_own_wolt(own_list, wolt_list):
     return merged
 
 def apply_to_data(own_res, wolt_res, store, data):
-    wolt_only = store in ("Neptun","Rahat")
+    own_res, wolt_res = own_res or {}, wolt_res or {}
+    if not any(own_res.values()) and not any(wolt_res.values()):
+        print(f"  [{store}] ⚠ nəticə boşdur — köhnə qiymətlər saxlanıldı")
+        return False
+    wolt_only = store in ("Araz","Neptun","Rahat")
     for cid in CATEGORIES:
         if wolt_only:
             items = [{"name":w["name"],"wolt_price":w["wolt_price"]}
@@ -369,6 +429,12 @@ def apply_to_data(own_res, wolt_res, store, data):
         else:
             items = merge_own_wolt(own_res.get(cid,[]), wolt_res.get(cid,[]))
         data["categories"][cid]["stores"][store] = items
+    data.setdefault("meta", {})[store] = {
+        "updated": datetime.now().strftime("%d.%m.%Y %H:%M"),
+        "own": sum(len(v) for v in own_res.values()),
+        "wolt": sum(len(v) for v in wolt_res.values()),
+    }
+    return True
 
 # ── MAIN ─────────────────────────────────────────────────────────────────
 def main():
@@ -422,7 +488,7 @@ def main():
     data["last_updated"] = datetime.now().strftime("%d.%m.%Y %H:%M")
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out,"w",encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     print(f"\n✅  Saxlandı: {out}  ({out.stat().st_size//1024} KB)")
     print("\n📊  Nəticə:")
     for s in ALL_STORES:
