@@ -246,77 +246,50 @@ def _extract_list(d):
     return []
 
 # ── OBA ──────────────────────────────────────────────────────────────────
-OBA_API = "https://oba-we-api-p-app-01.azurewebsites.net/api/v1/obaPlus/catalog/products"
+
+_OBA_CARD = re.compile(
+    r'<h3[^>]*>([^<]+)</h3>.*?<p class="color-mako[^>]*>([^<]*)</p>.*?'
+    r'<span class="fs-lg-24 fs-20 lh-24 fw-400">([\d.,]+)</span>', re.S)
+OBA_STEP = 24
+
+def _oba_cards(html):
+    from html import unescape
+    return [(unescape(n).strip(), unescape(c).strip(), pr) for n, c, pr in _OBA_CARD.findall(html)]
 
 def scrape_oba():
-    import requests
-    results = {c: [] for c in CATEGORIES}
-    heads = {"User-Agent":"okhttp/4.9.2","Accept":"application/json",
-             "Accept-Encoding":"gzip","accept-language":"az"}
-    page, ps, total = 1, 50, 0
-    print("  [OBA] tətbiq API…", end="", flush=True)
-    while True:
-        try:
-            r = requests.get(OBA_API,
-                params={"page":page,"pageSize":ps,"sortBy":0,"descending":"false"},
-                headers=heads, timeout=30)
-            if r.status_code == 401:
-                print("\n  [OBA] 401 → web fallback")
-                return _oba_web()
-            if r.status_code != 200: break
-            d = r.json()
-            items = _extract_list(d) or _extract_list(d.get("data",{}))
-            if not items: break
-            for p in items:
-                name = (p.get("name") or p.get("productName") or p.get("nameAz") or "")
-                price = clean_price(p.get("price") or p.get("sellPrice") or
-                                    p.get("currentPrice") or p.get("salePrice") or
-                                    p.get("discountedPrice") or p.get("basePrice"))
-                if not name or price is None: continue
-                total += 1
-                cat = assign_cat(name)
-                if cat: results[cat].append({"name":name,"price":price})
-            print(f" {page}", end="", flush=True)
-            tp = (d.get("data",{}).get("totalPages") or d.get("totalPages") or d.get("pageCount"))
-            if (tp and page >= int(tp)) or len(items) < ps: break
-            page += 1; time.sleep(0.3)
-        except Exception as e:
-            print(f"\n  [OBA] xəta: {e}"); break
-    print(f"\n  [OBA] ✓ {total} məhsul")
-    return results if total > 0 else _oba_web()
+    """oba.az/products/ — server tərəfindən render olunan HTML, ?start= ilə səhifələmə."""
+    ses = _session()
+    ses.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124",
+                        "Accept-Language": "az"})
+    ses.headers.pop("Content-Type", None)
 
-def _oba_web():
-    import requests
-    from bs4 import BeautifulSoup
-    results = {c: [] for c in CATEGORIES}
-    heads = {"User-Agent":"Mozilla/5.0","Accept-Language":"az"}
-    total = 0
-    print("  [OBA] oba.az web scrape…")
-    for pg in range(1, 400):
+    def page(start):
         try:
-            r = requests.get(f"https://oba.az/az/products/?page={pg}", headers=heads, timeout=30)
-            if r.status_code != 200: break
-            soup = BeautifulSoup(r.text,"html.parser")
-            cards = soup.select(".product-card,.product-item,[class*='product']")
-            if not cards: break
-            found = 0
-            for c in cards:
-                ne = c.select_one("[class*='name'],[class*='title'],h3,h4")
-                pe = c.select_one("[class*='price']")
-                if not ne or not pe: continue
-                name = ne.get_text(strip=True)
-                price = clean_price(pe.get_text(strip=True))
-                if not name or price is None: continue
-                found += 1; total += 1
-                cat = assign_cat(name)
-                if cat: results[cat].append({"name":name,"price":price})
-            if found == 0: break
-            print(f"  [OBA/web] s.{pg}: {found} məhsul", end="\r")
-            time.sleep(0.35)
-        except Exception as e:
-            print(f"\n  [OBA/web] xəta: {e}"); break
-    print(f"\n  [OBA/web] ✓ {total} məhsul")
-    return results
+            r = ses.get("https://oba.az/products/", params={"start": start} if start else None, timeout=30)
+            return _oba_cards(r.text) if r.status_code == 200 else []
+        except Exception:
+            return []
+
+    results = {c: [] for c in CATEGORIES}
+    seen, total, start, empty = set(), 0, 0, 0
+    print("  [OBA] oba.az/products/ …", end="", flush=True)
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        while start < 60000 and empty < 1:
+            offsets = [start + i * OBA_STEP for i in range(8)]
+            new_in_batch = 0
+            for cards in ex.map(page, offsets):
+                for name, _cat, raw in cards:
+                    price = clean_price(raw)
+                    key = (name.lower(), price)
+                    if not name or price is None or key in seen: continue
+                    seen.add(key); total += 1; new_in_batch += 1
+                    cat = assign_cat(name)
+                    if cat: results[cat].append({"name": name, "price": price})
+            if new_in_batch == 0: empty += 1
+            start += 8 * OBA_STEP
+            print(f" {total}", end="", flush=True)
+    print(f"\n  [OBA] ✓ {total} məhsul")
+    return results if total else None
 
 # ── ARAZ — arazmarket.az API ─────────────────────────────────────────────
 ARAZ_API = "https://b7x9kq.arazmarket.az/api"
