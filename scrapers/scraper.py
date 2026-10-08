@@ -318,6 +318,63 @@ def _oba_web():
     print(f"\n  [OBA/web] ✓ {total} məhsul")
     return results
 
+# ── ARAZ — arazmarket.az API ─────────────────────────────────────────────
+ARAZ_API = "https://b7x9kq.arazmarket.az/api"
+
+def _araz_price(p):
+    """Rəfdəki faktiki qiymət: endirim varsa endirimli, yoxsa adi qiymət."""
+    if p.get("is_discount") and p.get("discount_price"):
+        v = clean_price(p.get("discount_price"))
+        if v: return v
+    return clean_price(p.get("sales_price"))
+
+def _araz_leaves(nodes, out):
+    for n in nodes or []:
+        if n.get("sub"): _araz_leaves(n["sub"], out)
+        else: out.append(n["id"])
+    return out
+
+def scrape_araz():
+    """Araz-ın öz API-si. Uğursuz olarsa None qaytarır (Wolt-a keçilir)."""
+    ses = _session()
+    ses.headers.update({"Accept": "application/json", "Origin": "https://arazmarket.az",
+                        "Referer": "https://arazmarket.az/", "Accept-Language": "az"})
+    try:
+        r = ses.get(f"{ARAZ_API}/categories", timeout=40)
+        r.raise_for_status()
+        leaves = _araz_leaves(r.json().get("data"), [])
+    except Exception as e:
+        print(f"  [Araz] ✗ kateqoriyalar alınmadı: {e}")
+        return None
+    print(f"  [Araz] {len(leaves)} alt kateqoriya")
+
+    def fetch(cid):
+        items, page = [], 1
+        while page <= 60:
+            try:
+                r = ses.get(f"{ARAZ_API}/products/category/{cid}", params={"page": page}, timeout=30)
+                if r.status_code != 200: break
+                d = (r.json().get("data") or {})
+                items += d.get("products") or []
+                if page >= int((d.get("pagination") or {}).get("last_page") or 1): break
+                page += 1
+            except Exception:
+                break
+        return items
+
+    results = {c: [] for c in CATEGORIES}
+    seen, total = set(), 0
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for items in ex.map(fetch, leaves):
+            for p in items:
+                pid, name, price = p.get("id"), (p.get("title") or "").strip(), _araz_price(p)
+                if pid in seen or not name or price is None: continue
+                seen.add(pid); total += 1
+                cat = assign_cat(name)
+                if cat: results[cat].append({"name": name, "price": price})
+    print(f"  [Araz] ✓ {total} məhsul (arazmarket.az)")
+    return results if total else None
+
 # ── WOLT ─────────────────────────────────────────────────────────────────
 WOLT_HEADS = {
     "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120",
@@ -421,7 +478,7 @@ def apply_to_data(own_res, wolt_res, store, data):
     if not any(own_res.values()) and not any(wolt_res.values()):
         print(f"  [{store}] ⚠ nəticə boşdur — köhnə qiymətlər saxlanıldı")
         return False
-    wolt_only = store in ("Araz","Neptun","Rahat")
+    wolt_only = store in ("Neptun","Rahat")
     for cid in CATEGORIES:
         if wolt_only:
             items = [{"name":w["name"],"wolt_price":w["wolt_price"]}
@@ -475,8 +532,10 @@ def main():
                     continue
             elif sname == "OBA":
                 own_res = scrape_oba()
+            elif sname == "Araz":
+                own_res = scrape_araz() or {}
             # Araz, Neptun, Rahat — öz saytları yoxdur/bloklayır → Wolt
-            elif sname in ("Araz","Neptun","Rahat"):
+            elif sname in ("Neptun","Rahat"):
                 pass  # goes straight to Wolt below
 
         # Wolt
