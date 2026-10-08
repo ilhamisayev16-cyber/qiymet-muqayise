@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       store:
-        description: 'Mağaza (all, araz, oba, bravo, neptun, rahat)'
+        description: 'Mağaza (all, araz, oba, bravo, neptun)'
         default: 'all'
 
 permissions:

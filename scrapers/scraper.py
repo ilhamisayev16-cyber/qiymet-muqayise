@@ -5,7 +5,6 @@ QiymətMüqayisə Scraper
   OBA    -> oba-we-api / oba.az fallback
   Araz   -> Wolt  (sayt bloklayır)
   Neptun -> Wolt
-  Rahat  -> Wolt
 
 İstifadə:
   python scraper.py
@@ -88,10 +87,10 @@ CATEGORIES = {
     "istiot":    {"name":"İstiot/Ədviyyat",  "kw":["istiot","ədviyyat","zirə","darçın"]},
 }
 
-ALL_STORES = ["Bravo","OBA","Araz","Neptun","Rahat"]
+ALL_STORES = ["Bravo","OBA","Araz","Neptun"]
 
 # Hər mağaza üçün bir neçə Wolt filialı: ilk işləyən istifadə olunur.
-# Mühit dəyişəni ilə əvəz etmək olar: WOLT_SLUG_RAHAT=... (vergüllə bir neçə)
+# Mühit dəyişəni ilə əvəz etmək olar: WOLT_SLUG_NEPTUN=... (vergüllə bir neçə)
 WOLT_SLUGS = {
     "Bravo":  ["bravo-supermarket-globus-centre", "bravo-supermarket-28-may",
                "bravo-supermarket-narimanov"],
@@ -100,8 +99,6 @@ WOLT_SLUGS = {
                "araz-supermarket-28-may"],
     "Neptun": ["neptun-supermarket-28", "neptun-supermarket-narimanov",
                "neptun-supermarket-nizami"],
-    "Rahat":  ["rahat-supermarket-heydar-aliyev", "rahat-supermarket-narimanov",
-               "rahat-supermarket-yasamal", "rahat-supermarket-nasimi"],
 }
 
 def wolt_slugs(store):
@@ -451,7 +448,7 @@ def apply_to_data(own_res, wolt_res, store, data):
     if not any(own_res.values()) and not any(wolt_res.values()):
         print(f"  [{store}] ⚠ nəticə boşdur — köhnə qiymətlər saxlanıldı")
         return False
-    wolt_only = store in ("Neptun","Rahat")
+    wolt_only = store in ("Neptun",)
     for cid in CATEGORIES:
         if wolt_only:
             items = [{"name":w["name"],"wolt_price":w["wolt_price"]}
@@ -469,7 +466,7 @@ def apply_to_data(own_res, wolt_res, store, data):
 # ── MAIN ─────────────────────────────────────────────────────────────────
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--store", choices=["bravo","oba","araz","neptun","rahat","all"], default="all")
+    ap.add_argument("--store", choices=["bravo","oba","araz","neptun","all"], default="all")
     ap.add_argument("--wolt-only",  action="store_true")
     ap.add_argument("--own-only",   action="store_true")
     ap.add_argument("--out", default="../data/prices.json")
@@ -486,7 +483,7 @@ def main():
     else:
         data = empty_data()
 
-    name_map = {"bravo":"Bravo","oba":"OBA","araz":"Araz","neptun":"Neptun","rahat":"Rahat"}
+    name_map = {"bravo":"Bravo","oba":"OBA","araz":"Araz","neptun":"Neptun"}
     targets = list(name_map.keys()) if args.store=="all" else [args.store]
 
     for t in targets:
@@ -507,8 +504,8 @@ def main():
                 own_res = scrape_oba()
             elif sname == "Araz":
                 own_res = scrape_araz() or {}
-            # Araz, Neptun, Rahat — öz saytları yoxdur/bloklayır → Wolt
-            elif sname in ("Neptun","Rahat"):
+            # Neptun — öz saytları yoxdur/bloklayır → Wolt
+            elif sname == "Neptun":
                 pass  # goes straight to Wolt below
 
         # Wolt
