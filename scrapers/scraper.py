@@ -477,6 +477,8 @@ def main():
         with open(out, encoding="utf-8") as f:
             data = json.load(f)
         if "stores" not in data: data["stores"] = ALL_STORES
+        # köhnə (artıq istifadə olunmayan) kateqoriyaları at: onlarda köhnəlmiş qiymətlər qalır
+        data["categories"] = {k: v for k, v in data["categories"].items() if k in CATEGORIES}
         for cid, info in CATEGORIES.items():
             if cid not in data["categories"]:
                 data["categories"][cid] = {"name":info["name"],"stores":{s:[] for s in ALL_STORES}}
