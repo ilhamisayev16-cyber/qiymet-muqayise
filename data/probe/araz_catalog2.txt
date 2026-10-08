@@ -1,0 +1,27 @@
+page=1 status=200 products=28 first=[('1051', 'Bos Persol 600qr'), ('1268', 'Alafran Persol 200ml')]
+page=2 status=200 products=12 first=[('1478', 'Gel Prelest Bio 250ml(Zelyoniy Cay)'), ('8658', 'SOBA SAC LAVAŞ 10 ƏD')]
+page=3 status=200 products=12 first=[('6373', 'Ayca Krem Pendir 200gr'), ('2070', 'Melodiya Hava Teravet. Deniz 285ml')]
+page1==page2: False
+sample product json: ,"errorScripts":[],"template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L20",null,{}],[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/e63677e061aa6b13.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"forbidden":"$undefined","unauthorized":"$undefined"}]\n1e:["$","$L21",null,{"data":"$19:0:props:data","settings":"$19:0:props:settings"}]\n"])</script><script>self.__next_f.push([1,"5:["$","$L22",null,{"page_type":"categories","data":{"products":[{"id":1051,"title":"Bos Persol 600qr","avg_rating":0,"slug":"bos-persol-600qr-1051","description":null,"barcode":"1000015678","nutritional_value":null,"sales_price":"6.00","discount_price":"5.35","is_discount":true,"discount_percent":11,"is_popular":false,"is_new":false,"is_araz_brand":false,"is_wow_campaign":false,"category_id":371,"category_title":"AĞARDICILAR","category_slug":"agardicilar-371","images":["https://b7x9kq.arazmarket.az/storage/products/1000015678.png"],"is_basket":false},{"id":1268,"title":"Alafran Persol 200ml","avg_rating":0,"slug":"alafran-persol-200ml-1268","description":null,"barcode":"1000014976","nutritional_value":null,"sales_price":"2.30","discount_price":"2.30","is_discount":false,"discount_percent":null,"is_popular":false,"is_new":false,"is_araz_brand":false,"is_wow_campaign":false,"category_id":371,"category_ti
+current_page ['"current_page":1']
+last_page ['"last_page":1']
+per_page ['"per_page":28']
+total ['"total":"Cəmi"', '"total":16']
+js chunks: 22
+api-like paths: ['/categories', '/categories/', '/discount-products', '/products/', '/products/comment', '/products/search-result', '/search-result', 'by_products', 'catalog', 'category', 'discount-products-slider', 'discount_products', 'frequently_searched_products', 'popular_products', 'product', 'product_added_to_cart', 'products', 'search', 'search-dropdown', 'search_in_araz', 'search_in_category', 'search_products', 'search_result', 'search_results_for', 'search_site', 'search_term', 'show_products', 'view_all_products']
+404     127B sales_price=0 /api/categories/agardicilar-371
+404     115B sales_price=0 /api/categories/371
+404     125B sales_price=0 /api/categories/371/products
+404     113B sales_price=0 /api/category/371
+404     125B sales_price=0 /api/category/agardicilar-371
+404     108B sales_price=0 /api/products?category_id=371
+404     107B sales_price=0 /api/product?category_id=371
+200   13148B sales_price=22 /api/products/category/371
+200   13011B sales_price=22 /api/products/category/agardicilar-371
+404     122B sales_price=0 /api/category-products/371
+404     108B sales_price=0 /api/products?categoryId=371
+404     108B sales_price=0 /api/products?category=371
+404     116B sales_price=0 /api/search/products?q=s%C3%BCd
+404     121B sales_price=0 /api/products/search?q=s%C3%BCd
+404     106B sales_price=0 /api/search?search=s%C3%BCd
+404     108B sales_price=0 /api/products?search=s%C3%BCd
