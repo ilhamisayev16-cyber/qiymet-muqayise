@@ -1,0 +1,26 @@
+oba page1 cards: 28 [('2 QATLI CICEKLI SUSE FINCAN CH, 1 pc', 'Ev əşyaları', '4,99'), ('3 Inek Feta Pendir 50%, 500 gr', 'Süd məhsulları', '5,80')]
+more-products snippet: 6 fs-lg-28 lh-24 lh-lg-40 fw-600"><span class="color-yellow">OBA Market</span> </h2> </div> </div> <div class="more-products"></div> <div class="row no-gutters product-cards"> 
+pagination-ish: ['data-url="/products/"', 'data-url="/ru/products/"', 'data-url="/en/products/"', 'data-url="/products/"', 'data-url="https://oba.az/ru/products/"', 'data-url="https://oba.az/en/products/"', 'data-url="/products/"\n                                    style="color: red !important;"', 'data-url="/ru/products/"']
+category types: 9
+?page=2: 200 cards=28 same_as_p1=True first=[('2 QATLI CICEKLI SUSE FINCAN CH, 1 pc', 'Ev əşyaları', '4,99')]
+?p=2: 200 cards=28 same_as_p1=True first=[('2 QATLI CICEKLI SUSE FINCAN CH, 1 pc', 'Ev əşyaları', '4,99')]
+?pg=2: 200 cards=28 same_as_p1=True first=[('2 QATLI CICEKLI SUSE FINCAN CH, 1 pc', 'Ev əşyaları', '4,99')]
+?pageNum=2: 200 cards=28 same_as_p1=True first=[('2 QATLI CICEKLI SUSE FINCAN CH, 1 pc', 'Ev əşyaları', '4,99')]
+?start=24: 200 cards=28 same_as_p1=False first=[('Adazu Cipsi Pendir, 130 gr', 'Quru qida', '2,90')]
+type bc8c4845: cards=30 cats=['Şirniyyat']
+type bc8c4845 page2: cards=30 first=[('7 DAYS KRUASAN KAKAO, 200 g', 'Şirniyyat', '4,79')]
+type a63c78f6: cards=30 cats=['Quru qida']
+type a63c78f6 page2: cards=30 first=[('5 D Cipsi Dord Pendir Dadli, 200 gr', 'Quru qida', '2,79')]
+https://oba.az/products/?ajax=1&page=2 200 173778 28
+https://oba.az/products/page2 404 34844 0
+https://oba.az/products/page-2/ 404 34844 0
+wolt 200 4360709 https://consumer-api.wolt.com/v1/pages/restaurants?lat=40.4093&lon=49.8671
+wolt 404 17 https://consumer-api.wolt.com/v1/pages/shops?lat=40.4093&lon=49.8671
+wolt 410 351 https://consumer-api.wolt.com/v1/pages/search?q=rahat&lat=40.4093&lon=49.8671
+wolt 404 17 https://restaurant-api.wolt.com/v1/pages/shops?lat=40.4093&lon=49.8671
+wolt 404 17 https://consumer-api.wolt.com/v1/pages/delivery?lat=40.4093&lon=49.8671
+rahat slugs: ['rahat-gourmet-restaurant']
+araz slugs: ['araz-terrace', 'kabablaraz-neftchiler', 'kabablaraz-yasamal']
+oba slugs: ['megobari1', 'obao-sushi', 'rabarba-gastrobarr']
+neptun slugs: []
+bravo slugs: []
