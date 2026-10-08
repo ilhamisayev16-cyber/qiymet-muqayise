@@ -96,7 +96,7 @@ WOLT_SLUGS = {
     "Bravo":  ["bravo-supermarket-globus-centre", "bravo-supermarket-28-may",
                "bravo-supermarket-narimanov"],
     "OBA":    ["oba-market-nerimanov-1", "oba-market-narimanov", "oba-market-yasamal"],
-    "Araz":   ["araz-supermarket-narimanov", "araz-supermarket-yasamal",
+    "Araz":   ["araz-supermarket-20-yanvarr", "araz-supermarket-narimanov", "araz-supermarket-yasamal",
                "araz-supermarket-28-may"],
     "Neptun": ["neptun-supermarket-28", "neptun-supermarket-narimanov",
                "neptun-supermarket-nizami"],
