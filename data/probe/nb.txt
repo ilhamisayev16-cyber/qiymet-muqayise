@@ -1,0 +1,15 @@
+neptun: 200 0B final=https://neptun.az/ title=
+  next: False False  api: []  links: []
+  price snippets: []
+neptun_az: 200 0B final=https://neptun.az/az title=
+  next: False False  api: []  links: []
+  price snippets: []
+neptun_shop: ERR HTTPSConnectionPool(host='shop.neptun.az', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='shop.neptun.az', port=443): Failed to resolve 'shop.neptun.az' ([Errno -2] Name or service not known)"))
+bravo: ERR HTTPSConnectionPool(host='bravo.az', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='bravo.az', port=443) at 0x7f9a341297d0>, 'Connection to bravo.az timed out. (connect timeout=25)'))
+bravoonline: ERR HTTPSConnectionPool(host='bravoonline.az', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='bravoonline.az', port=443) at 0x7f9a3412b7d0>, 'Connection to bravoonline.az timed out. (connect timeout=25)'))
+bravo_super: 200 43900B final=https://bravosupermarket.az/ title=Ana səhifə | Bravo Supermarket
+  next: False False  api: []  links: ['/about-us/', '/bloq/', '/branches/', '/bravo-app/', '/cards/', '/career/', '/corporate/', '/customerservice/', '/en/', '/huquq/rejection/', '/huquq/terms-of-use/', '/icareye-vermeye-yeriniz-var/', '/news/', '/news/bravo-app/mistik-dunyaya-geri-qayit/', '/news/layiheler/bravo-artiq-wolt-da/', '/news/layiheler/bravo-da-bolkartla-7-kesbek-var-1/', '/news/layiheler/mo-geyim-mehsullari-bravo-da-1/', '/ru/', '/site/templates/img/favicon/apple-icon-114x114.png', '/site/templates/img/favicon/apple-icon-120x120.png']
+  price snippets: []
+birmarket: 200 180463B final=https://birmarket.az/ title=BIRMARKET (Umico) - 800 000-dən çox məhsul sərfəli qiymətlərlə ✅
+  next: False False  api: []  links: ['/_nuxt/04fcdb3.js', '/_nuxt/2fda390.js', '/_nuxt/31d2365.js', '/_nuxt/52bd536.js', '/_nuxt/5c244a9.js', '/_nuxt/5cabc18.js', '/_nuxt/69d2f64.js', '/_nuxt/6fdfbf9.js', '/_nuxt/711f3ac.js', '/_nuxt/742218a.js', '/_nuxt/7c34923.js', '/_nuxt/8a067cc.js', '/_nuxt/9090328.js', '/_nuxt/9adc955.js', '/_nuxt/aefe0b8.js', '/_nuxt/b42f2ed.js', '/_nuxt/b597f53.js', '/_nuxt/b9eea39.js', '/_nuxt/bc505d1.js', '/_nuxt/c6f9aff.js']
+  price snippets: []
