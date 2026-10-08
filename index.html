@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QiymətMüqayisə — Bakı supermarket qiymətləri</title>
-<meta name="description" content="Bravo, OBA, Araz, Neptun və Rahat supermarketlərinin qiymətlərini bir yerdə müqayisə edin.">
+<meta name="description" content="Bravo, OBA, Araz və Neptun supermarketlərinin qiymətlərini bir yerdə müqayisə edin.">
 <meta name="theme-color" content="#e35600">
 <link rel="preload" href="data/prices.json" as="fetch" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛒%3C/text%3E%3C/svg%3E">
@@ -13,7 +13,7 @@
   --bg:#faf6ee; --card:#fff; --ink:#281505; --mute:#6b5a46; --line:#eedcc4; --soft:#f6efe2;
   --brand:#e35600; --brand-soft:#fff1e6; --good:#0f9d58; --good-soft:#e6f6ee; --bad:#d93025; --bad-soft:#fdecea;
   --shadow:0 1px 2px rgba(40,21,5,.06),0 4px 14px rgba(40,21,5,.05);
-  --Bravo:#d93025; --OBA:#0b79d0; --Araz:#8e44ad; --Neptun:#0f9d58; --Rahat:#c77700;
+  --Bravo:#d93025; --OBA:#0b79d0; --Araz:#8e44ad; --Neptun:#0f9d58;
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#151009; --card:#1f1810; --ink:#f5ebdc; --mute:#b4a58f; --line:#3a2e20; --soft:#2a2118;
@@ -189,7 +189,7 @@ td .sub{font-size:11px;color:var(--mute);margin-top:2px}
   <section id="homeView" hidden>
     <div class="hero">
       <h1>Hansı market daha ucuzdur?</h1>
-      <p>Bravo, OBA, Araz, Neptun və Rahat qiymətləri bir cədvəldə.</p>
+      <p>Bravo, OBA, Araz və Neptun qiymətləri bir cədvəldə.</p>
     </div>
     <div class="stats" id="stats"></div>
     <div class="stores" id="storeChips"></div>
@@ -348,7 +348,7 @@ function renderHome(){
     `<button class="cat" data-id="${id}"><span class="em">${EMOJI[id]||"📦"}</span><b>${esc(c.name)}</b>
      <small>${raw(id)} qiymət</small></button>`).join("");
   const total=shownCats.reduce((a,[id])=>a+raw(id),0);
-  $("stats").innerHTML=stat("Mağaza",stores.length,"Bravo · OBA · Araz · Neptun · Rahat")+
+  $("stats").innerHTML=stat("Mağaza",stores.length,"Bravo · OBA · Araz · Neptun")+
     stat("Kateqoriya",shownCats.length,"ərzaq qrupu")+stat("Qiymət qeydi",total.toLocaleString("az"),"bütün mağazalar üzrə")+
     `<div class="stat good"><span>Maks. qənaət</span><b id="maxSave">…</b><small id="maxSaveP">hesablanır</small></div>`;
   const meta=DB.meta||{};

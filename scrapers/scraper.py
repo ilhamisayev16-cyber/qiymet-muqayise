@@ -5,7 +5,6 @@ QiymətMüqayisə Scraper
   OBA    -> oba-we-api / oba.az fallback
   Araz   -> Wolt  (sayt bloklayır)
   Neptun -> Wolt
-  Rahat  -> Wolt
 
 İstifadə:
   python scraper.py
@@ -88,20 +87,18 @@ CATEGORIES = {
     "istiot":    {"name":"İstiot/Ədviyyat",  "kw":["istiot","ədviyyat","zirə","darçın"]},
 }
 
-ALL_STORES = ["Bravo","OBA","Araz","Neptun","Rahat"]
+ALL_STORES = ["Bravo","OBA","Araz","Neptun"]
 
 # Hər mağaza üçün bir neçə Wolt filialı: ilk işləyən istifadə olunur.
-# Mühit dəyişəni ilə əvəz etmək olar: WOLT_SLUG_RAHAT=... (vergüllə bir neçə)
+# Mühit dəyişəni ilə əvəz etmək olar: WOLT_SLUG_NEPTUN=... (vergüllə bir neçə)
 WOLT_SLUGS = {
     "Bravo":  ["bravo-supermarket-globus-centre", "bravo-supermarket-28-may",
                "bravo-supermarket-narimanov"],
     "OBA":    ["oba-market-nerimanov-1", "oba-market-narimanov", "oba-market-yasamal"],
     "Araz":   ["araz-supermarket-20-yanvarr", "araz-supermarket-narimanov", "araz-supermarket-yasamal",
                "araz-supermarket-28-may"],
-    "Neptun": ["neptun-supermarket-28", "neptun-supermarket-narimanov",
+    "Neptun": ["neptun-supermarket-narimanovv", "neptun-supermarket-28", "neptun-supermarket-narimanov",
                "neptun-supermarket-nizami"],
-    "Rahat":  ["rahat-supermarket-heydar-aliyev", "rahat-supermarket-narimanov",
-               "rahat-supermarket-yasamal", "rahat-supermarket-nasimi"],
 }
 
 def wolt_slugs(store):
@@ -246,77 +243,107 @@ def _extract_list(d):
     return []
 
 # ── OBA ──────────────────────────────────────────────────────────────────
-OBA_API = "https://oba-we-api-p-app-01.azurewebsites.net/api/v1/obaPlus/catalog/products"
+
+_OBA_CARD = re.compile(
+    r'<h3[^>]*>([^<]+)</h3>.*?<p class="color-mako[^>]*>([^<]*)</p>.*?'
+    r'<span class="fs-lg-24 fs-20 lh-24 fw-400">([\d.,]+)</span>', re.S)
+OBA_STEP = 24
+
+def _oba_cards(html):
+    from html import unescape
+    return [(unescape(n).strip(), unescape(c).strip(), pr) for n, c, pr in _OBA_CARD.findall(html)]
 
 def scrape_oba():
-    import requests
-    results = {c: [] for c in CATEGORIES}
-    heads = {"User-Agent":"okhttp/4.9.2","Accept":"application/json",
-             "Accept-Encoding":"gzip","accept-language":"az"}
-    page, ps, total = 1, 50, 0
-    print("  [OBA] tətbiq API…", end="", flush=True)
-    while True:
-        try:
-            r = requests.get(OBA_API,
-                params={"page":page,"pageSize":ps,"sortBy":0,"descending":"false"},
-                headers=heads, timeout=30)
-            if r.status_code == 401:
-                print("\n  [OBA] 401 → web fallback")
-                return _oba_web()
-            if r.status_code != 200: break
-            d = r.json()
-            items = _extract_list(d) or _extract_list(d.get("data",{}))
-            if not items: break
-            for p in items:
-                name = (p.get("name") or p.get("productName") or p.get("nameAz") or "")
-                price = clean_price(p.get("price") or p.get("sellPrice") or
-                                    p.get("currentPrice") or p.get("salePrice") or
-                                    p.get("discountedPrice") or p.get("basePrice"))
-                if not name or price is None: continue
-                total += 1
-                cat = assign_cat(name)
-                if cat: results[cat].append({"name":name,"price":price})
-            print(f" {page}", end="", flush=True)
-            tp = (d.get("data",{}).get("totalPages") or d.get("totalPages") or d.get("pageCount"))
-            if (tp and page >= int(tp)) or len(items) < ps: break
-            page += 1; time.sleep(0.3)
-        except Exception as e:
-            print(f"\n  [OBA] xəta: {e}"); break
-    print(f"\n  [OBA] ✓ {total} məhsul")
-    return results if total > 0 else _oba_web()
+    """oba.az/products/ — server tərəfindən render olunan HTML, ?start= ilə səhifələmə."""
+    ses = _session()
+    ses.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124",
+                        "Accept-Language": "az"})
+    ses.headers.pop("Content-Type", None)
 
-def _oba_web():
-    import requests
-    from bs4 import BeautifulSoup
-    results = {c: [] for c in CATEGORIES}
-    heads = {"User-Agent":"Mozilla/5.0","Accept-Language":"az"}
-    total = 0
-    print("  [OBA] oba.az web scrape…")
-    for pg in range(1, 400):
+    def page(start):
         try:
-            r = requests.get(f"https://oba.az/az/products/?page={pg}", headers=heads, timeout=30)
-            if r.status_code != 200: break
-            soup = BeautifulSoup(r.text,"html.parser")
-            cards = soup.select(".product-card,.product-item,[class*='product']")
-            if not cards: break
-            found = 0
-            for c in cards:
-                ne = c.select_one("[class*='name'],[class*='title'],h3,h4")
-                pe = c.select_one("[class*='price']")
-                if not ne or not pe: continue
-                name = ne.get_text(strip=True)
-                price = clean_price(pe.get_text(strip=True))
-                if not name or price is None: continue
-                found += 1; total += 1
+            r = ses.get("https://oba.az/products/", params={"start": start} if start else None, timeout=30)
+            return _oba_cards(r.text) if r.status_code == 200 else []
+        except Exception:
+            return []
+
+    results = {c: [] for c in CATEGORIES}
+    seen, total, start, empty = set(), 0, 0, 0
+    print("  [OBA] oba.az/products/ …", end="", flush=True)
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        while start < 60000 and empty < 1:
+            offsets = [start + i * OBA_STEP for i in range(8)]
+            new_in_batch = 0
+            for cards in ex.map(page, offsets):
+                for name, _cat, raw in cards:
+                    price = clean_price(raw)
+                    key = (name.lower(), price)
+                    if not name or price is None or key in seen: continue
+                    seen.add(key); total += 1; new_in_batch += 1
+                    cat = assign_cat(name)
+                    if cat: results[cat].append({"name": name, "price": price})
+            if new_in_batch == 0: empty += 1
+            start += 8 * OBA_STEP
+            print(f" {total}", end="", flush=True)
+    print(f"\n  [OBA] ✓ {total} məhsul")
+    return results if total else None
+
+# ── ARAZ — arazmarket.az API ─────────────────────────────────────────────
+ARAZ_API = "https://b7x9kq.arazmarket.az/api"
+
+def _araz_price(p):
+    """Rəfdəki faktiki qiymət: endirim varsa endirimli, yoxsa adi qiymət."""
+    if p.get("is_discount") and p.get("discount_price"):
+        v = clean_price(p.get("discount_price"))
+        if v: return v
+    return clean_price(p.get("sales_price"))
+
+def _araz_leaves(nodes, out):
+    for n in nodes or []:
+        if n.get("sub"): _araz_leaves(n["sub"], out)
+        else: out.append(n["id"])
+    return out
+
+def scrape_araz():
+    """Araz-ın öz API-si. Uğursuz olarsa None qaytarır (Wolt-a keçilir)."""
+    ses = _session()
+    ses.headers.update({"Accept": "application/json", "Origin": "https://arazmarket.az",
+                        "Referer": "https://arazmarket.az/", "Accept-Language": "az"})
+    try:
+        r = ses.get(f"{ARAZ_API}/categories", timeout=40)
+        r.raise_for_status()
+        leaves = _araz_leaves(r.json().get("data"), [])
+    except Exception as e:
+        print(f"  [Araz] ✗ kateqoriyalar alınmadı: {e}")
+        return None
+    print(f"  [Araz] {len(leaves)} alt kateqoriya")
+
+    def fetch(cid):
+        items, page = [], 1
+        while page <= 60:
+            try:
+                r = ses.get(f"{ARAZ_API}/products/category/{cid}", params={"page": page}, timeout=30)
+                if r.status_code != 200: break
+                d = (r.json().get("data") or {})
+                items += d.get("products") or []
+                if page >= int((d.get("pagination") or {}).get("last_page") or 1): break
+                page += 1
+            except Exception:
+                break
+        return items
+
+    results = {c: [] for c in CATEGORIES}
+    seen, total = set(), 0
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for items in ex.map(fetch, leaves):
+            for p in items:
+                pid, name, price = p.get("id"), (p.get("title") or "").strip(), _araz_price(p)
+                if pid in seen or not name or price is None: continue
+                seen.add(pid); total += 1
                 cat = assign_cat(name)
-                if cat: results[cat].append({"name":name,"price":price})
-            if found == 0: break
-            print(f"  [OBA/web] s.{pg}: {found} məhsul", end="\r")
-            time.sleep(0.35)
-        except Exception as e:
-            print(f"\n  [OBA/web] xəta: {e}"); break
-    print(f"\n  [OBA/web] ✓ {total} məhsul")
-    return results
+                if cat: results[cat].append({"name": name, "price": price})
+    print(f"  [Araz] ✓ {total} məhsul (arazmarket.az)")
+    return results if total else None
 
 # ── WOLT ─────────────────────────────────────────────────────────────────
 WOLT_HEADS = {
@@ -421,7 +448,7 @@ def apply_to_data(own_res, wolt_res, store, data):
     if not any(own_res.values()) and not any(wolt_res.values()):
         print(f"  [{store}] ⚠ nəticə boşdur — köhnə qiymətlər saxlanıldı")
         return False
-    wolt_only = store in ("Araz","Neptun","Rahat")
+    wolt_only = store in ("Neptun",)
     for cid in CATEGORIES:
         if wolt_only:
             items = [{"name":w["name"],"wolt_price":w["wolt_price"]}
@@ -439,7 +466,7 @@ def apply_to_data(own_res, wolt_res, store, data):
 # ── MAIN ─────────────────────────────────────────────────────────────────
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--store", choices=["bravo","oba","araz","neptun","rahat","all"], default="all")
+    ap.add_argument("--store", choices=["bravo","oba","araz","neptun","all"], default="all")
     ap.add_argument("--wolt-only",  action="store_true")
     ap.add_argument("--own-only",   action="store_true")
     ap.add_argument("--out", default="../data/prices.json")
@@ -450,13 +477,15 @@ def main():
         with open(out, encoding="utf-8") as f:
             data = json.load(f)
         if "stores" not in data: data["stores"] = ALL_STORES
+        # köhnə (artıq istifadə olunmayan) kateqoriyaları at: onlarda köhnəlmiş qiymətlər qalır
+        data["categories"] = {k: v for k, v in data["categories"].items() if k in CATEGORIES}
         for cid, info in CATEGORIES.items():
             if cid not in data["categories"]:
                 data["categories"][cid] = {"name":info["name"],"stores":{s:[] for s in ALL_STORES}}
     else:
         data = empty_data()
 
-    name_map = {"bravo":"Bravo","oba":"OBA","araz":"Araz","neptun":"Neptun","rahat":"Rahat"}
+    name_map = {"bravo":"Bravo","oba":"OBA","araz":"Araz","neptun":"Neptun"}
     targets = list(name_map.keys()) if args.store=="all" else [args.store]
 
     for t in targets:
@@ -475,8 +504,10 @@ def main():
                     continue
             elif sname == "OBA":
                 own_res = scrape_oba()
-            # Araz, Neptun, Rahat — öz saytları yoxdur/bloklayır → Wolt
-            elif sname in ("Araz","Neptun","Rahat"):
+            elif sname == "Araz":
+                own_res = scrape_araz() or {}
+            # Neptun — öz saytları yoxdur/bloklayır → Wolt
+            elif sname == "Neptun":
                 pass  # goes straight to Wolt below
 
         # Wolt

@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 2 * * *'   # 06:00 Bakı vaxtı
   workflow_dispatch:
+    inputs:
+      store:
+        description: 'Mağaza (all, araz, oba, bravo, neptun)'
+        default: 'all'
 
 permissions:
   contents: write
@@ -29,7 +33,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Scraper işlət
-        run: python scrapers/scraper.py
+        run: python scrapers/scraper.py --store "${{ github.event.inputs.store || 'all' }}"
 
       - name: Nəticəni GitHub-a yüklə
         run: |
