@@ -1,60 +1,44 @@
 #!/usr/bin/env python3
-"""Araz kataloq API/səhifələmə probe-u (nəticə data/probe/araz_catalog2.txt)."""
-import re, json
+"""Rahat Wolt brend səhifəsi və OBA məhsul səhifəsi probe-u (data/probe/obarahat.txt)."""
+import re
 from pathlib import Path
 import requests
 
 OUT = Path(__file__).resolve().parent.parent / "data" / "probe"
 H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124", "Accept-Language": "az"}
-BASE, API = "https://arazmarket.az", "https://b7x9kq.arazmarket.az"
 log = []
 def L(*a):
     s = " ".join(str(x) for x in a); log.append(s); print(s)
-
 def get(url, **kw):
     try:
         return requests.get(url, headers={**H, **kw.pop("headers", {})}, timeout=30, **kw)
     except Exception as e:
-        L("ERR", url, e); return None
+        L("ERR", url, e)
 
-def ids(txt):
-    return re.findall(r'"id":(\d+),"title":"([^"]+)","avg_rating"', txt.replace('\\"', '"'))
+# 1) Wolt Rahat brend
+r = get("https://wolt.com/az/aze/baku/brand/rahat-supermarket")
+if r is not None:
+    t = r.text.replace('\\"', '"')
+    L("wolt brand", r.status_code, len(t))
+    L("venue slugs:", sorted(set(re.findall(r'/venue/([a-z0-9\-]+)', t)))[:40])
+    L("slug fields:", sorted(set(re.findall(r'"slug":"([a-z0-9\-]*rahat[a-z0-9\-]*)"', t)))[:40])
+    (OUT / "rahat_wolt_brand.html").write_text(t[:120000], encoding="utf-8")
 
-slug = "agardicilar-371"
-pages = {}
-for p in (1, 2, 3):
-    r = get(f"{BASE}/az/categories/{slug}", params={"page": p})
-    if r is not None:
-        pages[p] = ids(r.text)
-        L(f"page={p} status={r.status_code} products={len(pages[p])} first={pages[p][:2]}")
-L("page1==page2:", pages.get(1) == pages.get(2))
-html = get(f"{BASE}/az/categories/{slug}").text
-t = html.replace('\\"', '"')
-i = t.find('"sales_price"')
-L("sample product json:", t[max(0, i - 700): i + 700])
-for k in ("current_page", "last_page", "per_page", "total", "links", "meta", "next", "page"):
-    m = re.findall(r'"%s":[^,}\]]{0,40}' % k, t)
-    if m: L(k, m[:4])
-
-# JS chunk-lardan API yolları
-chunks = sorted(set(re.findall(r'/_next/static/[^"\\]+\.js', html)))[:60]
-L("js chunks:", len(chunks))
-paths = set()
-for c in chunks:
-    r = get(BASE + c)
-    if r is not None and r.status_code == 200:
-        paths |= set(re.findall(r'["\'`](/?(?:api/)?[a-z\-_/]*(?:product|categor|search|catalog)[a-z\-_/$\{\}\.]*)["\'`]', r.text))
-L("api-like paths:", sorted(paths)[:80])
-
-# kateqoriya id ilə sınaqlar
-for path in [f"/api/categories/{slug}", "/api/categories/371", "/api/categories/371/products", "/api/category/371",
-             f"/api/category/{slug}", "/api/products?category_id=371", "/api/product?category_id=371",
-             "/api/products/category/371", f"/api/products/category/{slug}", "/api/category-products/371",
-             "/api/products?categoryId=371", "/api/products?category=371", "/api/search/products?q=s%C3%BCd",
-             "/api/products/search?q=s%C3%BCd", "/api/search?search=s%C3%BCd", "/api/products?search=s%C3%BCd"]:
-    r = get(API + path, headers={"Accept": "application/json", "Origin": BASE, "Referer": BASE + "/"})
-    if r is not None:
-        L(f"{r.status_code} {len(r.text):>7}B sales_price={r.text.count('sales_price')} {path}")
-        if r.status_code == 200 and "sales_price" in r.text:
-            (OUT / ("araz_try_" + re.sub(r"\W+", "_", path) + ".json")).write_text(r.text[:30000], encoding="utf-8")
-(OUT / "araz_catalog2.txt").write_text("\n".join(log), encoding="utf-8")
+# 2) OBA
+r = get("https://oba.az/products/")
+if r is not None:
+    t = r.text
+    L("oba /products/", r.status_code, len(t), r.url)
+    L("title:", (re.search(r"<title>(.*?)</title>", t, re.S) or [0, ""])[1].strip())
+    L("json-ld:", t.count("ld+json"), " __NEXT_DATA__:", "__NEXT_DATA__" in t, " next_f:", "__next_f" in t)
+    L("api-like:", sorted(set(re.findall(r'(?:https?:)?//[a-z0-9.\-]+/(?:api|v\d)[A-Za-z0-9/_\-?=&.]*', t)))[:30])
+    L("hrefs:", sorted(set(re.findall(r'href="(/[^"#?]{2,70})"', t)))[:60])
+    L("price snippets:", re.findall(r".{60}\d+[.,]\d{2}\s*(?:₼|AZN|man).{20}", t)[:6])
+    (OUT / "oba_products.html").write_text(t[:200000], encoding="utf-8")
+    for c in sorted(set(re.findall(r'(?:src|href)="([^"]+\.js[^"]*)"', t)))[:25]:
+        u = c if c.startswith("http") else "https://oba.az" + (c if c.startswith("/") else "/" + c)
+        j = get(u)
+        if j is not None and j.status_code == 200:
+            p = sorted(set(re.findall(r'["\'`]((?:https?://[^"\'`]+)?/?(?:api/)?[a-zA-Z\-_/]*(?:product|categor|catalog)[a-zA-Z\-_/{}$.?=&]*)["\'`]', j.text)))[:15]
+            if p: L("js", c[:60], p)
+(OUT / "obarahat.txt").write_text("\n".join(log), encoding="utf-8")
