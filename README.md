@@ -10,11 +10,13 @@ qiymet-project/
 ├── haqqinda.html           ← Haqqında, şərtlər, məxfilik, düzəliş sorğuları
 ├── data/
 │   ├── prices.json         ← Qiymətlər (scraper tərəfindən yenilənir)
-│   └── groups.json         ← Hazır "eyni məhsul" kartları (build_site.js)
+│   ├── groups.json         ← Hazır "eyni məhsul" kartları (build_site.js)
+│   └── off_images.json     ← Ştrix-kod → Open Food Facts şəkli (keş, off_images.py)
 ├── qiymetler/              ← Statik kateqoriya səhifələri, Google üçün (build_site.js)
 ├── sitemap.xml             ← Google Search Console üçün (build_site.js)
 ├── scrapers/
-│   └── scraper.py          ← Python scraper
+│   ├── scraper.py          ← Python scraper
+│   └── off_images.py       ← Məhsul şəkilləri: Open Food Facts (CC BY-SA), ştrix-koda görə
 ├── scripts/
 │   └── build_site.js       ← scrape-dən sonra saytı qurur (Node)
 ├── requirements.txt        ← Python asılılıqları

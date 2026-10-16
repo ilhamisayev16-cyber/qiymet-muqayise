@@ -465,3 +465,82 @@ def test_own_plus_wolt_store_multi_branch_switch_skips_only_wolt_badges(monkeypa
     monkeypatch.delitem(S.WOLT_SRC, "Araz")                  # növbəti gün Wolt alınmadı: üsul yaddaşda qalır
     assert S.apply_to_data(own, {}, "Araz", d, {})
     assert d["meta"]["Araz"]["src"] == "multi-" + S.WOLT_SRC_VER
+
+
+# ── məhsul şəkilləri: Open Food Facts, ştrix-koda görə (mağazanın şəkli yox) ──
+def test_wolt_entry_keeps_only_valid_barcode():
+    _, e = S._wolt_entry({"name": "Süd 1 L", "price": 199, "barcode_gtin": "4760095101025", "images": [{"url": "https://img/x.png"}]})
+    assert e == {"name": "Süd 1 L", "wolt_price": 1.99, "gtin": "4760095101025"}
+    for bad in ("", "12ab", "123", None, 4760095101025):
+        _, e = S._wolt_entry({"name": "Süd 1 L", "price": 199, "barcode_gtin": bad})
+        assert "gtin" not in e
+
+
+def test_off_front_image_path():
+    import off_images as O
+    assert O.folder("4760095101025") == "476/009/510/1025"
+    assert O.folder("12345678") == "000/001/234/5678"
+    sz = {"200": {"w": 150, "h": 200}}
+    imgs = {"1": {"sizes": sz}, "front_ru": {"rev": "3", "sizes": sz}, "front_az": {"rev": 7, "sizes": sz},
+            "ingredients_az": {"rev": "4", "sizes": sz}}
+    assert O.front("4760095101025", imgs) == "476/009/510/1025/front_az.7"
+    assert O.front("4760095101025", {"front_ru": {"rev": "3", "sizes": sz}}) == "476/009/510/1025/front_ru.3"
+    assert O.front("4760095101025", {"front_az": {"rev": "3", "sizes": {"400": {}}}}) == ""   # 200 px yoxdur
+    assert O.front("4760095101025", {"ingredients_az": {"rev": "3", "sizes": sz}}) == ""
+    assert O.front("4760095101025", {"front_x\"y": {"rev": "3", "sizes": sz}}) == ""
+
+
+def test_off_images_turns_barcode_into_image_and_uses_cache(tmp_path, monkeypatch):
+    import off_images as O
+    d = mini("Neptun", 0)
+    d["categories"]["sud"]["stores"]["Neptun"] = [
+        {"name": "A", "wolt_price": 1.0, "gtin": "4760095101025"},
+        {"name": "B", "wolt_price": 1.0, "gtin": "4760000000001"},
+        {"name": "C", "wolt_price": 1.0, "gtin": "4760000000002"},
+        {"name": "D", "wolt_price": 1.0, "im": "476/000/000/0003/front_az.1"}]   # arxiv məhsul: köhnə şəkil qalır
+    p, c = tmp_path / "prices.json", tmp_path / "off.json"
+    p.write_text(json.dumps(d, ensure_ascii=False))
+    c.write_text(json.dumps({"4760000000002": ["", "9999-12-31"]}))   # götürülmüş şəkil: bir daha soruşulmur
+    monkeypatch.setattr(O, "PRICES", str(p)); monkeypatch.setattr(O, "CACHE", str(c))
+    asked = []
+    def fake(ses, codes):
+        asked.append(list(codes))
+        return {k: ("476/009/510/1025/front_az.3" if k == "4760095101025" else "") for k in codes}
+    monkeypatch.setattr(O, "lookup", fake)
+    O.run()
+    items = json.loads(p.read_text())["categories"]["sud"]["stores"]["Neptun"]
+    assert asked == [["4760000000001", "4760095101025"]]
+    assert items == [{"name": "A", "wolt_price": 1.0, "im": "476/009/510/1025/front_az.3"},
+                     {"name": "B", "wolt_price": 1.0}, {"name": "C", "wolt_price": 1.0},
+                     {"name": "D", "wolt_price": 1.0, "im": "476/000/000/0003/front_az.1"}]
+    cache = json.loads(c.read_text())
+    assert cache["4760095101025"][0] and cache["4760000000001"][0] == "" and cache["4760000000002"] == ["", "9999-12-31"]
+    asked.clear(); p.write_text(json.dumps(d, ensure_ascii=False)); O.run()
+    assert asked == []                                          # keşdən: təkrar sorğu yoxdur
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node yoxdur")
+def test_card_photo_from_open_food_facts_else_icon(tmp_path):
+    db = {"stores": ["OBA", "Bravo"], "groups": [{"id": "sud", "name": "Süd", "cats": ["sud"]}],
+          "categories": {"sud": {"name": "Süd", "stores": {
+              "OBA": [{"name": "Azərsüd Süd 3.2% 1 l", "price": 2.8}, {"name": "Milla Süd 3.2% 1 l", "price": 2.7}],
+              "Bravo": [{"name": "Azərsüd Süd 3.2% 1l", "wolt_price": 2.89, "im": "476/009/510/1025/front_az.3"},
+                        {"name": "Milla Süd 3.2% 1l", "wolt_price": 2.79, "im": "x\"><script>"}]}}}}
+    f = tmp_path / "db.json"; f.write_text(json.dumps(db, ensure_ascii=False))
+    js = f"""const api=require({json.dumps(str(ROOT / 'tests' / 'site_harness.js'))})({json.dumps(str(ROOT / 'index.html'))});
+api.setDB(JSON.parse(require('fs').readFileSync({json.dumps(str(f))},'utf8')));
+console.log(JSON.stringify(api.groups('sud').map(g=>[g.name.split(' ')[0],api.picOf(g)])));"""
+    r = subprocess.run(["node", "-e", js], capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stderr[-500:]
+    got = dict(json.loads(r.stdout.strip()))
+    assert got["Azərsüd"].startswith('<img class="ph" src="https://images.openfoodfacts.org/images/products/476/009/510/1025/front_az.3.200.jpg"')
+    assert "<" not in got["Milla"]                              # yolu düzgün olmayan "im" göstərilmir: ikon
+
+
+def test_fluent_icon_list_matches_files_and_license():
+    js = (ROOT / "assets" / "twemoji.js").read_text(encoding="utf-8")
+    fl = set(re.search(r'var FL=new Set\("([^"]*)"', js).group(1).split())
+    files = {p.stem for p in (ROOT / "assets" / "fluent").glob("*.webp")}
+    assert fl == files and len(fl) > 150
+    assert fl <= {p.stem for p in (ROOT / "assets" / "twemoji").glob("*.svg")}   # Fluent yüklənməsə Twemoji-yə düşür
+    assert "MIT License" in (ROOT / "assets" / "fluent" / "LICENSE").read_text(encoding="utf-8")

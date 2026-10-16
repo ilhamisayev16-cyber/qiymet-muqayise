@@ -47,6 +47,12 @@ jobs:
           esac
           python scrapers/scraper.py --store "$STORE"
 
+      - name: Məhsul şəkilləri (Open Food Facts, ştrix-koda görə)
+        if: always()   # scrape vaxtı bitsə də; alınmasa sayt ikon göstərir
+        continue-on-error: true
+        timeout-minutes: 30
+        run: python scrapers/off_images.py
+
       - name: Saytı qur (hazır kartlar, statik səhifələr, sitemap)
         if: always()   # scrape vaxtı bitsə də yazılmış data üçün
         timeout-minutes: 10
@@ -58,6 +64,7 @@ jobs:
           git config user.name "Price Bot"
           git config user.email "bot@qiymet.az"
           git add data/prices.json data/history.json
+          if [ -e data/off_images.json ]; then git add data/off_images.json; fi
           for f in data/groups.json sitemap.xml qiymetler; do if [ -e "$f" ]; then git add -A "$f"; fi; done   # qurma alınmasa da qiymətlər commit olunsun
           git diff --staged --quiet || git commit -m "Qiymətlər yeniləndi"
           git pull --rebase origin "$GITHUB_REF_NAME"

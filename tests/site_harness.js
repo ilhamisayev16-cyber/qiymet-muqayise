@@ -14,7 +14,7 @@ module.exports=function(path){
     setTimeout:()=>0,clearTimeout(){},location:{hash:''},window:{scrollTo(){}},innerWidth:390,performance};
   vm.createContext(ctx);
   const names=['fold','kw','stem','expandQ','matchQ','hasAlt','tokens','alpha','jaccard','parseSize','attrs','fmtSize','compat','isKg','group','mk','SYN','TR',
-    'GEN','GEN_NAME','EMOJI','search','qparse','score','qscore','catName','ICONS','iconOf','typeOf','tpIdx','metaOf'];
+    'GEN','GEN_NAME','EMOJI','search','qparse','score','qscore','catName','ICONS','iconOf','picOf','typeOf','tpIdx','metaOf'];
   vm.runInContext(js+`;globalThis.__api={${names.map(n=>`get ${n}(){try{return ${n}}catch(e){return undefined}}`).join(',')},
     setDB(d){DB=d;stores=DB.stores||[];GL=DB.groups;GM=Object.fromEntries(GL.map(g=>[g.id,g]));for(const k in GROUPS)delete GROUPS[k];},
     groups:(gid)=>groups(gid), GL:()=>GL, F:()=>F, apply:()=>{apply();return filtered;}, setCur:(c)=>{cur=c;}};`,ctx);

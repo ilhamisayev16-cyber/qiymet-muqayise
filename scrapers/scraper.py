@@ -1280,6 +1280,8 @@ def _wolt_entry(item, path=""):
     e = {"name": name, "wolt_price": price}
     wt = _wolt_weight(item)
     if wt: e["wt"] = wt
+    g = item.get("barcode_gtin")   # ştrix-kod: yalnız məhsul şəkli üçün (scrapers/off_images.py "im"-ə çevirir və silir)
+    if isinstance(g, str) and re.fullmatch(r"\d{8,14}", g): e["gtin"] = g
     return classify(name, path), e
 
 def _wolt_base(slug):
@@ -1426,6 +1428,7 @@ def scrape_wolt_multi(store):
                 else:
                     m["p"].append(e["wolt_price"])
                     if "wt" not in m["e"] and e.get("wt"): m["e"]["wt"] = e["wt"]
+                    if "gtin" not in m["e"] and e.get("gtin"): m["e"]["gtin"] = e["gtin"]
         print(f"  [Wolt/{store}] {slug}: +{len(merged) - before} yeni (cəmi {len(merged)}); {round(time.time() - t0)} san", flush=True)
         time.sleep(5)
     if not ok: return None
@@ -1520,12 +1523,13 @@ def merge_own_wolt(own_list, wolt_list):
             w = wolt_list[j]
             if abs(w["wolt_price"] - item["price"]) > 0.005: entry["wolt_price"] = w["wolt_price"]
             if w.get("wt"): entry["wt"] = w["wt"]
+            if w.get("gtin"): entry["gtin"] = w["gtin"]
             if item.get("rp") and item["price"] <= 0.5 * item["rp"] and "wolt_price" in entry:
                 del entry["price"]   # 50%+ aksiya: Wolt qiyməti göstərilir
         merged.append(entry)
     for j, w in enumerate(wolt_list):   # yalnız Wolt-da olanlar
         if j not in used:
-            merged.append({k: w[k] for k in ("name", "wolt_price", "wt") if k in w})
+            merged.append({k: w[k] for k in ("name", "wolt_price", "wt", "gtin") if k in w})
     return merged
 
 # ── Qiymət dəyişikliyi: məhsulda "pp" (əvvəlki qiymət) + "pd" (dəyişmə tarixi); tam tarixçə data/history.json-da ───────
@@ -1597,7 +1601,7 @@ def apply_to_data(own_res, wolt_res, store, data, hist=None, wolt_on=True):
     old_day = _iso((data.get("meta", {}).get(store) or {}).get("updated", "")) or _iso(data.get("last_updated", ""))
     for cid in CATEGORIES:
         if wolt_only:
-            items = [{k: w[k] for k in ("name", "wolt_price", "wt") if k in w}
+            items = [{k: w[k] for k in ("name", "wolt_price", "wt", "gtin") if k in w}
                      for w in wolt_res.get(cid,[])]
         else:
             items = merge_own_wolt(own_res.get(cid,[]), wolt_res.get(cid,[]))
